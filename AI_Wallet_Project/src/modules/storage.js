@@ -105,9 +105,12 @@ function readUsage(accountId){
  return open().then(db=>new Promise((resolve,reject)=>{
   const tx=db.transaction(STORES.usage,'readonly'),store=tx.objectStore(STORES.usage);
   const request=accountId?store.index('accountId').getAll(accountId):store.getAll();
-  request.onsuccess=()=>resolve(request.result||[]);
+  let rows=[];
+  request.onsuccess=()=>{rows=request.result||[]};
   request.onerror=()=>reject(request.error||new Error('Could not read usage history'));
+  tx.oncomplete=()=>resolve(rows);
   tx.onerror=()=>reject(tx.error||new Error('Usage history read failed'));
+  tx.onabort=()=>reject(tx.error||new Error('Usage history read aborted'));
  }));
 }
 function clearWalletStores(){
