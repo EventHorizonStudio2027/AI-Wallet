@@ -38,6 +38,23 @@ jobs:
           mkdir -p AI_Wallet_Project
           touch AI_Wallet_Project/.nojekyll
           echo "Deploying DomAIn from $(git rev-parse --short HEAD)"
+      - name: Install Node.js for release checks
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Audit and test release before publishing
+        shell: bash
+        working-directory: AI_Wallet_Project
+        run: |
+          set -euo pipefail
+          python3 tests/check_project.py
+          python3 -m json.tool manifest.webmanifest >/dev/null
+          find src -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+          node --check service-worker.js
+          for test in tests/*.test.cjs; do
+            echo "Running $test"
+            node "$test"
+          done
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload DomAIn app as website root
