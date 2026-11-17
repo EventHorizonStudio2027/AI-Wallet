@@ -42,5 +42,6 @@ assert.throws(()=>backup.validateBackup({...linked,files:[{...linked.files[0],fo
 assert.throws(()=>backup.validateBackup({...linked,files:[{...linked.files[0],accountId:'missing'}]}),/missing account/);
 assert.throws(()=>backup.validateBackup({...linked,accounts:[{id:'account1',serviceId:'missing'}]}),/missing service/);
 assert.throws(()=>backup.validateBackup({...linked,files:[{...linked.files[0],serviceId:'missing'}]}),/missing service/);
+assert.throws(()=>backup.validateBackup({...linked,services:[{id:'service1'},{id:'service2'}],files:[{...linked.files[0],serviceId:'service2'}]}),/account and service do not match/);
 assert.throws(()=>backup.createEnvelope(null),/Invalid wallet state/);
 console.log('DomAIn financial, subscription, trial and backup regression tests passed.');
