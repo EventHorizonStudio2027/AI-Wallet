@@ -36,4 +36,11 @@ assert.equal(creator.report({goal:1000,agreements:[],payouts:[{id:'p',client:'Cl
 const valid={schemaVersion:7,services:[],accounts:[],files:[]};
 assert.equal(backup.validateBackup(valid).fileCount,0);
 assert.throws(()=>backup.validateBackup({...valid,files:[{id:'a',name:'file',data:'data:text/plain;base64,%%%%'}]}),/Invalid file data/);
+const linked={schemaVersion:7,services:[{id:'service1'}],accounts:[{id:'account1',serviceId:'service1'}],folders:[{id:'folder1'}],files:[{id:'file1',name:'test.txt',serviceId:'service1',accountId:'account1',folderId:'folder1'}]};
+assert.equal(backup.validateBackup(linked).fileCount,1);
+assert.throws(()=>backup.validateBackup({...linked,files:[{...linked.files[0],folderId:'missing'}]}),/missing folder/);
+assert.throws(()=>backup.validateBackup({...linked,files:[{...linked.files[0],accountId:'missing'}]}),/missing account/);
+assert.throws(()=>backup.validateBackup({...linked,accounts:[{id:'account1',serviceId:'missing'}]}),/missing service/);
+assert.throws(()=>backup.validateBackup({...linked,files:[{...linked.files[0],serviceId:'missing'}]}),/missing service/);
+assert.throws(()=>backup.createEnvelope(null),/Invalid wallet state/);
 console.log('DomAIn financial, subscription, trial and backup regression tests passed.');
