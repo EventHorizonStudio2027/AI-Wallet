@@ -1,0 +1,27 @@
+name: Validate AI Wallet
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check app structure
+        run: |
+          test -f index.html
+          test -f manifest.webmanifest
+          test -f service-worker.js
+          test -f src/app.js
+          test -f styles/app.css
+          python3 tests/check_project.py
+      - name: Run all Node tests
+        run: |
+          for file in tests/*.test.cjs; do node "$file"; done
