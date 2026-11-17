@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const app=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
+assert.match(app,/name:'Flow',domain:'labs\.google'.*url:'https:\/\/labs\.google\/fx\/tools\/flow'/,'Google Flow must use its official landing page');
+assert.match(app,/name:'Flow Music',domain:'www\.flowmusic\.app'.*url:'https:\/\/www\.flowmusic\.app\/'/,'Google Flow Music must have a separate website and favicon');
+assert.match(app,/function serviceLaunchUrl\(s\)/,'Service links must be normalized');
+assert.match(app,/url\.protocol!=='https:'/,'Only HTTPS service destinations are allowed');
+assert.match(app,/window\.open\(url,'_blank','noopener,noreferrer'\)/,'Login must open directly on the provider with opener isolation');
+assert.match(app,/render\(\);launchService\(service\(selectedService\)\)/,'Service strip cards must open the provider');
+assert.match(app,/data-launch-service/,'AI directory must offer Open / Sign in');
+assert.match(app,/entry\.id==='flow'\|\|entry\.id==='flowmusic'/,'Existing saved Flow destinations must migrate');
+console.log('DomAIn service launch and Google Flow destination checks passed.');
