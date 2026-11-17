@@ -9,4 +9,11 @@ assert.match(app,/const incompleteFiles=parsed\.files\.filter\(file=>file\.data=
 assert.match(app,/if\(incompleteFiles\.length&&!confirm\(/,'Missing file contents require confirmation');
 assert.match(storage,/tx\.oncomplete=\(\)=>resolve\(keys\)/,'File audit must wait for completed IndexedDB transaction');
 assert.match(storage,/tx\.onabort=\(\)=>reject\(/,'File audit must reject aborted transactions');
+assert.match(app,/let backupExportBusy=false;async function exportBackup\(\)/,'Backup export must guard concurrent work');
+assert.match(app,/finally\{backupExportBusy=false\}/,'Backup export must release its lock');
+assert.match(app,/if\(window\._walletImportBusy\|\|fileUploadBusy\|\|backupExportBusy\)/,'Backup import must wait for other file operations');
+assert.match(app,/if\(fileUploadBusy\|\|window\._walletImportBusy\|\|backupExportBusy\)/,'Uploads must wait for backup export');
+assert.match(app,/toast\('Backup import cancelled'\);return/,'User cancellation must not report invalid backup');
+assert.match(app,/a\.download='domain-backup\.json'/,'Export filename must use DomAIn brand');
+assert.match(app,/const currentRaw=localStorage\.getItem\(DATA_KEY\)/,'Rollback must safely read stored metadata');
 console.log('DomAIn backup import and IndexedDB integrity regression checks passed.');
