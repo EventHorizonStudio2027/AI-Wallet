@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#080d20">
-<meta name="description" content="AI Wallet keeps your AI accounts, usage, subscriptions and generated files organized in one place.">
+<meta name="description" content="DomAIn keeps your AI accounts, usage, subscriptions and generated files organized in one place.">
 <meta name="color-scheme" content="dark">
-<title>AI Wallet</title>
+<title>DomAIn — Your AI. Your Domain.</title>
 <link rel="stylesheet" href="styles/app.css">
 <link rel="manifest" href="manifest.webmanifest">
 </head>
@@ -14,24 +14,24 @@
 <div class="app">
 <aside>
  <div class="brand">
-  <svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-label="AI Wallet logo"><path d="M9 22 18 9q2-3 6-3h25q5 0 5 5v8" stroke="#8bdcff" stroke-width="2.5"/><path d="M6 22q0-4 5-4h42q5 0 5 5v27q0 5-5 5H11q-5 0-5-5V22Z" fill="url(#g)" stroke="#65a9ff" stroke-width="2"/><path d="M43 31h15v13H43a6.5 6.5 0 0 1 0-13Z" fill="#101e50" stroke="#75cfff" stroke-width="2"/><circle cx="46" cy="37.5" r="2" fill="#a7f4ff"/><path d="m27 22 2.2 6.8L36 31l-6.8 2.2L27 40l-2.2-6.8L18 31l6.8-2.2L27 22Z" fill="#e1f7ff"/><defs><linearGradient id="g" x1="9" y1="15" x2="50" y2="55" gradientUnits="userSpaceOnUse"><stop stop-color="#266cff"/><stop offset="1" stop-color="#3622a2"/></linearGradient></defs></svg>
-  <div><div class="brand-name">AI Wallet</div><div class="brand-sub">Your AI ecosystem</div></div>
+  <svg class="brand-mark" viewBox="0 0 100 100" fill="none" role="img" aria-label="DomAIn layered hexagon emblem"><defs><linearGradient id="domainNeon" x1="10" y1="10" x2="90" y2="90"><stop stop-color="#00efff"/><stop offset=".48" stop-color="#378cff"/><stop offset="1" stop-color="#f033fa"/></linearGradient><linearGradient id="domainMetal" x1="15" y1="10" x2="85" y2="90"><stop stop-color="#f9ffff"/><stop offset=".48" stop-color="#60caff"/><stop offset="1" stop-color="#d64bff"/></linearGradient></defs><path d="M50 4 88 26v47L50 96 12 73V26Z" stroke="url(#domainNeon)" stroke-width="4" stroke-linejoin="round"/><path d="M50 11 81 30v39L50 88 19 69V30Z" stroke="#71c7ff" stroke-opacity=".45" stroke-width="1.5"/><path d="M6 72C-1 62 19 46 45 41c25-5 49-2 51 10 2 9-14 17-27 20" stroke="url(#domainNeon)" stroke-width="3.5" stroke-linecap="round"/><path d="m50 34 27 13-27 13-27-13 27-13Z" fill="url(#domainMetal)"/><path d="m23 57 27 13 27-13M23 68l27 13 27-13" stroke="url(#domainMetal)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 13c2 12 5 15 17 17-12 2-15 5-17 17-2-12-5-15-17-17 12-2 15-5 17-17Z" fill="white"/></svg>
+  <div><div class="brand-name">Dom<span class="brand-ai">A<span class="brand-serif-i">I</span></span>n</div><div class="brand-sub">Your AI. Your Domain.</div></div>
  </div>
  <nav class="nav" id="sideNav">
   <button class="active" data-page="home"><span class="ico">⌂</span>Overview</button>
   <button data-page="accounts"><span class="ico">♙</span>Accounts</button>
-  <button data-page="files"><span class="ico">▱</span>My Files</button>
-  <button data-page="usage"><span class="ico">◫</span>Memory & Usage</button>
+  <button data-page="files"><span class="ico">▱</span>Media Library</button>
+  <button data-page="usage"><span class="ico">◫</span>Usage &amp; Limits</button>
   <button data-page="apps"><span class="ico">▦</span>AI Apps</button>
   <button data-page="creator"><span class="ico">✧</span>Creator Income</button><button data-page="settings"><span class="ico">⚙</span>Settings</button>
  </nav>
- <div class="side-bottom plan"><b>✦ Your AI Wallet</b><small>One place for your AI accounts, usage and files.</small><div style="margin-top:12px"><span class="pill">Local library enabled</span></div></div>
+ <div class="side-bottom plan"><b>✦ Your DomAIn</b><small>One place for your AI accounts, usage and files.</small><div style="margin-top:12px"><span class="pill">Local library enabled</span></div></div>
 </aside>
 <main class="main">
- <header class="top"><div><div class="eyebrow">Your personal AI hub</div><h1 id="pageTitle">Welcome to AI Wallet</h1><p id="pageSubtitle">All your AI accounts, usage and creations in one place.</p></div><div class="top-actions"><button class="iconbtn" id="backupBtn" title="Export backup">⇩</button><button class="primary" id="addAccountTop">＋ Add account</button></div></header>
+ <header class="top"><div><div class="eyebrow">Your personal AI hub</div><h1 id="pageTitle">Welcome to DomAIn</h1><p id="pageSubtitle">All your AI accounts, usage and creations in one place.</p></div><div class="top-actions"><button class="iconbtn" id="backupBtn" title="Export backup">⇩</button><button class="primary" id="addAccountTop">＋ Add account</button></div></header>
 
 <section class="section active" id="page-home">
- <div class="service-strip" id="serviceStrip"></div>
+ <div class="domain-hero" aria-label="DomAIn connected AI dashboard"><div class="domain-hero-glow"></div><div class="domain-hero-copy"><div class="domain-hero-kicker">✦ YOUR CONNECTED AI UNIVERSE</div><div class="domain-hero-title">Everything AI.<br><em>One DomAIn.</em></div><p>One beautiful home for your tools, accounts, creations and insights.</p></div><div class="domain-hero-orbit" aria-hidden="true"><svg class="hero-mark" viewBox="0 0 100 100" fill="none" role="img" aria-label="DomAIn layered hexagon emblem"><defs><linearGradient id="domainNeon" x1="10" y1="10" x2="90" y2="90"><stop stop-color="#00efff"/><stop offset=".48" stop-color="#378cff"/><stop offset="1" stop-color="#f033fa"/></linearGradient><linearGradient id="domainMetal" x1="15" y1="10" x2="85" y2="90"><stop stop-color="#f9ffff"/><stop offset=".48" stop-color="#60caff"/><stop offset="1" stop-color="#d64bff"/></linearGradient></defs><path d="M50 4 88 26v47L50 96 12 73V26Z" stroke="url(#domainNeon)" stroke-width="4" stroke-linejoin="round"/><path d="M50 11 81 30v39L50 88 19 69V30Z" stroke="#71c7ff" stroke-opacity=".45" stroke-width="1.5"/><path d="M6 72C-1 62 19 46 45 41c25-5 49-2 51 10 2 9-14 17-27 20" stroke="url(#domainNeon)" stroke-width="3.5" stroke-linecap="round"/><path d="m50 34 27 13-27 13-27-13 27-13Z" fill="url(#domainMetal)"/><path d="m23 57 27 13 27-13M23 68l27 13 27-13" stroke="url(#domainMetal)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 13c2 12 5 15 17 17-12 2-15 5-17 17-2-12-5-15-17-17 12-2 15-5 17-17Z" fill="white"/></svg></div></div><div class="domain-section-heading"><span>YOUR AI ECOSYSTEM</span><span class="domain-section-hint">Connected services &amp; profiles</span></div><div class="service-strip" id="serviceStrip"></div>
  <div class="card attention-panel" id="homeAttentionPanel" aria-label="Upcoming deadlines and subscription payments">
   <div class="card-head"><div><h2>Coming up</h2><p class="tiny muted">Trial cancellation deadlines and estimated subscription payments from saved account details.</p></div><button class="secondary" type="button" data-goto="usage">Manage deadlines →</button></div>
   <div class="attention-stats" id="homeAttentionStats" aria-live="polite"></div>
