@@ -100,6 +100,17 @@ if sw_file.is_file():
         check(len(entries) == len(set(entries)), "Duplicate service worker precache entries")
     check("CACHE_PREFIX" in sw, "Service worker cache namespace missing")
 
+# Brand, navigation and asset integration regressions
+app_js = (ROOT / "src/app.js").read_text(encoding="utf-8")
+css = (ROOT / "styles/app.css").read_text(encoding="utf-8")
+check("Welcome to AI Wallet" not in app_js, "Old brand title still rendered dynamically")
+check("Welcome to DomAIn" in app_js, "Dynamic home title is not branded")
+check("service-logo-image" in app_js and ".service-logo-image" in css, "Service logo markup and CSS out of sync")
+check("mobile-nav-label" in html and ".mobile-nav-label" in css, "Mobile navigation markup and CSS out of sync")
+check(html.count('id="domainNeon"') == 1, "Duplicate sidebar SVG gradient identifier")
+check(html.count('id="domainHeroNeon"') == 1, "Dashboard SVG gradient missing or duplicated")
+check("CACHE_PREFIX" in (ROOT / "service-worker.js").read_text(encoding="utf-8"), "Missing offline cache version")
+check("styles/app.css" in html, "Stylesheet missing from HTML")
 if errors:
     for error in errors:
         print(f"FAIL: {error}")
