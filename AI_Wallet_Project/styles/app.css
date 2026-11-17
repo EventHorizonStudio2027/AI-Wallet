@@ -98,3 +98,11 @@ button{touch-action:manipulation}button:disabled{opacity:.5;cursor:not-allowed}
  .hero-mark{opacity:.45}.domain-hero-copy{max-width:95%}
  .top-actions button{padding:9px}
 }
+
+/* Shared navigation icons: identical desktop/mobile assets, predictable sizing */
+.mobile-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.mobile-nav button .ico{display:grid;place-items:center;width:23px;height:23px;flex:0 0 23px;line-height:1}
+.mobile-nav button .ico svg{display:block;width:21px;height:21px;max-width:21px;max-height:21px;overflow:visible;stroke:currentColor;filter:none}
+.mobile-nav button .mobile-nav-label{font-size:10px;line-height:1.1;white-space:nowrap;font-weight:600}
+.mobile-nav button.active .ico svg{filter:drop-shadow(0 0 5px #3fd6ff77)}
+@media(max-width:390px){.mobile-nav button .mobile-nav-label{font-size:9px}}
