@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const app=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
+const storage=fs.readFileSync(path.join(__dirname,'../src/modules/storage.js'),'utf8');
+assert.match(app,/const \{data,\.\.\.metadata\}=file;return \{\.\.\.metadata,id:fileIdMap\.get\(file\.id\)\|\|id\(\)\}/,'Imported file payload must not be copied to localStorage');
+assert.match(app,/const incompleteFiles=parsed\.files\.filter\(file=>file\.data==null\)/,'Incomplete backups must be detected');
+assert.match(app,/if\(incompleteFiles\.length&&!confirm\(/,'Missing file contents require confirmation');
+assert.match(storage,/tx\.oncomplete=\(\)=>resolve\(keys\)/,'File audit must wait for completed IndexedDB transaction');
+assert.match(storage,/tx\.onabort=\(\)=>reject\(/,'File audit must reject aborted transactions');
+console.log('DomAIn backup import and IndexedDB integrity regression checks passed.');
