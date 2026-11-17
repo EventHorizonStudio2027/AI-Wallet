@@ -8,7 +8,11 @@ function forService(accounts,serviceId) {
 }
 function resolveActive(accounts,selectedAccount,selectedService) {
  const list=Array.isArray(accounts)?accounts:[];
- return findById(list,selectedAccount)||list.find(account=>account&&account.serviceId===selectedService)||null;
+ // Explicitly selecting a service with no accounts must not silently display
+ // a profile from a different provider.
+ const chosen=findById(list,selectedAccount);
+ if(chosen&&(!selectedService||chosen.serviceId===selectedService))return chosen;
+ return list.find(account=>account&&account.serviceId===selectedService)||null;
 }
 function totals(accounts) {
  const list=Array.isArray(accounts)?accounts:[];
