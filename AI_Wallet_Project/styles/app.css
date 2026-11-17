@@ -44,3 +44,57 @@ aside{background:linear-gradient(175deg,#0a1331f7,#060b1dfb);border-right:1px so
 
 /* DomAIn navigation vector icons */
 .nav button .ico{display:inline-flex;align-items:center;justify-content:center;flex:0 0 22px;width:22px;height:22px}.nav button .ico svg{width:21px;height:21px;overflow:visible;filter:drop-shadow(0 0 5px #00bfff40)}
+
+/* DomAIn v34: layout hardening and responsive polish */
+html{min-width:320px;overflow-x:clip}body{overflow-x:clip}main,section,.grid,.card,.top>div,.card-head>div{min-width:0}
+img,svg,video,canvas{max-width:100%}img{height:auto}
+h1,h2,h3,p,small,.card,.history-item{overflow-wrap:break-word}
+button{touch-action:manipulation}button:disabled{opacity:.5;cursor:not-allowed}
+.top-actions{flex-shrink:0;align-items:center}.top-actions button{white-space:nowrap}
+.card-head{flex-wrap:wrap}.card-head>div{flex:1 1 180px}
+.toolbar>*{min-width:0}.toolbar select,.toolbar input{max-width:100%}
+.stat strong{overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.service-strip{overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-color:#446caa transparent}
+.service{scroll-snap-align:start}
+.mobile-nav{box-shadow:0 -10px 35px #01071488}
+.mobile-nav button{min-width:0;flex:1;padding:7px 1px;border-radius:10px}
+.mobile-nav button.active{color:#5ceaff;background:linear-gradient(180deg,#0c6da82e,#622ba021)}
+.mobile-nav button span{line-height:1.15}
+@media(min-width:851px) and (max-width:1100px){
+ .app{grid-template-columns:215px minmax(0,1fr)}
+ aside{padding:19px 11px}.brand-name{font-size:23px}.brand-mark{width:47px;height:47px}
+ .main{padding:22px 18px 40px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .file-cats{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:850px){
+ .app{display:block;width:100%}.main{width:100%;padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+ .top{gap:12px}.top h1{font-size:clamp(21px,5vw,29px)}
+ .domain-hero{isolation:isolate}
+ .mobile-nav{overflow-x:auto;gap:2px}
+ .mobile-nav button{font-size:10px;min-height:48px}
+ .stats{gap:10px}.stat{min-width:0}
+ .file-cats{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:520px){
+ .top{flex-wrap:wrap}.top>div:first-child{flex:1 1 100%}
+ .top-actions{width:100%;justify-content:flex-end}
+ .top-actions .primary{flex:1}
+ .card{padding:15px;border-radius:16px}
+ .grid{gap:12px}.stats{gap:9px}.stat{padding:12px}
+ .stat strong{font-size:21px}.stat small{font-size:10px}
+ .card-head{align-items:flex-start}
+ .usage{flex-wrap:wrap}.usage-details{flex-basis:160px}
+ .formgrid{grid-template-columns:minmax(0,1fr)}
+ .formgrid .full{grid-column:auto}
+ .domain-hero{min-height:165px}
+ .domain-hero-copy{max-width:78%}
+ .domain-hero-title{letter-spacing:-.8px}
+ .hero-mark{width:95px;margin-right:-42px;opacity:.85}
+ .mobile-nav{padding:7px 3px calc(7px + env(safe-area-inset-bottom))}
+ .mobile-nav button{font-size:9px}
+}
+@media(max-width:360px){
+ .file-cats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .hero-mark{opacity:.45}.domain-hero-copy{max-width:95%}
+ .top-actions button{padding:9px}
+}
