@@ -10,3 +10,34 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 
 /* v31: mobile-first action summary */
 .attention-panel{margin:14px 0 18px}.attention-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}.attention-stats>div{border:1px solid #293b62;border-radius:12px;padding:12px;min-width:0;background:rgba(85,120,190,.07)}.attention-stats strong{display:block;font-size:clamp(16px,3vw,23px);overflow-wrap:anywhere}.attention-stats small{display:block;color:#aab8d1;margin-top:4px;line-height:1.4}.attention-panel .history-item{gap:12px}.attention-panel .history-item>div{min-width:0;overflow-wrap:anywhere}@media(max-width:600px){.attention-stats{grid-template-columns:1fr 1fr}.attention-stats>div:last-child{grid-column:1/-1}.attention-panel .card-head{align-items:flex-start;gap:8px;flex-wrap:wrap}.attention-panel .history-item{align-items:flex-start}}
+
+
+/* DomAIn brand system — neon chrome, orbital hexagon and mobile-first glass UI */
+:root{--bg:#05091b;--bg2:#0b1128;--panel:#0c1733;--panel2:#14214b;--line:#314678;--cyan:#00eaff;--blue:#168dff;--violet:#7b55ff;--pink:#e347f4;--shadow:0 16px 45px #010511a8}
+body{background:radial-gradient(ellipse at 85% -10%,#39126055,transparent 38%),radial-gradient(ellipse at 8% 10%,#0049a733,transparent 36%),#05091b}
+.app{max-width:1600px;grid-template-columns:252px minmax(0,1fr)}
+aside{background:linear-gradient(175deg,#0a1331f7,#060b1dfb);border-right:1px solid #245b9b77}
+.brand{padding:7px 7px 24px;gap:11px}.brand-mark{width:59px;height:59px;flex:none;filter:drop-shadow(0 0 9px #00bfff88) drop-shadow(0 0 12px #c52bff55)}
+.brand-name{font-size:27px;letter-spacing:-1.3px;font-weight:800;white-space:nowrap;background:linear-gradient(180deg,#fff,#b9d4fa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand-ai{background:linear-gradient(140deg,#00f4ff 4%,#317fff 43%,#f13bfa 96%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand-serif-i{font-family:Georgia,'Times New Roman',serif;font-weight:700}
+.brand-sub{letter-spacing:.4px;text-transform:none;font-size:10px;color:#b8c9ef}
+.nav button{border-radius:13px;transition:background .18s,border-color .18s}.nav button.active{background:linear-gradient(100deg,#064c85a8,#59288a70);border-color:#1abdf8aa;box-shadow:inset 3px 0 #12d9ff,0 0 18px #078aff2a}
+.nav button .ico{color:#6bdfff;text-shadow:0 0 12px #1baeff}
+.main{padding:28px clamp(16px,3vw,40px) 48px}.top{padding-bottom:16px;border-bottom:1px solid #28508755}
+.eyebrow{color:#63c9ed}.top h1{font-weight:800}.primary{background:linear-gradient(115deg,#086bc6,#7138d3 65%,#a22ad5);border-color:#5bb8ff;box-shadow:0 7px 24px #305bfa42}
+.card{background:linear-gradient(145deg,#132448ed,#0a1229f4);border:1px solid #345083b8;box-shadow:0 12px 35px #02051580,inset 0 1px #b0d8ff12}
+.card:hover{border-color:#4270a5}
+.service{background:linear-gradient(155deg,#162b53,#090f28);border:1px solid #3a5989;border-radius:17px}
+.service:hover,.service.selected{border-color:#27dbff;box-shadow:0 0 20px #078bff48,0 0 13px #b12dff24}
+.service img{filter:drop-shadow(0 2px 8px #41aaff33)}
+.stat{border-color:#35598d!important}
+.domain-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;min-height:206px;border:1px solid #2374bb;border-radius:24px;padding:25px clamp(18px,3vw,36px);margin-bottom:22px;background:radial-gradient(ellipse at 82% 44%,#5c1d9870,transparent 40%),radial-gradient(ellipse at 25% 80%,#005ab85c,transparent 52%),linear-gradient(110deg,#091b3b,#090b27 75%);box-shadow:0 0 32px #056eff20,inset 0 1px #92d8ff33}
+.domain-hero:after{content:'';position:absolute;bottom:0;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,#00dfff,#9c43ff,transparent);box-shadow:0 0 15px #19baff}
+.domain-hero-glow{position:absolute;width:280px;height:280px;right:3%;top:-40px;border:1px solid #31aaff35;border-radius:50%;transform:rotate(-22deg) scaleY(.55);box-shadow:0 0 28px #3c58f055}
+.domain-hero-copy{z-index:1;max-width:65%}.domain-hero-kicker{color:#6de7ff;font-size:10px;letter-spacing:2px;font-weight:800}
+.domain-hero-title{font-size:clamp(26px,3.5vw,45px);font-weight:850;line-height:1.08;letter-spacing:-1.7px;margin:11px 0}.domain-hero-title em{font-style:normal;background:linear-gradient(100deg,#66eaff,#8f8bff,#ed62f8);background-clip:text;-webkit-background-clip:text;color:transparent}
+.domain-hero-copy p{font-size:13px;color:#b7c8e9;max-width:360px;margin:10px 0 0}.hero-mark{width:clamp(125px,19vw,210px);height:auto;position:relative;z-index:1;filter:drop-shadow(0 0 18px #17c8ff8c) drop-shadow(0 0 24px #c336f86b)}
+.domain-section-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 11px;color:#b9e8ff;font-size:11px;font-weight:800;letter-spacing:1.2px}.domain-section-hint{font-size:11px;font-weight:400;letter-spacing:0;color:#91a7cb}
+@media(max-width:700px){.domain-hero{min-height:166px;padding:20px 17px;border-radius:19px}.domain-hero-copy{max-width:73%}.domain-hero-title{font-size:clamp(24px,6vw,33px)}.domain-hero-kicker{font-size:8px;letter-spacing:1.1px}.domain-hero-copy p{font-size:11px}.hero-mark{width:110px;margin-right:-35px}.domain-section-hint{display:none}.brand-name{font-size:23px}}
+@media(prefers-reduced-motion:reduce){.service,.nav button{transition:none}}
