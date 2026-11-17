@@ -11,4 +11,8 @@ assert.match(app,/window\.open\(url,'_blank','noopener,noreferrer'\)/,'Login mus
 assert.match(app,/render\(\);launchService\(service\(selectedService\)\)/,'Service strip cards must open the provider');
 assert.match(app,/data-launch-service/,'AI directory must offer Open / Sign in');
 assert.match(app,/entry\.id==='flow'\|\|entry\.id==='flowmusic'/,'Existing saved Flow destinations must migrate');
+assert.match(app,/\$\$\('\[data-launch-service\]'\)\.forEach/,'Every service launch button must receive a handler');
+assert.match(app,/\$\$\('\[data-addfor\]'\)\.forEach/,'Every Add Account button must receive a handler');
+assert.match(app,/data-delservice="\$\{esc\(s\.id\)\}"/,'Custom service action identifiers must be escaped');
+assert.match(app,/x\.files\.length>10000/,'Restored library must respect the same file limit as imports');
 console.log('DomAIn service launch and Google Flow destination checks passed.');
