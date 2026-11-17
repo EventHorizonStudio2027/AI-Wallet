@@ -31,7 +31,8 @@ function validateBackup(parsed){
  // Validate foreign keys before importing, rather than silently dropping
  // account associations or folder assignments during normalization.
  const serviceIds=new Set((parsed.services||[]).map(item=>item.id));
- const accountIds=new Set((parsed.accounts||[]).map(item=>item.id));
+ const accountServices=new Map((parsed.accounts||[]).map(item=>[item.id,item.serviceId]));
+ const accountIds=new Set(accountServices.keys());
  const folderIds=new Set((parsed.folders||[]).map(item=>item.id));
  for(const account of parsed.accounts||[]){
   if(account.serviceId&&!serviceIds.has(account.serviceId))throw new Error('Backup account refers to a missing service');
@@ -39,6 +40,7 @@ function validateBackup(parsed){
  for(const file of parsed.files){
   if(file.serviceId&&!serviceIds.has(file.serviceId))throw new Error('Backup file refers to a missing service');
   if(file.accountId&&!accountIds.has(file.accountId))throw new Error('Backup file refers to a missing account');
+  if(file.accountId&&file.serviceId&&accountServices.get(file.accountId)!==file.serviceId)throw new Error('Backup file account and service do not match');
   if(file.folderId&&!folderIds.has(file.folderId))throw new Error('Backup file refers to a missing folder');
  }
  const ids=new Set();
