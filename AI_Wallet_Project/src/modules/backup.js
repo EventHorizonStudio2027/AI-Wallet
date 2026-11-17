@@ -18,6 +18,7 @@ function validateBackup(parsed){
  if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('Backup must be a JSON object');
  if(!SUPPORTED_SCHEMAS.includes(Number(parsed.schemaVersion||1)))throw new Error('Unsupported backup version');
  if(!Array.isArray(parsed.files)||parsed.files.length>MAX_FILES)throw new Error('Invalid backup file list');
+ if(parsed.files.some(file=>!file||typeof file!=='object'||Array.isArray(file)))throw new Error('Invalid file record');
  for(const [key,max] of [['services',MAX_SERVICES],['accounts',MAX_ACCOUNTS],['folders',MAX_FOLDERS],['usageHistory',MAX_USAGE]]){if((key==='services'||key==='accounts')&&!Array.isArray(parsed[key]))throw new Error('Missing backup '+key);if(parsed[key]!=null&&(!Array.isArray(parsed[key])||parsed[key].length>max))throw new Error('Invalid or oversized backup '+key)}
  for(const key of ['services','accounts','folders']){
   if(!Array.isArray(parsed[key]))continue;
@@ -38,6 +39,7 @@ function validateBackup(parsed){
   if(account.serviceId&&!serviceIds.has(account.serviceId))throw new Error('Backup account refers to a missing service');
  }
  for(const file of parsed.files){
+  if(!file||typeof file!=='object'||Array.isArray(file))throw new Error('Invalid file record');
   if(file.serviceId&&!serviceIds.has(file.serviceId))throw new Error('Backup file refers to a missing service');
   if(file.accountId&&!accountIds.has(file.accountId))throw new Error('Backup file refers to a missing account');
   if(file.accountId&&file.serviceId&&accountServices.get(file.accountId)!==file.serviceId)throw new Error('Backup file account and service do not match');
