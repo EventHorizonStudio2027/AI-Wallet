@@ -8,7 +8,7 @@ function projectedPayments(accounts,today,horizonDays=90){
  const end=dateAdd(today,horizonDays-1),out=[];
  for(const a of Array.isArray(accounts)?accounts:[]){
   if(!a||!a.id||!['weekly','monthly','yearly'].includes(a.billingCycle)||a.trialEnabled&&a.trialStatus==='active')continue;
-  const amount=Number(a.cost);if(!Number.isFinite(amount)||amount<=0||amount>1e9)continue;
+  const amount=Number(a.cost);if(a.cost==null||a.cost===''||typeof a.cost==='boolean'||!Number.isFinite(amount)||amount<=0||amount>1e9)continue;
   let date=billing.nextRenewalDate(a.renewalDate,a.billingCycle,today);
   if(!date)continue;
   // Iterate using the original anchor to preserve month-end billing days.
