@@ -9,6 +9,9 @@ const MAX_TEXT_LENGTH=1024;
 const MAX_TOTAL_DECODED_BYTES=MAX_BACKUP_BYTES;
 const VALID_ID=/^[A-Za-z0-9_-]{1,80}$/;
 function createEnvelope(state,exportedAt=new Date().toISOString()){
+ if(!state||typeof state!=='object'||Array.isArray(state))throw new Error('Invalid wallet state');
+ // Never export live file payloads from localStorage state. Binary contents are
+ // added separately from IndexedDB by the export workflow.
  return {...state,schemaVersion:7,exportedAt,files:[]};
 }
 function validateBackup(parsed){
@@ -25,6 +28,19 @@ function validateBackup(parsed){
   }
  }
  if(parsed.creator!=null&&(typeof parsed.creator!=='object'||Array.isArray(parsed.creator)))throw new Error('Invalid creator records');
+ // Validate foreign keys before importing, rather than silently dropping
+ // account associations or folder assignments during normalization.
+ const serviceIds=new Set((parsed.services||[]).map(item=>item.id));
+ const accountIds=new Set((parsed.accounts||[]).map(item=>item.id));
+ const folderIds=new Set((parsed.folders||[]).map(item=>item.id));
+ for(const account of parsed.accounts||[]){
+  if(account.serviceId&&!serviceIds.has(account.serviceId))throw new Error('Backup account refers to a missing service');
+ }
+ for(const file of parsed.files){
+  if(file.serviceId&&!serviceIds.has(file.serviceId))throw new Error('Backup file refers to a missing service');
+  if(file.accountId&&!accountIds.has(file.accountId))throw new Error('Backup file refers to a missing account');
+  if(file.folderId&&!folderIds.has(file.folderId))throw new Error('Backup file refers to a missing folder');
+ }
  const ids=new Set();
  let totalDecodedBytes=0;
  for(const file of parsed.files){
