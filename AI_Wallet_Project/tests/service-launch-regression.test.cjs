@@ -8,7 +8,7 @@ assert.match(app,/name:'Flow Music',domain:'www\.flowmusic\.app'.*url:'https:\/\
 assert.match(app,/function serviceLaunchUrl\(s\)/,'Service links must be normalized');
 assert.match(app,/url\.protocol!=='https:'/,'Only HTTPS service destinations are allowed');
 assert.match(app,/window\.open\(url,'_blank','noopener,noreferrer'\)/,'Login must open directly on the provider with opener isolation');
-assert.match(app,/render\(\);launchService\(service\(selectedService\)\)/,'Service strip cards must open the provider');
+assert.match(app,/launchService\(service\(selectedService\)\);render\(\)/,'Service strip cards must open the provider before rerendering');
 assert.match(app,/data-launch-service/,'AI directory must offer Open / Sign in');
 assert.match(app,/entry\.id==='flow'\|\|entry\.id==='flowmusic'/,'Existing saved Flow destinations must migrate');
 assert.match(app,/\$\$\('\[data-launch-service\]'\)\.forEach/,'Every service launch button must receive a handler');
