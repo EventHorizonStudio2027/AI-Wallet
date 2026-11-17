@@ -9,6 +9,9 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: AI_Wallet_Project
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
