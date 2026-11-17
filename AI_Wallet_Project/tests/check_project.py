@@ -18,7 +18,7 @@ def local_path(value):
     if parsed.scheme or parsed.netloc or value.startswith(("#", "data:", "mailto:", "tel:")):
         return None
     path = unquote(parsed.path)
-    if not path or path == "/":
+    if not path or path in ("/", "./", "."):
         return None
     candidate = (ROOT / path.lstrip("/")).resolve()
     if not candidate.is_relative_to(ROOT.resolve()):
