@@ -150,7 +150,7 @@ async function addFiles(files){
  if(files.some(f=>!f||!Number.isFinite(f.size)||f.size<0||f.size>maxSize)){toast('One or more files exceed the supported file size');return}
  fileUploadBusy=true;
  const uploadButton=$('#uploadBtn');if(uploadButton)uploadButton.disabled=true;
- let svc=selectedService,acct=state.accounts.find(a=>a.id===selectedAccount&&a.serviceId===selectedService),previous=cloneState(state),stored=[];
+ let svc=selectedService,acct=state.accounts.find(a=>a.id===selectedAccount&&a.serviceId===selectedService),previous=cloneState(state),stored=[],committed=false;
  try{
   for(let f of files){
    let fid=id();
@@ -159,13 +159,19 @@ async function addFiles(files){
    state.files.push({id:fid,name:f.name,type:f.type,size:f.size,category:fileCategory(f.name,f.type),serviceId:acct?.serviceId||svc,accountId:acct?.id||'',added:Date.now()});
   }
   if(!save())throw Error('Could not save uploaded file metadata');
+  committed=true;
   render();
   toast(stored.length+' file'+(stored.length===1?'':'s')+' added to your library');
  }catch(err){
-  state=previous;
-  for(let key of stored)try{await deleteFileBlob(key)}catch(cleanupError){console.warn('Could not clean up failed file upload',cleanupError)}
-  render();
-  toast('File upload failed. Existing library records were preserved.');
+  console.error('File upload failed',err);
+  if(!committed){
+   state=previous;
+   for(let key of stored)try{await deleteFileBlob(key)}catch(cleanupError){console.warn('Could not clean up failed file upload',cleanupError)}
+   render();
+   toast('File upload failed. Existing library records were preserved.');
+  }else{
+   toast('Files saved, but the library display could not refresh. Reload the page.');
+  }
  }finally{
   fileUploadBusy=false;
   if(uploadButton)uploadButton.disabled=false;
