@@ -3,6 +3,9 @@ name: Deploy AI Wallet to GitHub Pages
 on:
   push:
     branches: [main]
+    paths:
+      - 'AI_Wallet_Project/**'
+      - '.github/workflows/pages.yml'
   workflow_dispatch:
 
 permissions:
@@ -24,13 +27,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Verify static app entrypoint
-        run: test -f index.html && test -f src/app.js && test -f styles/app.css
+        run: |
+          test -f AI_Wallet_Project/index.html
+          test -f AI_Wallet_Project/src/app.js
+          test -f AI_Wallet_Project/styles/app.css
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: AI_Wallet_Project
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
