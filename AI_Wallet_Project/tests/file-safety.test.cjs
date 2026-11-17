@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+const context={window:{}};
+vm.runInNewContext(fs.readFileSync(require('node:path').join(__dirname,'../src/modules/file-safety.js'),'utf8'),context);
+const {canInlinePreview,safeFilename}=context.window.AIWalletModules.fileSafety;
+for(const [name,type] of [['test.html','text/html'],['image.svg','image/svg+xml'],['evil.svg','image/png'],['script.js','text/plain'],['foo.xml','application/xml'],['evil.xhtml','text/html']])assert.equal(canInlinePreview({name,type}),false,name);
+for(const [name,type] of [['report.pdf','application/pdf'],['photo.png','image/png'],['notes.txt','text/plain'],['song.mp3','audio/mpeg']])assert.equal(canInlinePreview({name,type}),true,name);
+assert.equal(safeFilename('../foo\\bar.txt'),'.._foo_bar.txt');
+assert.equal(safeFilename(''), 'download');
+console.log('File safety tests passed');

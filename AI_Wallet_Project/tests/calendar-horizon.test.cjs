@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const window={};vm.runInNewContext(fs.readFileSync('src/modules/calendar-export.js','utf8'),{window,unescape,encodeURIComponent});
+const c=window.AIWalletModules.calendarExport;
+const a={id:'one',label:'Studio',billingCycle:'monthly',cost:20,renewalDate:'2026-01-31'};
+const opts={today:'2026-01-01',horizonDays:365};
+const events=c.calendarEvents([a],opts);assert.equal(events.length,12);assert.equal(events[0].date,'2026-01-31');assert.equal(events[1].date,'2026-02-28');assert.equal(events[2].date,'2026-03-31');
+assert.equal(c.calendarEvents([{...a,renewalDate:'2025-12-31'}],opts).length,12);
+assert.equal(c.calendarEvents([{...a,billingCycle:'weekly',renewalDate:'2026-01-01'}],{today:'2026-01-01',horizonDays:90}).length,13);
+assert.equal(c.calendarEvents([{...a,billingCycle:'yearly',renewalDate:'2026-01-31'}],opts).length,1);
+assert.equal(c.calendarEvents([{...a,trialEnabled:true,trialStatus:'active',trialEnd:'2026-02-01',cancelBy:'2026-01-30'}],opts).length,2);
+assert.equal(c.calendarEvents([{...a,trialEnabled:true,trialStatus:'cancelled',trialEnd:'2026-02-01',cancelBy:'2026-01-30'}],opts).length,12);
+assert.equal(c.calendarEvents([{...a,renewalDate:'2026-02-30'}],opts).length,0);
+assert.throws(()=>c.calendarEvents([a],{today:'bad',horizonDays:365}));
+assert.throws(()=>c.calendarEvents([a],{today:'2026-01-01',horizonDays:10000}));
+const output=c.generate([a],'2026-01-01T00:00:00Z',opts);assert.equal((output.match(/BEGIN:VEVENT/g)||[]).length,12);
+assert.equal(new Set(events.map(e=>e.uid)).size,12);
+console.log('Calendar horizon tests passed');

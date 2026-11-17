@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const ctx={window:{}};vm.createContext(ctx);
+for(const file of ['creator','analytics'])vm.runInContext(fs.readFileSync('src/modules/'+file+'.js','utf8'),ctx,{filename:file});
+const analyze=ctx.window.AIWalletModules.analytics.analyze;
+const data={goal:1000,agreements:[{id:'a',client:'Alpha',amount:1200,cadence:'yearly',status:'active',nextDue:'2026-01-31'},{id:'b',client:'Beta',amount:300,cadence:'monthly',status:'active',nextDue:'2026-11-01'},{id:'c',client:'Alpha',amount:90,cadence:'one-time',status:'active',nextDue:'2026-11-01'}],payouts:[{id:'p1',client:'Alpha',amount:100,dueDate:'2026-11-10',status:'pending'},{id:'p2',client:'Beta',amount:200,dueDate:'2026-10-01',status:'pending'},{id:'p3',client:'Beta',amount:300,dueDate:'2026-09-01',status:'pending'},{id:'p4',client:'Beta',amount:500,dueDate:'2026-11-01',status:'received'}]};
+const r=analyze(data,'2026-11-16');
+assert.equal(r.monthlyRecurring,400);assert.equal(r.largestClientSharePercent,75);
+assert.equal(r.totals.overdue,600);assert.equal(r.aging.days1to30,100);assert.equal(r.aging.days31to60,200);assert.equal(r.aging.days61plus,300);
+assert.equal(r.goal.remaining,500);assert.equal(r.goal.progressPercent,50);
+assert.equal(analyze({goal:0,payouts:[],agreements:[]},'2026-11-16').largestClientSharePercent,0);
+assert.throws(()=>analyze(data,'2026-02-30'),/Valid ISO/);
+console.log('Analytics tests passed: aging, concentration, goal, empty data, invalid date');

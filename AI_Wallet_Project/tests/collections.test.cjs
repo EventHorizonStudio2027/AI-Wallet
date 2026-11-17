@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const ctx={window:{}};vm.createContext(ctx);
+for(const name of ['creator','collections'])vm.runInContext(fs.readFileSync('src/modules/'+name+'.js','utf8'),ctx,{filename:name});
+const {worklist,exportCsv}=ctx.window.AIWalletModules.collections;
+const data={payouts:[{id:'a',client:'Late',amount:200.11,dueDate:'2026-09-01',status:'pending',reference:''},{id:'b',client:'Soon',amount:100.12,dueDate:'2026-11-20',status:'pending',reference:'x'},{id:'c',client:'=IMPORT("x")',amount:50,dueDate:'2026-11-16',status:'pending',reference:'@evil'},{id:'d',client:'Paid',amount:99,dueDate:'2026-11-01',status:'received',reference:'p'}]};
+const r=worklist(data,'2026-11-16');assert.equal(r.rows.length,3);assert.equal(r.rows[0].priority,'critical');assert.equal(r.summary.overdue,200.11);assert.equal(r.summary.dueSoon,150.12);assert.equal(r.summary.pending,350.23);assert.equal(r.summary.missingReferences,1);
+const csv=exportCsv(r);assert.match(csv,/"'=IMPORT/);assert.match(csv,/"'@evil"/);assert.doesNotMatch(csv,/Paid/);
+assert.throws(()=>worklist(data,'2026-02-30'),/Invalid report date/);
+assert.equal(worklist({},'2026-11-16').rows.length,0);
+console.log('Collections tests passed');

@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const window={};for(const name of ['creator','revenue-planning','reconciliation-review'])vm.runInNewContext(fs.readFileSync(`src/modules/${name}.js`,'utf8'),{window});
+const m=window.AIWalletModules.reconciliationReview;
+const data={agreements:[{id:'a1',client:'Acme',title:'Sponsorship',amount:250,cadence:'monthly',status:'active',nextDue:'2026-11-30'}],payouts:[{id:'p1',client:' ACME ',amount:250,status:'received',dueDate:'2026-11-10',reference:'REF1'},{id:'p2',client:'Other',amount:70,status:'received',dueDate:'2026-11-11',reference:'ref1'},{id:'p3',client:'Other',amount:20,status:'received',dueDate:'2026-11-12',reference:''},{id:'p4',client:'Other',amount:30,status:'pending',dueDate:'2026-11-13',reference:'=BAD()'}]};
+const r=m.review(data);
+assert.equal(r.summary.pendingAmount,30);assert.equal(r.summary.receivedAmount,340);
+assert.equal(r.matches.length,1);assert.equal(r.matches[0].agreementId,'a1');
+assert.ok(r.issues.some(i=>i.kind==='duplicate-reference'));assert.ok(r.issues.some(i=>i.kind==='missing-reference'));
+assert.ok(m.exportReview(data).startsWith('\uFEFF'));assert.ok(m.exportReview(data).includes('candidate-match'));
+assert.equal(m.review({}).summary.issueCount,0);
+console.log('Reconciliation review tests passed');

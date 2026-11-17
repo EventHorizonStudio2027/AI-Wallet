@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const window={};for(const name of ['billing','payment-forecast'])vm.runInNewContext(fs.readFileSync(`src/modules/${name}.js`,'utf8'),{window});
+const f=window.AIWalletModules.paymentForecast;
+const a={id:'a',label:'January billing',billingCycle:'monthly',renewalDate:'2026-01-31',cost:19.99};
+assert.deepEqual(Array.from(f.projectedPayments([a],'2026-02-01',90),e=>e.date),['2026-02-28','2026-03-31','2026-04-30']);
+assert.equal(f.summary([a],'2026-02-01',90).total,59.97);
+assert.deepEqual(Array.from(f.projectedPayments([{...a,trialEnabled:true,trialStatus:'active'}],'2026-02-01'),e=>e.date),[]);
+assert.equal(f.summary([{...a,billingCycle:'one-time'}],'2026-02-01').total,0);
+assert.equal(f.projectedPayments([{...a,renewalDate:'2026-02-30'}],'2026-02-01').length,0);
+assert.deepEqual(Array.from(f.projectedPayments([{...a,id:'w',billingCycle:'weekly',renewalDate:'2026-11-01',cost:2}],'2026-11-16',21),e=>e.date),['2026-11-22','2026-11-29','2026-12-06']);
+assert.throws(()=>f.summary([],'invalid',30));assert.throws(()=>f.summary([],'2026-11-16',10000));
+console.log('Payment forecast tests passed');

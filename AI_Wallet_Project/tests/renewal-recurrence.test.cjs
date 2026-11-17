@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),vm=require('node:vm');const window={};
+for(const name of ['billing','reminders'])vm.runInNewContext(fs.readFileSync(`src/modules/${name}.js`,'utf8'),{window});
+const {billing,reminders}=window.AIWalletModules;
+assert.equal(billing.nextRenewalDate('2026-01-31','monthly','2026-02-01'),'2026-02-28');
+assert.equal(billing.nextRenewalDate('2026-01-31','monthly','2026-03-01'),'2026-03-31');
+assert.equal(billing.nextRenewalDate('2024-02-29','yearly','2025-02-01'),'2025-02-28');
+assert.equal(billing.nextRenewalDate('2026-11-01','weekly','2026-11-16'),'2026-11-22');
+assert.equal(billing.nextRenewalDate('2026-02-30','monthly','2026-11-16'),null);
+const account={id:'test',label:'Test',cost:20,billingCycle:'monthly',renewalDate:'2026-01-31',alertDays:7};
+const entries=reminders.entries([account],'2026-11-25',reminders.prefs());
+assert.equal(entries.find(x=>x.type==='renewal').date,'2026-11-30');
+assert.equal(billing.alerts([account],'2026-11-25').find(x=>x.type==='renewal').date,'2026-11-30');
+assert.equal(reminders.entries([account],'2026-11-01',reminders.prefs()).length,0);
+console.log('Renewal recurrence tests passed');

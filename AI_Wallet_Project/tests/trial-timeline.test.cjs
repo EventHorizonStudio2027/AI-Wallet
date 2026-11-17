@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const window={};for(const name of ['billing','trial-timeline'])vm.runInNewContext(fs.readFileSync(`src/modules/${name}.js`,'utf8'),{window});
+const timeline=window.AIWalletModules.trialTimeline.trialTimeline;
+const base={id:'a',label:'Trial',trialEnabled:true,trialStatus:'active',trialStart:'2026-11-01',trialEnd:'2026-11-16',trialDays:15,cancelBy:'2026-11-15'};
+let r=timeline([base],'2026-11-16');assert.equal(r.active,1);assert.equal(r.urgent,1);assert.equal(r.entries[0].urgency,'overdue');assert.equal(r.entries[0].daysToCancel,-1);assert.equal(r.missing,0);
+r=timeline([{...base,id:'b',cancelBy:'2026-11-17'},{...base,id:'c',cancelBy:'2026-11-25'},{...base,id:'d',cancelBy:'bad'}],'2026-11-16');assert.equal(r.entries[0].urgency,'critical');assert.equal(r.entries[1].urgency,'unknown');assert.equal(r.entries[2].urgency,'upcoming');assert.equal(r.missing,3);
+r=timeline([{...base,trialStatus:'cancelled'},{...base,trialEnabled:false}], '2026-11-16');assert.equal(r.active,0);
+r=timeline([{...base,trialEnd:'2026-11-10',cancelBy:'2026-11-17',trialDays:15}],'2026-11-16');assert.equal(r.entries[0].issues.length,2);
+assert.throws(()=>timeline([], '2026-02-30'));
+console.log('Trial timeline tests passed');

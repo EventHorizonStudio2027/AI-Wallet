@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const window={};for(const name of ['creator','intelligence','revenue-planning'])vm.runInNewContext(fs.readFileSync(`src/modules/${name}.js`,'utf8'),{window});
+const r=window.AIWalletModules.revenuePlanning;
+const data={agreements:[{id:'a',client:'Client',title:'Campaign',amount:100,cadence:'monthly',status:'active',nextDue:'2026-01-31'}],payouts:[{id:'p',client:'Client',amount:100,status:'received',dueDate:'2026-02-28',reference:'=HYPERLINK("bad")'}]};
+const forecast=r.scenarios(data,'2026-01-01',3);
+assert.equal(forecast.months.length,3);
+assert.equal(forecast.months[1].contracted,100);
+assert.equal(forecast.months[1].recordedReceived,100);
+assert.equal(forecast.months[1].scenarios.base,80);
+assert.equal(forecast.totals.base,240);
+assert.ok(r.exportLedger(data).includes("'=HYPERLINK"));
+assert.ok(r.exportLedger(data).startsWith('\uFEFF'));
+assert.ok(r.exportForecast(data,'2026-01-01').includes('Conservative USD'));
+assert.throws(()=>r.scenarios(data,'2026-02-30'));
+console.log('Revenue planning tests passed');

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080d20">
+<meta name="description" content="AI Wallet keeps your AI accounts, usage, subscriptions and generated files organized in one place.">
+<meta name="color-scheme" content="dark">
+<title>AI Wallet</title>
+<link rel="stylesheet" href="styles/app.css">
+<link rel="manifest" href="manifest.webmanifest">
+</head>
+<body>
+<div class="app">
+<aside>
+ <div class="brand">
+  <svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-label="AI Wallet logo"><path d="M9 22 18 9q2-3 6-3h25q5 0 5 5v8" stroke="#8bdcff" stroke-width="2.5"/><path d="M6 22q0-4 5-4h42q5 0 5 5v27q0 5-5 5H11q-5 0-5-5V22Z" fill="url(#g)" stroke="#65a9ff" stroke-width="2"/><path d="M43 31h15v13H43a6.5 6.5 0 0 1 0-13Z" fill="#101e50" stroke="#75cfff" stroke-width="2"/><circle cx="46" cy="37.5" r="2" fill="#a7f4ff"/><path d="m27 22 2.2 6.8L36 31l-6.8 2.2L27 40l-2.2-6.8L18 31l6.8-2.2L27 22Z" fill="#e1f7ff"/><defs><linearGradient id="g" x1="9" y1="15" x2="50" y2="55" gradientUnits="userSpaceOnUse"><stop stop-color="#266cff"/><stop offset="1" stop-color="#3622a2"/></linearGradient></defs></svg>
+  <div><div class="brand-name">AI Wallet</div><div class="brand-sub">Your AI ecosystem</div></div>
+ </div>
+ <nav class="nav" id="sideNav">
+  <button class="active" data-page="home"><span class="ico">⌂</span>Overview</button>
+  <button data-page="accounts"><span class="ico">♙</span>Accounts</button>
+  <button data-page="files"><span class="ico">▱</span>My Files</button>
+  <button data-page="usage"><span class="ico">◫</span>Memory & Usage</button>
+  <button data-page="apps"><span class="ico">▦</span>AI Apps</button>
+  <button data-page="creator"><span class="ico">✧</span>Creator Income</button><button data-page="settings"><span class="ico">⚙</span>Settings</button>
+ </nav>
+ <div class="side-bottom plan"><b>✦ Your AI Wallet</b><small>One place for your AI accounts, usage and files.</small><div style="margin-top:12px"><span class="pill">Local library enabled</span></div></div>
+</aside>
+<main class="main">
+ <header class="top"><div><div class="eyebrow">Your personal AI hub</div><h1 id="pageTitle">Welcome to AI Wallet</h1><p id="pageSubtitle">All your AI accounts, usage and creations in one place.</p></div><div class="top-actions"><button class="iconbtn" id="backupBtn" title="Export backup">⇩</button><button class="primary" id="addAccountTop">＋ Add account</button></div></header>
+
+<section class="section active" id="page-home">
+ <div class="service-strip" id="serviceStrip"></div>
+ <div class="card attention-panel" id="homeAttentionPanel" aria-label="Upcoming deadlines and subscription payments">
+  <div class="card-head"><div><h2>Coming up</h2><p class="tiny muted">Trial cancellation deadlines and estimated subscription payments from saved account details.</p></div><button class="secondary" type="button" data-goto="usage">Manage deadlines →</button></div>
+  <div class="attention-stats" id="homeAttentionStats" aria-live="polite"></div>
+  <div id="homeAttentionList" aria-live="polite"></div>
+ </div>
+ <div class="stats">
+  <div class="stat"><span class="symbol">◈</span><strong id="statApps">0</strong><small>AI services</small></div>
+  <div class="stat"><span class="symbol">♙</span><strong id="statAccounts">0</strong><small>Account profiles</small></div>
+  <div class="stat"><span class="symbol">▱</span><strong id="statFiles">0</strong><small>Files in your library</small></div>
+  <div class="stat"><span class="symbol">◷</span><strong id="statSpend">$0</strong><small>Monthly subscriptions</small></div>
+ </div>
+ <div class="grid">
+  <div class="card span6">
+   <div class="card-head"><h2>Account at a glance</h2><span class="pill" id="profileStatus">● Profile</span></div>
+   <div class="profile"><div class="profile-logo" id="profileLogo"></div><div style="min-width:0;flex:1"><h3 id="profileService">ChatGPT</h3><div class="status">● Saved account profile</div><div class="tiny muted" id="profileEmail">No account selected</div></div></div>
+   <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:16px"><span class="tiny muted">Switch account profile</span><select class="account-select" id="quickAccount"></select></div>
+   <div class="usage"><div class="ring" id="usageRing" style="--pct:0%"><strong id="usagePct">—</strong></div><div class="usage-details"><div class="tiny muted">Tracked usage</div><strong id="usageNumbers">Not configured</strong><div class="bar" style="margin-top:9px"><i id="usageBar" style="width:0%"></i></div><div class="reset" id="resetText">Add usage details to track resets</div></div></div>
+  </div>
+  <div class="card span6">
+   <div class="card-head"><h2>Memory & usage</h2><button class="secondary" data-goto="usage">View details →</button></div>
+   <div id="usageSummary"></div>
+  </div>
+  <div class="card span12">
+   <div class="card-head"><h2>My Files</h2><button class="secondary" data-goto="files">Open library →</button></div>
+   <div class="file-cats" id="homeFolders"></div>
+  </div>
+  <div class="card span12">
+   <div class="card-head"><h2>Recently added</h2><button class="secondary" data-goto="files">View all</button></div>
+   <div id="recentFiles"></div>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="page-accounts">
+ <div class="card"><div class="card-head"><div><h2>Your accounts</h2><div class="tiny muted">Keep separate profiles for personal, work and project accounts.</div></div><button class="primary" id="addAccount">＋ Add account</button></div><div id="accountsList"></div></div>
+</section>
+
+<section class="section" id="page-files">
+ <div class="card">
+  <div class="card-head"><div><h2>My Files</h2><div class="tiny muted">One organized library for files you bring in from your AI tools.</div></div><button class="primary" id="uploadBtn">＋ Add files</button></div>
+  <div class="toolbar"><input class="search" id="fileSearch" placeholder="Search your files…"><select class="account-select" id="fileProvider"><option value="">All AI apps</option></select><select class="account-select" id="fileType"><option value="">All types</option><option>Images</option><option>Videos</option><option>Documents</option><option>Audio</option><option>Code</option><option>Other</option></select><select class="account-select" id="fileSort"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="name">Name A–Z</option></select></div>
+  <div class="file-cats" id="fileFolders" style="margin-bottom:12px"></div>
+  <div class="folder-tools" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 16px">
+   <input id="newFolderName" class="search" style="max-width:220px" maxlength="40" placeholder="New folder name" aria-label="New folder name">
+   <button class="secondary" id="createFolderBtn" type="button">＋ Create folder</button>
+   <span class="tiny muted" id="customFolderSummary">Custom folders keep related files together.</span>
+  </div>
+  <div class="file-cats" id="customFolders" style="margin-bottom:18px"></div>
+  <div class="files-drop" id="dropzone">✧ Drop files here or choose files to add them to your library.<br><span class="tiny muted">Files are stored in this browser's local app storage; large files may exceed browser limits.</span><div style="margin-top:12px"><input type="file" id="fileInput" multiple></div></div>
+  <div class="card-head" style="margin-top:20px"><h2 id="fileListTitle">All files</h2><span class="tiny muted" id="fileCount">0 items</span></div>
+  <div id="fileIntegrityNotice" class="tiny muted" role="status" style="margin:0 0 10px"></div>
+  <div id="fileList"></div>
+ </div>
+</section>
+
+<section class="section" id="page-usage">
+ <div class="card"><div class="card-head"><div><h2>Memory & usage tracker</h2><div class="tiny muted">Usage and reset dates are manually tracked unless a provider integration is added.</div></div></div><div class="stats" style="margin:12px 0"><div class="stat"><small>MONTHLY EQUIVALENT</small><strong id="subscriptionMonthly">$0</strong></div><div class="stat"><small>ANNUAL COMMITMENT</small><strong id="subscriptionAnnual">$0</strong></div><div class="stat"><small>UPCOMING RENEWALS</small><strong id="subscriptionRenewals">0</strong></div><div class="stat"><small>SUBSCRIPTIONS</small><strong id="subscriptionCount">0</strong></div></div><div class="grid" style="margin:14px 0">
+<div class="card span6" style="box-shadow:none"><div class="card-head"><div><h2>Renewal calendar</h2><div class="tiny muted">Upcoming scheduled renewals over the next 90 days</div></div><div style="display:flex;align-items:center;gap:6px"><button class="secondary" id="renewalPrev" aria-label="Previous month">‹</button><span class="pill" id="renewalWindowCount">0 upcoming</span><button class="secondary" id="renewalNext" aria-label="Next month">›</button></div></div><div id="renewalCalendar"></div></div>
+<div class="card span6" style="box-shadow:none"><div class="card-head"><div><h2>Spending outlook</h2><div class="tiny muted">Recurring subscription cost by billing frequency</div></div></div><div id="spendingBreakdown"></div></div><div class="history-head" style="margin-top:16px"><div><h2>Recorded payment trend</h2><div class="tiny muted">Manually recorded payments by month; excludes forecasts and plan edits.</div></div><select id="paymentTrendRange" class="account-select" aria-label="Payment trend range"><option value="3">3 months</option><option value="6" selected>6 months</option><option value="12">12 months</option></select></div><div id="paymentTrend"></div>
+</div>
+<div class="card" style="margin:14px 0"><div class="card-head"><div><h2>Upcoming payment forecast</h2><p class="tiny muted">Estimated scheduled subscription payments, not confirmed charges. Active free trials are excluded until their status is updated.</p></div><label class="tiny">Window <select id="paymentForecastWindow" class="account-select" aria-label="Payment forecast window"><option value="30">30 days</option><option value="90" selected>90 days</option><option value="365">12 months</option></select></label></div><div id="paymentForecastSummary" aria-live="polite"></div><div id="paymentForecastList"></div></div><div class="card" style="margin:14px 0"><div class="card-head"><div><h2>Free trial watchlist</h2><p class="tiny muted">Cancellation dates and trial lengths are based on your saved details, not live provider verification.</p></div></div><div id="trialTimelineSummary" aria-live="polite"></div><div id="trialTimelineList"></div></div><div class="card reminder-panel"><div class="card-head"><div><h2>Reminder center</h2><p class="tiny muted">On-device reminders while AI Wallet is open. Browser notifications are optional and are not guaranteed when closed.</p></div><span class="pill" id="reminderCount">0</span></div><div class="toolbar" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><label><input type="checkbox" id="remindersEnabled" checked> Enable reminders</label><label>Global warning lead <select id="reminderLead" class="account-select"><option value="1">1 day</option><option value="3">3 days</option><option value="7">7 days</option><option value="14">14 days</option><option value="30">30 days</option></select></label><button class="secondary" type="button" id="requestNotification">Enable browser notifications</button></div><div id="notificationStatus" class="tiny muted"></div><div class="toolbar" style="margin:10px 0"><label>Calendar horizon <select id="calendarHorizon" class="account-select" aria-label="Calendar export horizon"><option value="90">90 days</option><option value="365" selected>12 months</option><option value="730">24 months</option></select></label><button class="secondary" type="button" id="exportDeadlineCalendar">Export deadlines to calendar (.ics)</button><p class="tiny muted">Import into your calendar app to use its own reminders. Calendar alerts depend on that app’s settings.</p></div><div id="reminderList" aria-live="polite"></div></div><div class="history-head"><h2>Subscription data health</h2></div><p class="tiny muted">Check missing or conflicting trial and renewal dates. These are data-quality warnings, not verified provider notices.</p><div id="subscriptionAudit" aria-live="polite"></div><div id="subscriptionAlerts" role="status" aria-live="polite"></div><div id="subscriptionList"></div><div class="history-head"><div><h2>Billing activity</h2><div class="tiny muted">Plan changes and payments you manually record. These are not provider-verified transactions; scheduled costs are forecasts, not charges.</div></div></div><div class="toolbar" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0"><select id="billingProviderFilter" class="account-select" aria-label="Filter billing by provider"><option value="">All providers</option></select><select id="billingTypeFilter" class="account-select" aria-label="Filter billing activity"><option value="">All activity</option><option value="payment_recorded">Payments recorded</option><option value="plan_change">Plan changes</option></select></div><div id="billingActivityList"></div><div id="usagePageList"></div><div class="history-head"><div><h2>Individual chat memory</h2><div class="tiny muted">Track context usage separately for each conversation. Values are manual unless an authorized provider integration supplies them.</div></div><button class="secondary" id="addChatMemory">＋ Add chat</button></div><div id="chatMemoryList"></div>
+<div class="history-head"><div><h2>Conversation context analytics</h2><div class="tiny muted">Current context utilization and recorded history for each tracked chat.</div></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><select id="chatAnalyticsAccount" class="account-select" aria-label="Filter chats by account"><option value="">All accounts</option></select><select id="chatWarningThreshold" class="account-select" aria-label="Memory warning threshold"><option value="80">Warn at 80%</option><option value="85">Warn at 85%</option><option value="90">Warn at 90%</option></select><select id="chatHistoryRange" class="account-select" aria-label="Chat memory history range"><option value="7">7 days</option><option value="30" selected>30 days</option><option value="90">90 days</option><option value="all">All history</option></select><span class="pill" id="chatAnalyticsCount">0 conversations</span></div></div><div id="chatMemoryAnalytics"></div><div class="history-head"><div><h2>Usage history</h2><div class="tiny muted">Saved snapshots from account edits and automatic resets.</div></div><select id="historyAccountFilter" class="account-select" aria-label="Filter usage history"><option value="">All accounts</option></select></div><div id="usageHistoryList" aria-live="polite"><div class="empty">Loading usage history…</div></div></div>
+</section>
+
+<section class="section" id="page-apps">
+ <div class="card"><div class="card-head"><div><h2>AI app directory</h2><div class="tiny muted">Manage the services represented in your wallet.</div></div><button class="primary" id="addService">＋ Add service</button></div><div id="appsList"></div></div>
+</section>
+
+<section class="section" id="page-creator">
+ <div class="card"><div class="card-head"><div><h2>Creator income intelligence</h2><div class="tiny muted">Track agreements, payout reconciliation and contracted recurring revenue. All figures are manually entered, not bank-verified.</div></div></div>
+ <div class="stats"><div class="stat"><small>EXPECTED THIS MONTH</small><strong id="creatorExpected">$0</strong></div><div class="stat"><small>RECEIVED THIS MONTH</small><strong id="creatorReceived">$0</strong></div><div class="stat"><small>OUTSTANDING THIS MONTH</small><strong id="creatorOutstanding">$0</strong></div></div>
+ <div class="history-head"><h2>Monthly income goal</h2><span class="pill" id="creatorGoalProgress"></span></div><form id="creatorGoalForm" class="toolbar" style="display:flex;gap:10px;flex-wrap:wrap"><label>Target ($)<input id="creatorGoal" type="number" min="0" step=".01" required></label><button class="primary">Save goal</button></form>
+ <div class="history-head"><h2>Revenue scenarios & exports</h2></div><p class="tiny muted">Illustrative conservative (55%), base (80%), and optimistic (100%) collection of scheduled agreements. These are assumptions, not verified probabilities. Payouts are never added to scheduled contracts.</p><div id="creatorScenarios" aria-live="polite"></div><div class="toolbar" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"><button class="secondary" type="button" id="exportCreatorLedger">Export creator ledger CSV</button><button class="secondary" type="button" id="exportCreatorForecast">Export forecast CSV</button></div><div class="history-head"><h2>Recurring agreements</h2></div><form id="creatorAgreementForm" class="formgrid"><label>Client / platform<input name="client" required maxlength="120"></label><label>Project / deal<input name="title" required maxlength="120"></label><label>Amount ($)<input name="amount" type="number" min=".01" step=".01" required></label><label>Frequency<select name="cadence"><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="yearly">Yearly</option><option value="one-time">One-time</option></select></label><label>Next due<input name="nextDue" type="date"></label><label>Status<select name="status"><option value="active">Active</option><option value="paused">Paused</option><option value="ended">Ended</option></select></label><button class="primary" type="submit">Add agreement</button></form><div id="creatorAgreements"></div>
+ <div class="history-head"><h2>Payout ledger & reconciliation</h2></div><form id="creatorPayoutForm" class="formgrid"><label>Client / platform<input name="client" maxlength="120" required></label><label>Amount ($)<input name="amount" type="number" min=".01" step=".01" required></label><label>Expected / paid date<input name="dueDate" type="date" required></label><label>Status<select name="status"><option value="pending">Pending</option><option value="received">Received</option></select></label><label class="full">Invoice / transaction reference<input name="reference" maxlength="120" placeholder="Optional reconciliation reference"></label><button class="primary" type="submit">Add payout</button></form><div id="creatorPayouts"></div>
+ <div class="history-head"><h2>Action center · next 14 days</h2></div><p class="tiny muted">Creator payout follow-ups, agreement milestones, trial deadlines and upcoming AI subscription charges. Calculated while the app is open.</p><div id="creatorActions" aria-live="polite"></div><div class="history-head"><h2>Cash-date outlook · next 3 months</h2></div><p class="tiny muted">Scheduled agreements and recorded payouts are shown separately because a payout may correspond to an agreement. Do not add these columns together.</p><div id="creatorCashForecast"></div><div class="history-head"><h2>Revenue health · collection & concentration</h2></div><p class="tiny muted">Based on manually recorded payouts and active recurring agreements. Client concentration uses contracted monthly-equivalent revenue.</p><div id="creatorRevenueHealth" aria-live="polite"></div><div class="history-head"><h2>Collections worklist</h2><button class="secondary" type="button" id="exportCollections">Export follow-up CSV</button></div><p class="tiny muted">Pending payouts prioritized by overdue age. This is a follow-up queue, not proof that an invoice has been sent or a payment has cleared.</p><div id="creatorCollections" aria-live="polite"></div><div class="history-head"><h2>Reconciliation checks</h2></div><div id="creatorReconciliation"></div><div class="history-head"><h2>Reconciliation review queue</h2></div><p class="tiny muted">Potential matches are suggestions only. No bank verification or automatic status changes.</p><div id="creatorReviewQueue" aria-live="polite"></div><div class="history-head"><h2>Wallet data health</h2></div><p class="tiny muted">Read-only checks of account, file and payout records. Issues are advisory and never modify records.</p><div id="creatorDataHealth" aria-live="polite"></div><div class="history-head"><h2>Import creator payouts · CSV</h2></div><p class="tiny muted">Columns: client, amount, dueDate, status, reference; optional currency (USD only). Review the preview before importing. Duplicate non-empty references are skipped. No bank connection or verification is performed.</p><label class="tiny"><input id="creatorImportFuzzy" type="checkbox"> Flag possible duplicate payouts without transaction references (same client, amount, date and status)</label><div id="creatorCsvMapping" class="csv-mapping" hidden><strong>Map CSV columns</strong><p class="tiny muted">Select a column for each field. Required fields are marked *. Review the results after mapping changes.</p><div id="creatorCsvMappingFields" class="csv-mapping-fields"></div><button type="button" class="secondary" id="creatorCsvPreviewBtn">Preview mapped payouts</button></div><input id="creatorPayoutCsv" type="file" accept=".csv,text/csv" aria-label="Choose payout CSV"><div id="creatorImportPreview" aria-live="polite"></div><button class="secondary" id="creatorImportConfirm" type="button" hidden>Import validated payouts</button><button class="secondary" id="exportCreatorReview" type="button">Export reconciliation review CSV</button><div class="history-head"><h2>Three-month contracted revenue forecast</h2></div><p class="tiny muted">Forecast counts active recurring agreements only; excludes one-time deals, uncontracted leads, taxes and processing fees. Outstanding is based on recorded payouts, not inferred invoices.</p><div id="creatorForecast"></div>
+ </div></section>
+
+<section class="section" id="page-settings">
+ <div class="card"><h2>Settings & backup</h2><p class="muted tiny">Your account profiles and library metadata are saved locally in this browser. Passwords and API keys are never requested or stored.</p><div style="display:flex;flex-wrap:wrap;gap:9px;margin:18px 0"><button class="primary" id="exportBtn">Export wallet backup</button><button class="secondary" id="importBtn">Import backup</button><button class="secondary" id="clearBtn">Reset local data</button></div><div class="files-drop"><b>Provider connections</b><p class="tiny muted">This standalone version does not sign into providers or fetch live usage automatically. Add account profiles and import generated files. Direct integrations can be added separately where providers support authorized access.</p></div></div>
+</section>
+</main>
+</div>
+<nav class="mobile-nav" id="mobileNav"><button class="active" data-page="home"><span>⌂</span>Home</button><button data-page="accounts"><span>♙</span>Accounts</button><button data-page="files"><span>▱</span>Files</button><button data-page="usage"><span>◫</span>Usage</button><button data-page="creator"><span>✧</span>Income</button><button data-page="settings"><span>⚙</span>Settings</button></nav>
+<div class="modal" id="accountModal"><div class="modal-box"><h2 id="accountModalTitle">Add account</h2><form id="accountForm"><input type="hidden" id="accountId"><div class="formgrid">
+<label class="full">AI service<select id="aService"></select></label>
+<label>Account label<input id="aLabel" placeholder="Personal account" required></label><label>Email / account ID<input id="aEmail" placeholder="name@example.com"></label>
+<label>Plan<input id="aPlan" placeholder="Plus, Pro, Free…"></label><label>Subscription price ($)<input id="aCost" type="number" min="0" step=".01" value="0"></label><label>Billing frequency<select id="aBilling"><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="weekly">Weekly</option><option value="one-time">One-time</option><option value="free">Free</option></select></label><label>Next billing / renewal<input id="aRenewal" type="date"></label>
+<label class="full"><input id="aTrialEnabled" type="checkbox" style="width:auto;margin-right:8px">This account has a free trial</label>
+<label>Trial start<input id="aTrialStart" type="date"></label><label>Trial length (days)<input id="aTrialDays" type="number" min="1" max="3650" step="1" placeholder="e.g. 14"></label>
+<label>Trial ends / first charge<input id="aTrialEnd" type="date"></label><label>Cancel by (deadline)<input id="aCancelBy" type="date"></label>
+<label>Payment warning (days before)<input id="aAlertDays" type="number" min="0" max="90" value="7"></label><label>Trial status<select id="aTrialStatus"><option value="active">Active</option><option value="cancelled">Cancelled</option><option value="converted">Converted to paid</option></select></label>
+<label class="full">Offer source / terms<input id="aTrialOffer" placeholder="Where you found this offer; eligibility and terms"></label>
+<label>Usage unit<input id="aUnit" placeholder="Tokens, GB, credits…"></label><label>Used<input id="aUsed" type="number" min="0" step="any"></label>
+<label>Capacity / limit<input id="aCapacity" type="number" min="0" step="any"></label><label>Next reset date<input id="aReset" type="date"></label><label class="full">Usage reset cycle<select id="aCycle"><option value="never">Do not auto-reset</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="biweekly">Every 2 weeks</option><option value="monthly">Monthly</option><option value="quarterly">Every 3 months</option><option value="yearly">Yearly</option></select></label>
+<label class="full">Notes<input id="aNotes" placeholder="Optional notes"></label>
+</div><div class="form-actions"><button type="button" class="secondary" data-close>Cancel</button><button class="primary" type="submit">Save account</button></div></form></div></div>
+<div class="modal" id="fileEditModal"><div class="modal-box"><h2>Organize file</h2><form id="fileEditForm"><input type="hidden" id="editFileId"><div class="formgrid"><label class="full">File name<input id="editFileName" required></label><label>Folder<select id="editFileCategory"><option>Images</option><option>Videos</option><option>Documents</option><option>Audio</option><option>Code</option><option>Other</option></select></label><label>Custom folder<select id="editFileFolder"><option value="">No custom folder</option></select></label><label>AI service<select id="editFileService"></select></label><label class="full">Account profile<select id="editFileAccount"></select></label></div><div class="form-actions"><button type="button" class="secondary" data-close>Cancel</button><button class="primary">Save changes</button></div></form></div></div>
+<div class="modal" id="serviceModal"><div class="modal-box"><h2>Add AI service</h2><form id="serviceForm"><div class="formgrid"><label>Service name<input id="sName" required placeholder="e.g. Suno"></label><label>Website<input id="sUrl" placeholder="https://…"></label><label>Brand icon / emoji<input id="sIcon" value="✦"></label></div><div class="form-actions"><button type="button" class="secondary" data-close>Cancel</button><button class="primary">Add service</button></div></form></div></div>
+<div class="modal" id="importModal"><div class="modal-box"><h2>Import wallet backup</h2><p class="tiny muted">Choose a previously exported AI Wallet JSON backup.</p><input type="file" id="backupInput" accept="application/json"><div class="form-actions"><button class="secondary" data-close>Cancel</button></div></div></div>
+<div class="modal" id="chatMemoryModal"><div class="modal-box"><h2 id="chatMemoryTitle">Add conversation memory</h2><form id="chatMemoryForm"><input type="hidden" id="chatMemoryId"><div class="formgrid"><label class="full">AI account<select id="chatMemoryAccount" required></select></label><label class="full">Conversation name<input id="chatMemoryName" required maxlength="120" placeholder="Project planning chat"></label><label>Context used<input id="chatMemoryUsed" type="number" min="0" step="any" value="0" required></label><label>Context capacity<input id="chatMemoryCapacity" type="number" min="0" step="any" value="0" required></label><label>Unit<input id="chatMemoryUnit" value="tokens" maxlength="40"></label><label>Next refresh date<input id="chatMemoryRefresh" type="date"></label><label class="full">Refresh behavior<select id="chatMemoryCycle"><option value="conversation">Conversation-based / no automatic reset</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="rolling">Rolling window / track manually</option><option value="manual">Manual</option></select></label></div><p class="tiny muted">Context windows are not necessarily reset on a fixed schedule. Automatic resets only apply to daily, weekly and monthly schedules you explicitly configure.</p><div class="form-actions"><button type="button" class="secondary" data-close>Cancel</button><button class="primary" type="submit">Save conversation</button></div></form></div></div>
+<div class="toast" id="toast"></div>
+<script src="src/modules/creator.js" defer></script>
+<script src="src/modules/intelligence.js" defer></script>
+<script src="src/modules/analytics.js" defer></script>
+<script src="src/modules/billing.js" defer></script>
+<script src="src/modules/reminders.js" defer></script>
+<script src="src/modules/payment-forecast.js" defer></script>
+<script src="src/modules/trial-timeline.js" defer></script>
+<script src="src/modules/attention.js" defer></script>
+<script src="src/modules/calendar-export.js" defer></script>
+<script src="src/modules/subscription-audit.js" defer></script>
+<script src="src/modules/revenue-planning.js" defer></script>
+<script src="src/modules/reconciliation-review.js" defer></script>
+<script src="src/modules/payout-import.js" defer></script>
+<script src="src/modules/data-health.js" defer></script>
+<script src="src/modules/collections.js" defer></script>
+<script src="src/modules/memory.js" defer></script>
+<script src="src/modules/accounts.js" defer></script>
+<script src="src/modules/files.js" defer></script>
+<script src="src/modules/storage.js" defer></script>
+<script src="src/modules/backup.js" defer></script>
+<script src="src/modules/file-safety.js" defer></script>
+<script src="src/modules/events.js" defer></script>
+<script src="src/app.js" defer></script>
+</body>
+</html>

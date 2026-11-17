@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),vm=require('node:vm');const window={};
+for(const name of ['billing','reminders','calendar-export'])vm.runInNewContext(fs.readFileSync(`src/modules/${name}.js`,'utf8'),{window});
+const {billing,reminders,calendarExport}=window.AIWalletModules;
+const valid={id:'ok',label:'Studio',cost:24,billingCycle:'monthly',renewalDate:'2026-11-20',alertDays:7};
+const invalid={id:'bad',label:'Bad',cost:100,billingCycle:'quarterly',renewalDate:'2026-11-20',alertDays:7};
+assert.equal(billing.summarize([null,valid,invalid,undefined]).monthly,24);
+assert.equal(billing.summarize([valid,invalid]).recurringCount,1);
+assert.equal(billing.alerts([null,valid,invalid],'2026-11-16').filter(x=>x.type==='renewal').length,1);
+assert.equal(reminders.entries([valid,invalid],'2026-11-16',reminders.prefs()).filter(x=>x.type==='renewal').length,1);
+assert.equal(calendarExport.calendarEvents([valid,invalid],{today:'2026-11-16',horizonDays:30}).filter(x=>x.type==='renewal').length,1);
+assert.throws(()=>reminders.snooze({},'ok:renewal:2026-11-20','2026-02-30'),/Invalid snooze date/);
+assert.throws(()=>reminders.markDelivered({},'ok:renewal:2026-11-20','2026-02-30'),/Invalid delivery date/);
+assert.equal(reminders.markDelivered({},'key','2026-11-16').delivered.key,'2026-11-16');
+console.log('Billing and reminder consistency tests passed');

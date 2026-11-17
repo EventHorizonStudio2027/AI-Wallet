@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict');
+const test=require('node:test');
+const fs=require('node:fs');const vm=require('node:vm');const path=require('node:path');
+const root=path.resolve(__dirname,'..');const ctx={window:{AIWalletModules:{}}};vm.createContext(ctx);
+for(const file of ['billing.js','trial-timeline.js','payment-forecast.js','attention.js'])vm.runInContext(fs.readFileSync(path.join(root,'src/modules',file),'utf8'),ctx,{filename:file});
+const overview=ctx.window.AIWalletModules.attention.overview;
+test('empty wallet has zero alerts and projected payments',()=>{const x=overview([],'2026-11-16');assert.equal(x.rows.length,0);assert.equal(x.projected30,0)});
+test('prioritizes expired trials, missing dates, then projected payments',()=>{const x=overview([{id:'t1',label:'Expired trial',trialEnabled:true,trialStatus:'active',cancelBy:'2026-11-15',trialEnd:'2026-11-20'},{id:'t2',label:'Unknown date',trialEnabled:true,trialStatus:'active',trialEnd:'2026-11-20'},{id:'p1',label:'Monthly',cost:10,billingCycle:'monthly',renewalDate:'2026-10-20'}],'2026-11-16');assert.equal(x.rows[0].accountId,'t1');assert.equal(x.rows[1].accountId,'t2');assert.ok(x.rows.some(r=>r.kind==='payment'));assert.equal(x.projected30,10)});
+test('does not count converted trials as active',()=>{const x=overview([{id:'t',label:'Done',trialEnabled:true,trialStatus:'converted',cancelBy:'2026-11-16'}],'2026-11-16');assert.equal(x.trials,0)});
+test('old renewal anchor still produces current month payment',()=>{const x=overview([{id:'p',label:'Old anchor',cost:25,billingCycle:'monthly',renewalDate:'2024-01-31'}],'2026-11-16');assert.equal(x.paymentCount30,1);assert.equal(x.projected30,25)});
+test('invalid reference date is rejected',()=>assert.throws(()=>overview([],'2026-02-30')));
