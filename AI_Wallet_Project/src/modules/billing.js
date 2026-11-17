@@ -1,7 +1,7 @@
 (function (global) {
 'use strict';
 function monthlyEquivalent(amount, cycle) {
- const value=Number(amount); if(!Number.isFinite(value)||value<=0)return 0;
+ const value=Number(amount); if(amount==null||typeof amount==='boolean'||!Number.isFinite(value)||value<=0||value>1e9)return 0;
  if(cycle==='monthly')return value; if(cycle==='yearly')return value/12;
  if(cycle==='weekly')return value*52/12; return 0;
 }
@@ -37,7 +37,7 @@ function alerts(accounts,today){
  const out=[];
  for(const a of Array.isArray(accounts)?accounts:[]){
   if(!a||!a.id)continue;
-  const windowDays=Number.isInteger(Number(a.alertDays))?Math.min(90,Math.max(0,Number(a.alertDays))):7;
+  const windowDays=a.alertDays!==''&&a.alertDays!=null&&Number.isInteger(Number(a.alertDays))?Math.min(90,Math.max(0,Number(a.alertDays))):7;
   const push=(date,type,message,days)=>out.push({accountId:a.id,date,type,message,days});
   if(a.trialEnabled&&a.trialStatus==='active'){
    const cancel=daysUntil(a.cancelBy,today),end=daysUntil(a.trialEnd,today);
@@ -46,7 +46,7 @@ function alerts(accounts,today){
   }
   const next=nextRenewalDate(a.renewalDate,a.billingCycle,today);
   const payment=daysUntil(next,today);
-  if(['weekly','monthly','yearly'].includes(a.billingCycle)&&Number.isFinite(Number(a.cost))&&Number(a.cost)>0&&payment!==null&&payment>=0&&payment<=windowDays&&!(a.trialEnabled&&a.trialStatus==='active'))push(next,'renewal','Upcoming '+a.billingCycle+' payment: $'+Number(a.cost).toFixed(2),payment);
+  if(['weekly','monthly','yearly'].includes(a.billingCycle)&&a.cost!=null&&a.cost!==''&&Number.isFinite(Number(a.cost))&&Number(a.cost)>0&&payment!==null&&payment>=0&&payment<=windowDays&&!(a.trialEnabled&&a.trialStatus==='active'))push(next,'renewal','Upcoming '+a.billingCycle+' payment: $'+Number(a.cost).toFixed(2),payment);
  }
  return out;
 }
