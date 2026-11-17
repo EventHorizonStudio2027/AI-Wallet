@@ -1,14 +1,22 @@
 # AI Wallet
 
-Private development repository for AI Wallet, a mobile-first AI account, subscription, trial, generated-file, and creator-income management app.
+Mobile-first AI account, subscription, free-trial, usage-limit, generated-file, and creator-income manager.
+
+## Launch
+
+**[Open AI Wallet](https://fatespassage.github.io/AI-Wallet/)** (requires a successful GitHub Pages deployment).
+
+The browser application source is in [`AI_Wallet_Project/`](./AI_Wallet_Project/), with [`AI_Wallet_Project/index.html`](./AI_Wallet_Project/index.html) as its entry point. The GitHub Actions Pages workflow publishes the **contents** of that folder as the website root.
 
 ## Status
 
-Repository initialized. The existing v31 multi-file application has **not yet been imported**. Do not treat this README as a working application release.
+The v31 application source has been uploaded. GitHub Pages deployment and real-browser functionality still require verification; do not interpret source presence as proof of a working release.
 
 ## Development workflow
 
-- `main`: stable, verified releases only.
+- `main`: stable releases and GitHub Pages deployment.
 - `develop`: integration and testing before promotion to `main`.
+- Automated checks: `.github/workflows/validate.yml`.
+- Pages deployment: `.github/workflows/pages.yml`.
 - Never commit credentials, API keys, tokens, or personal account exports.
-- Validate automated tests and browser behavior before promoting a release.
+- Validate browser behavior before promoting a release.
