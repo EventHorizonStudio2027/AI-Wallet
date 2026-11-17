@@ -70,9 +70,12 @@ function deleteFile(key){return fileOperation('readwrite',key)}
 function listFileKeys(){
  return open().then(db=>new Promise((resolve,reject)=>{
   const tx=db.transaction(STORES.files,'readonly'),request=tx.objectStore(STORES.files).getAllKeys();
-  request.onsuccess=()=>resolve(request.result||[]);
+  let keys=[];
+  request.onsuccess=()=>{keys=request.result||[]};
   request.onerror=()=>reject(request.error||new Error('File storage audit failed'));
+  tx.oncomplete=()=>resolve(keys);
   tx.onerror=()=>reject(tx.error||new Error('File storage audit failed'));
+  tx.onabort=()=>reject(tx.error||new Error('File storage audit aborted'));
  }));
 }
 function clearFiles(){
