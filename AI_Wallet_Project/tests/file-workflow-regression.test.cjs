@@ -16,4 +16,6 @@ assert.match(source,/for\(let key of stored\)try\{await deleteFileBlob\(key\)\}/
 assert.match(source,/finally\{\s*fileUploadBusy=false/,'Busy flag must always be cleared');
 assert.match(source,/for\(const \[file,data\] of legacyPayloads\)file\.data=data/,'Failed legacy migration must retain in-memory payloads');
 assert.match(source,/if\(window\._walletImportBusy\|\|fileUploadBusy\)\{toast\('Wait for file operations to finish before resetting'\)/,'Reset must wait for file operations');
+assert.match(source,/committed=true;\s*render\(\)/,'Successful file writes must be marked committed before rendering');
+assert.match(source,/if\(!committed\)\{\s*state=previous/,'Committed file uploads must not be rolled back after a rendering error');
 console.log('DomAIn file workflow regression checks passed.');
