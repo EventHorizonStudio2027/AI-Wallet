@@ -106,3 +106,12 @@ button{touch-action:manipulation}button:disabled{opacity:.5;cursor:not-allowed}
 .mobile-nav button .mobile-nav-label{font-size:10px;line-height:1.1;white-space:nowrap;font-weight:600}
 .mobile-nav button.active .ico svg{filter:drop-shadow(0 0 5px #3fd6ff77)}
 @media(max-width:390px){.mobile-nav button .mobile-nav-label{font-size:9px}}
+
+/* Unified AI service artwork: contain real favicons; show fallback only until load */
+.logo{position:relative;display:grid;place-items:center;flex:none;width:44px;height:44px;min-width:44px;overflow:hidden;border-radius:13px;background:linear-gradient(145deg,#152a4d,#101a34);border:1px solid color-mix(in srgb,var(--brand,#6f8cff) 40%,#344369);isolation:isolate}
+.logo .fallback{display:grid;place-items:center;width:100%;height:100%;font-size:24px;line-height:1;color:var(--brand,#a9b8ff);font-weight:700;overflow:hidden}
+.logo .service-logo-image{position:absolute;inset:0;margin:auto;width:70%;height:70%;max-width:32px;max-height:32px;object-fit:contain;opacity:0;transition:opacity .15s ease}
+.logo .service-logo-image.loaded{opacity:1;background:#14213c;border-radius:5px}
+.profile-logo .logo{width:46px;height:46px;min-width:46px}
+.service .logo{margin:0 auto 8px}
+@media(prefers-reduced-motion:reduce){.logo .service-logo-image{transition:none}}
