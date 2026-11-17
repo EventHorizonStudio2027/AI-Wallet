@@ -42,7 +42,7 @@ function logo(s,size=32){if(!s)return '✦';if(s.domain){const src='https://www.
 function serviceLaunchUrl(s){
  if(!s)return '';
  const candidate=typeof s.url==='string'&&s.url.trim()?s.url.trim():s.domain?'https://'+s.domain:'';
- try{const url=new URL(candidate);if(url.protocol!=='https:'||url.username||url.password||!url.hostname||url.hostname==='localhost'||!url.hostname.includes('.'))return '';return url.href}catch(e){return ''}
+ try{const url=new URL(candidate);if(url.protocol!=='https:'||url.username||url.password||!url.hostname||url.hostname==='localhost'||!url.hostname.includes('.')||url.hostname.endsWith('.localhost')||url.hostname.endsWith('.local')||url.hostname.endsWith('.internal')||url.port)return '';return url.href}catch(e){return ''}
 }
 function launchService(s){const url=serviceLaunchUrl(s);if(!url){toast('Add a valid HTTPS website to open this service');return}window.open(url,'_blank','noopener,noreferrer')}
 function logoBox(s){const color=/^#[0-9a-fA-F]{3,8}$/.test(s?.color||'')?s.color:'#6f8cff';return `<div class="logo" style="--brand:${color}" role="img" aria-label="${esc(s?.name||'AI service')}"><span class="fallback">${esc(s?.fallback||'✦')}</span>${s?.domain?logo(s):''}</div>`}
