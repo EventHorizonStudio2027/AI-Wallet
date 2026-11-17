@@ -41,3 +41,6 @@ aside{background:linear-gradient(175deg,#0a1331f7,#060b1dfb);border-right:1px so
 .domain-section-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 11px;color:#b9e8ff;font-size:11px;font-weight:800;letter-spacing:1.2px}.domain-section-hint{font-size:11px;font-weight:400;letter-spacing:0;color:#91a7cb}
 @media(max-width:700px){.domain-hero{min-height:166px;padding:20px 17px;border-radius:19px}.domain-hero-copy{max-width:73%}.domain-hero-title{font-size:clamp(24px,6vw,33px)}.domain-hero-kicker{font-size:8px;letter-spacing:1.1px}.domain-hero-copy p{font-size:11px}.hero-mark{width:110px;margin-right:-35px}.domain-section-hint{display:none}.brand-name{font-size:23px}}
 @media(prefers-reduced-motion:reduce){.service,.nav button{transition:none}}
+
+/* DomAIn navigation vector icons */
+.nav button .ico{display:inline-flex;align-items:center;justify-content:center;flex:0 0 22px;width:22px;height:22px}.nav button .ico svg{width:21px;height:21px;overflow:visible;filter:drop-shadow(0 0 5px #00bfff40)}
