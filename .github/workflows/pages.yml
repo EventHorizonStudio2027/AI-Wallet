@@ -1,11 +1,9 @@
-name: Deploy AI Wallet to GitHub Pages
+name: Deploy DomAIn website
 
 on:
   push:
-    branches: [main]
-    paths:
-      - 'AI_Wallet_Project/**'
-      - '.github/workflows/pages.yml'
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -15,28 +13,37 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout main
         uses: actions/checkout@v4
-      - name: Verify static app entrypoint
+        with:
+          ref: main
+      - name: Verify website build
+        shell: bash
         run: |
-          test -f AI_Wallet_Project/index.html
-          test -f AI_Wallet_Project/src/app.js
-          test -f AI_Wallet_Project/styles/app.css
-      - name: Configure Pages
+          set -euo pipefail
+          test -s AI_Wallet_Project/index.html
+          test -s AI_Wallet_Project/styles/app.css
+          test -s AI_Wallet_Project/src/app.js
+          test -s AI_Wallet_Project/service-worker.js
+          grep -q 'DomAIn' AI_Wallet_Project/index.html
+          mkdir -p AI_Wallet_Project
+          touch AI_Wallet_Project/.nojekyll
+          echo "Deploying DomAIn from $(git rev-parse --short HEAD)"
+      - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-      - name: Upload static site
+      - name: Upload DomAIn app as website root
         uses: actions/upload-pages-artifact@v3
         with:
-          path: AI_Wallet_Project
-      - name: Deploy to GitHub Pages
+          path: ./AI_Wallet_Project
+      - name: Publish website
         id: deployment
         uses: actions/deploy-pages@v4
