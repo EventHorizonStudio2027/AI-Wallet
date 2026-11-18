@@ -37,4 +37,8 @@ const missingEndingSoon={id:'soonend',label:'Ends soon',trialEnabled:true,trialS
 const soonReport=window.AIWalletModules.attention.overview([missingEndingSoon],'2026-11-18');
 assert.ok(soonReport.rows.some(r=>r.kind==='trial_end'&&r.days===1),'Missing cancel-by date must not hide imminent trial end');
 assert.ok(soonReport.rows.some(r=>r.kind==='review'),'Unknown cancellation deadline must still trigger review');
+const missingRenewal={id:'no-renewal',label:'No renewal date',billingCycle:'monthly',cost:12,renewalDate:''};
+const forecast=window.AIWalletModules.paymentForecast.summary([missingRenewal,accounts[1]],'2026-11-18',30);
+assert.equal(forecast.missingDates,1,'Forecast must report paid subscriptions missing renewal dates');
+assert.ok(forecast.events.every(e=>e.accountId!=='no-renewal'),'Subscriptions with unknown renewal dates must not invent payment dates');
 console.log('DomAIn attention regressions passed');
