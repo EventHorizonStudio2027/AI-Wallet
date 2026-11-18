@@ -230,3 +230,8 @@ body{font-size:14px}
 .forecast-next strong{font-size:13px;letter-spacing:-.15px;font-variant-numeric:tabular-nums}
 .forecast-next small{margin-left:auto;font-size:11px;color:#b4d7f7}
 @media(max-width:560px){.forecast-next{gap:5px 10px;padding:10px}.forecast-next span{flex:1 1 100%}.forecast-next small{margin-left:0}}
+
+/* DomAIn v69: quieter account-form guidance without increasing modal bulk */
+.field-hint{display:block;margin-top:5px;color:var(--muted);font-size:10px;line-height:1.4;font-weight:400;letter-spacing:0}
+#accountForm label:focus-within .field-hint{color:#b8dffb}
+#accountForm input:focus-visible,#accountForm select:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
