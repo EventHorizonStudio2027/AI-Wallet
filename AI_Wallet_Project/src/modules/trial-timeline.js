@@ -20,7 +20,7 @@ function trialTimeline(accounts,today){
   const daysToCancel=cancel?billing.daysUntil(cancel,today):null;
   const daysToEnd=end?billing.daysUntil(end,today):null;
   const urgency=daysToCancel===null?'unknown':daysToCancel<0?'overdue':daysToCancel<=2?'critical':daysToCancel<=7?'soon':'upcoming';
-  entries.push({accountId:account.id,label:String(account.label||'AI account').slice(0,100),cancelBy:cancel,trialEnd:end,trialStart:start,trialDays:Number.isFinite(days)&&days>0?days:null,daysToCancel,daysToEnd,urgency,issues});
+  entries.push({accountId:account.id,label:String(account.label||'AI account').slice(0,100),cancelBy:cancel,trialEnd:end,trialStart:start,trialDays:Number.isFinite(days)&&days>0?days:null,daysToCancel,daysToEnd,urgency,alertDays:Number.isInteger(Number(account.alertDays))&&Number(account.alertDays)>=0&&Number(account.alertDays)<=90?Number(account.alertDays):7,issues});
  }
  const priority={overdue:0,critical:1,soon:2,unknown:3,upcoming:4};
  entries.sort((a,b)=>priority[a.urgency]-priority[b.urgency]||(a.cancelBy||'9999').localeCompare(b.cancelBy||'9999')||a.label.localeCompare(b.label));
