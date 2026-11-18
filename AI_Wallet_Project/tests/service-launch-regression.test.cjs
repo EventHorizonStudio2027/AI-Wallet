@@ -20,4 +20,9 @@ assert.match(app,/x\.files\.length>10000/,'Restored library must respect the sam
 assert.match(app,/\$\$\('\[data-service\]'\)\.forEach/,'Every home service card must receive a click handler');
 assert.match(app,/url\.hostname\.endsWith\('\.internal'\)/,'Internal hosts must not be accepted as sign-in destinations');
 assert.match(app,/\$\$\('\[data-service\]'\)\.forEach/,'All service cards must be wired');
+assert.match(app,/\$\$\('\[data-switch\]'\)\.forEach/,'All account Switch buttons must receive handlers');
+assert.match(app,/\.sort\(\(a,b\)=>Number\(b\.serviceId===selectedService\)-Number\(a\.serviceId===selectedService\)\)/,'Selected service profiles must appear first');
+assert.match(app,/Manually tracked profile/,'Account profiles must not be misrepresented as OAuth connections');
+assert.match(app,/No automatic sync/,'Service directory must disclose the absence of automatic sync');
+assert.doesNotMatch(app,/(?<!\$)\$\('\[data-(?:service|launch-service|addfor|switch)\]'\)\.forEach/,'A single-element selector cannot attach multiple action handlers');
 console.log('DomAIn service launch and Google Flow destination checks passed.');
