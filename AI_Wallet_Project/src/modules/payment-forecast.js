@@ -28,7 +28,7 @@ function summary(accounts,today,horizonDays=90){
  const byDate=Object.entries(events.reduce((acc,e)=>{const row=acc[e.date]||(acc[e.date]={cents:0,count:0});row.cents+=Math.round(e.amount*100);row.count++;return acc},Object.create(null))).map(([date,row])=>({date,total:row.cents/100,count:row.count}));
  const unique=new Set(events.map(e=>e.accountId));
  const missingDateAccounts=(Array.isArray(accounts)?accounts:[]).filter(a=>a&&a.id&&['weekly','monthly','yearly'].includes(a.billingCycle)&&!(a.trialEnabled&&a.trialStatus==='active')&&a.cost!=null&&a.cost!==''&&typeof a.cost!=='boolean'&&Number.isFinite(Number(a.cost))&&Number(a.cost)>0&&!billing.nextRenewalDate(a.renewalDate,a.billingCycle,today)).map(a=>({accountId:a.id,label:String(a.label||'AI account').slice(0,100)}));
- const dueSoon=byDate.filter(d=>billing.daysUntil(d.date,today)<=7);
+ const dueSoon=byDate.filter(d=>billing.daysUntil(d.date,today)<7);
  const dueSoonCents=dueSoon.reduce((sum,d)=>sum+Math.round(d.total*100),0);
  const missingDates=missingDateAccounts.length;
  return {events,byDate,dueSoonTotal:dueSoonCents/100,dueSoonDays:dueSoon.length,total:cents/100,count:events.length,accounts:unique.size,missingDates,missingDateAccounts,first:events[0]?.date||null};
