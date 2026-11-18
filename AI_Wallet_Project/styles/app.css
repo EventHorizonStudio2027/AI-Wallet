@@ -205,3 +205,12 @@ body{font-size:14px}
 .card button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 @media(max-width:520px){.forecast-date-chip{flex:1 1 auto;justify-content:space-between}.forecast-dates{padding-top:7px}}
 @media(prefers-reduced-motion:reduce){.card .secondary,.card .primary{transition:none}}
+
+/* DomAIn v66: concise actionable forecast exceptions */
+.forecast-missing{border:1px solid #625377;background:linear-gradient(125deg,#29213b,#161e38);border-radius:12px;padding:12px 14px;margin:12px 0 14px}
+.forecast-missing>b{display:block;font-size:12px;color:#f4d6ff;margin-bottom:3px}
+.forecast-missing>small{display:block;color:#c4b6d7;font-size:11px;margin-bottom:8px}
+.forecast-missing-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid #ffffff14;font-size:12px}
+.forecast-missing-row span{min-width:0;overflow-wrap:anywhere}
+.forecast-missing-row button{flex-shrink:0}
+@media(max-width:520px){.forecast-missing{padding:10px 11px}.forecast-missing-row button{min-height:38px}}
