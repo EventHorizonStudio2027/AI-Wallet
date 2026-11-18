@@ -44,7 +44,7 @@ function serviceLaunchUrl(s){
  const candidate=typeof s.url==='string'&&s.url.trim()?s.url.trim():s.domain?'https://'+s.domain:'';
  try{const url=new URL(candidate);if(url.protocol!=='https:'||url.username||url.password||!url.hostname||url.hostname==='localhost'||!url.hostname.includes('.')||url.hostname.endsWith('.localhost')||url.hostname.endsWith('.local')||url.hostname.endsWith('.internal')||url.port)return '';return url.href}catch(e){return ''}
 }
-function launchService(s){const url=serviceLaunchUrl(s);if(!url){toast('Add a valid HTTPS website to open this service');return}window.open(url,'_blank','noopener,noreferrer')}
+function launchService(s){const url=serviceLaunchUrl(s);if(!url){toast('Add a valid HTTPS website to open this service');return}window.location.assign(url)}
 function logoBox(s){const color=/^#[0-9a-fA-F]{3,8}$/.test(s?.color||'')?s.color:'#6f8cff';return `<div class="logo" style="--brand:${color}" role="img" aria-label="${esc(s?.name||'AI service')}"><span class="fallback">${esc(s?.fallback||'✦')}</span>${s?.domain?logo(s):''}</div>`}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function money(v){return '$'+Number(v||0).toFixed(2).replace(/\.00$/,'')}
