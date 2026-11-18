@@ -46,4 +46,7 @@ assert.equal(sameDay.byDate.length,1,'Same-day payments should group into one da
 assert.equal(sameDay.byDate[0].total,12,'Same-day totals must sum in cents');
 assert.equal(forecast.missingDateAccounts[0].accountId,'no-renewal','Missing renewal records must link to the correct profile');
 assert.equal(sameDay.byDate[0].count,2,'Payment day summary must show number of renewals');
+const week=window.AIWalletModules.paymentForecast.summary([{id:'w',label:'Within week',billingCycle:'monthly',renewalDate:'2026-11-20',cost:7.15},{id:'l',label:'Later',billingCycle:'monthly',renewalDate:'2026-11-27',cost:9.25}],'2026-11-18',14);
+assert.equal(week.dueSoonTotal,7.15,'Seven-day forecast must exclude later payments');
+assert.equal(week.dueSoonDays,1,'Seven-day forecast should count distinct payment dates');
 console.log('DomAIn attention regressions passed');
