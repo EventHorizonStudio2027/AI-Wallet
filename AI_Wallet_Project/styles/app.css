@@ -140,3 +140,57 @@ button{touch-action:manipulation}button:disabled{opacity:.5;cursor:not-allowed}
 @media(prefers-reduced-motion:reduce){
  #accountsList button,#appsList button{scroll-behavior:auto;transition:none}
 }
+
+/* DomAIn v64: slightly denser overall layout, especially dashboard cards */
+body{font-size:14px}
+.main{padding:22px 25px 36px}
+.top{margin-bottom:18px}
+.top h1{font-size:clamp(22px,3.6vw,31px)}
+.top p{font-size:12px}
+.grid{gap:12px}
+.card{padding:15px;border-radius:16px}
+.card-head{margin-bottom:11px}
+.card h2{font-size:15px}
+.stats{gap:9px;margin-bottom:12px}
+.stat{padding:12px;border-radius:13px}
+.stat strong{font-size:23px;margin:3px 0 1px}
+.stat small{font-size:10px}
+.service-strip{gap:8px;padding-bottom:10px;margin-bottom:11px}
+.service{flex-basis:98px;padding:10px 8px;border-radius:13px}
+.service img{width:30px;height:30px;margin-bottom:6px}
+.service b{font-size:11px}
+.service small{font-size:9px}
+.service .logo{width:39px;height:39px;min-width:39px;margin-bottom:6px}
+.service .logo .service-logo-image{max-width:28px;max-height:28px}
+.profile{gap:11px}
+.profile-logo{width:51px;height:51px;border-radius:13px}
+.profile h3{font-size:16px}
+.usage{gap:15px;margin-top:15px}
+.ring{width:100px;height:100px}
+.ring strong{font-size:22px}
+.usage-details strong{font-size:18px}
+.file-cats{gap:8px}
+.folder{padding:10px 6px;border-radius:12px}
+.folder .folder-icon{font-size:22px;margin-bottom:4px}
+.file-row{gap:10px;padding:10px 0}
+.domain-hero{min-height:155px;padding:18px}
+.hero-mark{width:clamp(110px,17vw,185px)}
+@media(max-width:850px){
+ .main{padding:19px 17px calc(104px + env(safe-area-inset-bottom))}
+ .grid{gap:10px}
+ .stats{gap:8px}
+}
+@media(max-width:520px){
+ .main{padding:15px 12px calc(104px + env(safe-area-inset-bottom))}
+ .card{padding:12px;border-radius:14px}
+ .stats{gap:7px}
+ .stat{padding:10px;border-radius:11px}
+ .stat strong{font-size:20px}
+ .service{flex-basis:88px;padding:9px 6px}
+ .service .logo{width:36px;height:36px;min-width:36px}
+ .domain-hero{min-height:145px;padding:16px}
+ .hero-mark{width:88px}
+ .file-cats{gap:7px}
+ .folder{padding:9px 5px}
+ .ring{width:92px;height:92px}
+}
