@@ -17,4 +17,5 @@ assert.match(app,/data-delservice="\$\{esc\(s\.id\)\}"/,'Custom service action i
 assert.match(app,/x\.files\.length>10000/,'Restored library must respect the same file limit as imports');
 assert.match(app,/\$\$\('\[data-service\]'\)\.forEach/,'Every home service card must receive a click handler');
 assert.match(app,/url\.hostname\.endsWith\('\.internal'\)/,'Internal hosts must not be accepted as sign-in destinations');
+assert.match(app,/\$\$\('\[data-service\]'\)\.forEach/,'All service cards must be wired');
 console.log('DomAIn service launch and Google Flow destination checks passed.');
