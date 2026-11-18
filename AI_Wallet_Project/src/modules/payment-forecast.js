@@ -29,9 +29,10 @@ function summary(accounts,today,horizonDays=90){
  const unique=new Set(events.map(e=>e.accountId));
  const missingDateAccounts=(Array.isArray(accounts)?accounts:[]).filter(a=>a&&a.id&&['weekly','monthly','yearly'].includes(a.billingCycle)&&!(a.trialEnabled&&a.trialStatus==='active')&&a.cost!=null&&a.cost!==''&&typeof a.cost!=='boolean'&&Number.isFinite(Number(a.cost))&&Number(a.cost)>0&&!billing.nextRenewalDate(a.renewalDate,a.billingCycle,today)).map(a=>({accountId:a.id,label:String(a.label||'AI account').slice(0,100)}));
  const dueSoon=byDate.filter(d=>billing.daysUntil(d.date,today)<7);
+ const nextPayment=events.length?{date:events[0].date,days:billing.daysUntil(events[0].date,today),amount:byDate[0].total,count:byDate[0].count}:null;
  const dueSoonCents=dueSoon.reduce((sum,d)=>sum+Math.round(d.total*100),0);
  const missingDates=missingDateAccounts.length;
- return {events,byDate,dueSoonTotal:dueSoonCents/100,dueSoonDays:dueSoon.length,total:cents/100,count:events.length,accounts:unique.size,missingDates,missingDateAccounts,first:events[0]?.date||null};
+ return {events,byDate,nextPayment,dueSoonTotal:dueSoonCents/100,dueSoonDays:dueSoon.length,total:cents/100,count:events.length,accounts:unique.size,missingDates,missingDateAccounts,first:events[0]?.date||null};
 }
 global.AIWalletModules=global.AIWalletModules||{};
 global.AIWalletModules.paymentForecast=Object.freeze({projectedPayments,summary});
