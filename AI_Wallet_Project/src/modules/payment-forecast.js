@@ -25,9 +25,10 @@ function projectedPayments(accounts,today,horizonDays=90){
 function summary(accounts,today,horizonDays=90){
  const events=projectedPayments(accounts,today,horizonDays);
  const cents=events.reduce((total,e)=>total+Math.round(e.amount*100),0);
+ const byDate=Object.entries(events.reduce((acc,e)=>{acc[e.date]=(acc[e.date]||0)+Math.round(e.amount*100);return acc},Object.create(null))).map(([date,cents])=>({date,total:cents/100}));
  const unique=new Set(events.map(e=>e.accountId));
  const missingDates=(Array.isArray(accounts)?accounts:[]).filter(a=>a&&a.id&&['weekly','monthly','yearly'].includes(a.billingCycle)&&!(a.trialEnabled&&a.trialStatus==='active')&&a.cost!=null&&a.cost!==''&&typeof a.cost!=='boolean'&&Number.isFinite(Number(a.cost))&&Number(a.cost)>0&&!billing.nextRenewalDate(a.renewalDate,a.billingCycle,today)).length;
- return {events,total:cents/100,count:events.length,accounts:unique.size,missingDates,first:events[0]?.date||null};
+ return {events,byDate,total:cents/100,count:events.length,accounts:unique.size,missingDates,first:events[0]?.date||null};
 }
 global.AIWalletModules=global.AIWalletModules||{};
 global.AIWalletModules.paymentForecast=Object.freeze({projectedPayments,summary});
