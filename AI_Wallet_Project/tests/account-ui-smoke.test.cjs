@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const app=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
-for(const selector of ['service','launch-service','addfor','switch','edit','open-account-service','account-add-selected','account-open-selected','account-toggle-filter','manage-service']){
+for(const selector of ['service','launch-service','addfor','switch','edit','open-account-service','account-add-selected','account-open-selected','account-toggle-filter','manage-service','forecast-review']){
  assert.doesNotMatch(app,new RegExp('(?<!\\$)\\$\\(\\x27\\[data-'+selector+'\\]\\x27\\)\\.(?:forEach|find)'),'Single-node selector incorrectly used for '+selector);
  assert.match(app,new RegExp('\\$\\$\\(\\x27\\[data-'+selector+'\\]\\x27\\)\\.(?:forEach|find)'),'Missing multi-node selector for '+selector);
 }
@@ -17,4 +17,5 @@ assert.match(app,/No profiles for this provider/,'Provider-specific empty state 
 assert.match(app,/data-manage-service=/,'AI directory must expose profile management');
 assert.match(app,/accountProviderOnly=true;go\('accounts',\{preserveAccountFilter:true\}\);render\(\)/,'Directory must preserve selected provider filter');
 assert.match(app,/if\(p==='accounts'&&!options\.preserveAccountFilter\)accountProviderOnly=false/,'Normal Accounts navigation must reset the provider filter');
+assert.match(app,/data-forecast-review=/,'Payment forecast must expose subscription review');
 console.log('DomAIn account UI smoke checks passed');
