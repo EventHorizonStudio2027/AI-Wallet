@@ -194,3 +194,14 @@ body{font-size:14px}
  .folder{padding:9px 5px}
  .ring{width:92px;height:92px}
 }
+
+/* DomAIn v65: understated forecast grouping and consistent compact controls */
+.forecast-dates{padding:11px 0 14px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.forecast-dates>strong{display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.forecast-date-chips{display:flex;gap:7px;flex-wrap:wrap}
+.forecast-date-chip{display:inline-flex;align-items:center;gap:8px;border:1px solid #344b79;background:#101e3c;border-radius:9px;padding:7px 9px;color:#b9c9e7;font-size:11px;font-variant-numeric:tabular-nums}
+.forecast-date-chip b{color:var(--text);font-size:12px}
+.card .secondary,.card .primary{transition:border-color .16s ease,background-color .16s ease,transform .16s ease}
+.card button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+@media(max-width:520px){.forecast-date-chip{flex:1 1 auto;justify-content:space-between}.forecast-dates{padding-top:7px}}
+@media(prefers-reduced-motion:reduce){.card .secondary,.card .primary{transition:none}}
