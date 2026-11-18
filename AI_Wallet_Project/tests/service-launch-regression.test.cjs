@@ -8,7 +8,9 @@ assert.match(app,/name:'Flow Music',domain:'www\.flowmusic\.app'.*url:'https:\/\
 assert.match(app,/function serviceLaunchUrl\(s\)/,'Service links must be normalized');
 assert.match(app,/url\.protocol!=='https:'/,'Only HTTPS service destinations are allowed');
 assert.match(app,/window\.location\.assign\(url\)/,'Provider navigation must use same-tab navigation, not popups');
-assert.match(app,/render\(\);openAccount\(selectedService\)/,'Top icons must open account setup without navigating away');
+assert.match(app,/if\(a\)\{page='accounts';render\(\)/,'Top icons with existing accounts must show account management');
+assert.match(app,/else\{render\(\);openAccount\(selectedService\)\}/,'Top icons with no accounts must open setup');
+assert.match(app,/go\('home'\);render\(\)/,'Switching account must refresh displayed account information');
 assert.match(app,/data-launch-service/,'AI directory must offer Open / Sign in');
 assert.match(app,/entry\.id==='flow'\|\|entry\.id==='flowmusic'/,'Existing saved Flow destinations must migrate');
 assert.match(app,/\$\$\('\[data-launch-service\]'\)\.forEach/,'Every service launch button must receive a handler');
