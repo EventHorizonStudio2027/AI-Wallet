@@ -7,8 +7,8 @@ assert.match(app,/name:'Flow',domain:'labs\.google'.*url:'https:\/\/labs\.google
 assert.match(app,/name:'Flow Music',domain:'www\.flowmusic\.app'.*url:'https:\/\/www\.flowmusic\.app\/'/,'Google Flow Music must have a separate website and favicon');
 assert.match(app,/function serviceLaunchUrl\(s\)/,'Service links must be normalized');
 assert.match(app,/url\.protocol!=='https:'/,'Only HTTPS service destinations are allowed');
-assert.match(app,/window\.open\(url,'_blank','noopener,noreferrer'\)/,'Login must open directly on the provider with opener isolation');
-assert.match(app,/launchService\(service\(selectedService\)\);render\(\)/,'Service strip cards must open the provider before rerendering');
+assert.match(app,/window\.location\.assign\(url\)/,'Provider navigation must use same-tab navigation, not popups');
+assert.match(app,/launchService\(service\(selectedService\)\);render\(\)/ ,'Service strip cards must open the provider before rerendering');
 assert.match(app,/data-launch-service/,'AI directory must offer Open / Sign in');
 assert.match(app,/entry\.id==='flow'\|\|entry\.id==='flowmusic'/,'Existing saved Flow destinations must migrate');
 assert.match(app,/\$\$\('\[data-launch-service\]'\)\.forEach/,'Every service launch button must receive a handler');
@@ -17,4 +17,7 @@ assert.match(app,/data-delservice="\$\{esc\(s\.id\)\}"/,'Custom service action i
 assert.match(app,/x\.files\.length>10000/,'Restored library must respect the same file limit as imports');
 assert.match(app,/\$\$\('\[data-service\]'\)\.forEach/,'Every home service card must receive a click handler');
 assert.match(app,/url\.hostname\.endsWith\('\.internal'\)/,'Internal hosts must not be accepted as sign-in destinations');
+assert.doesNotMatch(app,/\$\('\[data-service\]'\)\.forEach/,'Single-element service selector must not be used for multiple icons');
+assert.doesNotMatch(app,/\$\('\[data-launch-service\]'\)\.forEach/,'Single-element directory selector must not be used');
+assert.doesNotMatch(app,/\$\('\[data-addfor\]'\)\.forEach/,'Single-element Add Account selector must not be used');
 console.log('DomAIn service launch and Google Flow destination checks passed.');
