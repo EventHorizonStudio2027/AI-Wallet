@@ -214,3 +214,12 @@ body{font-size:14px}
 .forecast-missing-row span{min-width:0;overflow-wrap:anywhere}
 .forecast-missing-row button{flex-shrink:0}
 @media(max-width:520px){.forecast-missing{padding:10px 11px}.forecast-missing-row button{min-height:38px}}
+
+/* DomAIn v67: quieter forecast chips and responsive five-metric scorecard */
+.forecast-date-chip{gap:6px;flex-wrap:wrap}
+.forecast-date-chip small{color:var(--muted);font-size:10px;white-space:nowrap}
+#paymentForecastSummary .stats{grid-template-columns:repeat(5,minmax(0,1fr))}
+#paymentForecastSummary .stat{min-width:0}
+#paymentForecastSummary .stat strong{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+@media(max-width:900px){#paymentForecastSummary .stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:540px){#paymentForecastSummary .stats{grid-template-columns:repeat(2,minmax(0,1fr))}#paymentForecastSummary .stat{padding:10px}}
