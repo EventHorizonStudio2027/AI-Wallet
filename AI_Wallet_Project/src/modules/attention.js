@@ -5,8 +5,11 @@ function overview(accounts,today){
  const payments=global.AIWalletModules.paymentForecast.summary(accounts,today,30);
  const rows=[];
  for(const t of trials.entries){
-  if(t.daysToCancel===null){rows.push({kind:'review',accountId:t.accountId,label:t.label,date:null,days:null,message:'Cancellation deadline missing — review trial',priority:1});continue}
-  if(t.issues.length){rows.push({kind:'review',accountId:t.accountId,label:t.label,date:t.cancelBy,days:t.daysToCancel,message:'Trial dates need review: '+t.issues.join('; '),priority:1})}
+  const issues=t.issues||[];
+  if(issues.length){
+   rows.push({kind:'review',accountId:t.accountId,label:t.label,date:t.cancelBy,days:t.daysToCancel,message:'Trial details need review: '+issues.join('; '),priority:1});
+  }
+  if(t.daysToCancel===null)continue;
   if(t.daysToCancel>14)continue;
   rows.push({kind:'trial',accountId:t.accountId,label:t.label,date:t.cancelBy,days:t.daysToCancel,message:t.daysToCancel<0?'Cancellation deadline passed — verify status':t.daysToCancel===0?'Cancel-by deadline today':`Cancel within ${t.daysToCancel} day(s)`,priority:t.daysToCancel<0?0:t.daysToCancel<=2?1:2});
  }
