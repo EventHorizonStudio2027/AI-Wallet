@@ -33,4 +33,8 @@ const earlyReport=window.AIWalletModules.attention.overview([early],'2026-11-18'
 assert.ok(earlyReport.rows.some(r=>r.kind==='trial'&&r.days===20),'Custom 30-day cancellation lead time must surface early alerts');
 const defaultReport=window.AIWalletModules.attention.overview([{...early,alertDays:7}],'2026-11-18');
 assert.ok(!defaultReport.rows.some(r=>r.kind==='trial'),'Default warning window should not show distant deadlines');
+const missingEndingSoon={id:'soonend',label:'Ends soon',trialEnabled:true,trialStatus:'active',trialEnd:'2026-11-19',cancelBy:'',billingCycle:'never'};
+const soonReport=window.AIWalletModules.attention.overview([missingEndingSoon],'2026-11-18');
+assert.ok(soonReport.rows.some(r=>r.kind==='trial_end'&&r.days===1),'Missing cancel-by date must not hide imminent trial end');
+assert.ok(soonReport.rows.some(r=>r.kind==='review'),'Unknown cancellation deadline must still trigger review');
 console.log('DomAIn attention regressions passed');
