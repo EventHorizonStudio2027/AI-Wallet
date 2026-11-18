@@ -115,3 +115,28 @@ button{touch-action:manipulation}button:disabled{opacity:.5;cursor:not-allowed}
 .profile-logo .logo{width:46px;height:46px;min-width:46px}
 .service .logo{margin:0 auto 8px}
 @media(prefers-reduced-motion:reduce){.logo .service-logo-image{transition:none}}
+
+/* DomAIn v60: compact, touch-friendly account hub and provider directory */
+#accountsList .file-row,#appsList .file-row{display:flex;align-items:center;gap:14px;min-width:0}
+#accountsList .file-info,#appsList .file-info{flex:1 1 220px;min-width:0}
+#accountsList .file-info b,#appsList .file-info b{display:block;overflow-wrap:anywhere}
+#accountsList .file-info small,#appsList .file-info small{display:block;overflow-wrap:anywhere}
+#accountsList .file-actions,#appsList .file-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap;min-width:0}
+#accountsList .file-actions button,#appsList .file-actions button{min-height:40px;white-space:normal;line-height:1.2}
+#accountsList [data-account-toggle-filter][aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan);background:#12b4e41a}
+#accountsList [data-switch][aria-current="true"]{color:var(--green);border-color:#50e2b066;opacity:1}
+#accountsList .empty{padding:28px 16px;line-height:1.55}
+#accountsList button:focus-visible,#appsList button:focus-visible,.service:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+@media(max-width:720px){
+ #accountsList .file-row,#appsList .file-row{align-items:flex-start;flex-wrap:wrap;padding:14px 12px;gap:10px}
+ #accountsList .profile-logo{flex:0 0 auto}
+ #accountsList .file-info,#appsList .file-info{flex:1 1 170px}
+ #accountsList .file-actions,#appsList .file-actions{flex:1 1 100%;justify-content:flex-start}
+ #accountsList .file-actions button,#appsList .file-actions button{flex:1 1 auto;min-width:95px;min-height:44px}
+}
+@media(max-width:390px){
+ #accountsList .file-actions button,#appsList .file-actions button{font-size:12px;min-width:0}
+}
+@media(prefers-reduced-motion:reduce){
+ #accountsList button,#appsList button{scroll-behavior:auto;transition:none}
+}
