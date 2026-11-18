@@ -28,4 +28,9 @@ assert.equal(farReport.rows.length,0,'Valid distant trials should not clutter th
 const overdue={id:'overdue',label:'Overdue',trialEnabled:true,trialStatus:'active',trialEnd:'2026-11-17',cancelBy:'2026-11-16',billingCycle:'never'};
 const overdueReport=window.AIWalletModules.attention.overview([overdue],'2026-11-18');
 assert.ok(overdueReport.rows.some(r=>r.kind==='trial'&&r.days<0),'Past cancellation deadlines must remain visible until status is reviewed');
+const early={id:'early',label:'Early warning',trialEnabled:true,trialStatus:'active',trialEnd:'2026-12-10',cancelBy:'2026-12-08',alertDays:30,billingCycle:'never'};
+const earlyReport=window.AIWalletModules.attention.overview([early],'2026-11-18');
+assert.ok(earlyReport.rows.some(r=>r.kind==='trial'&&r.days===20),'Custom 30-day cancellation lead time must surface early alerts');
+const defaultReport=window.AIWalletModules.attention.overview([{...early,alertDays:7}],'2026-11-18');
+assert.ok(!defaultReport.rows.some(r=>r.kind==='trial'),'Default warning window should not show distant deadlines');
 console.log('DomAIn attention regressions passed');
