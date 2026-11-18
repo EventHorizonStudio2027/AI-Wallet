@@ -11,6 +11,12 @@ assert.match(app,/window\.location\.assign\(url\)/,'Provider navigation must use
 assert.match(app,/if\(a\)\{page='accounts';render\(\)/,'Top icons with existing accounts must show account management');
 assert.match(app,/else\{render\(\);openAccount\(selectedService\)\}/,'Top icons with no accounts must open setup');
 assert.match(app,/go\('home'\);render\(\)/,'Switching account must refresh displayed account information');
+assert.match(app,/const chosen=state\.accounts\.find\(a=>a\.id===b\.dataset\.switch\)/,'Account switching must resolve a valid profile');
+assert.match(app,/data-open-account-service/,'Account profiles must provide direct provider navigation');
+assert.match(app,/data-switch="\$\{esc\(a\.id\)\}"/,'Account action IDs must be escaped');
+assert.match(app,/aria-current="true"/,'Active account must be indicated accessibly');
+assert.match(app,/\$\$\('\[data-open-account-service\]'\)\.forEach/,'Every provider action must be wired');
+
 assert.match(app,/data-launch-service/,'AI directory must offer Open / Sign in');
 assert.match(app,/entry\.id==='flow'\|\|entry\.id==='flowmusic'/,'Existing saved Flow destinations must migrate');
 assert.match(app,/\$\$\('\[data-launch-service\]'\)\.forEach/,'Every service launch button must receive a handler');
