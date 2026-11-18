@@ -49,4 +49,9 @@ assert.equal(sameDay.byDate[0].count,2,'Payment day summary must show number of 
 const week=window.AIWalletModules.paymentForecast.summary([{id:'w',label:'Within week',billingCycle:'monthly',renewalDate:'2026-11-20',cost:7.15},{id:'l',label:'Later',billingCycle:'monthly',renewalDate:'2026-11-27',cost:9.25}],'2026-11-18',14);
 assert.equal(week.dueSoonTotal,7.15,'Seven-day forecast must exclude later payments');
 assert.equal(week.dueSoonDays,1,'Seven-day forecast should count distinct payment dates');
+assert.equal(sameDay.nextPayment.date,'2026-11-25','Next payment date should match earliest forecast date');
+assert.equal(sameDay.nextPayment.amount,12,'Next payment amount must aggregate same-day renewals');
+assert.equal(sameDay.nextPayment.count,2,'Next payment count must reflect grouped renewals');
+const noPayments=window.AIWalletModules.paymentForecast.summary([],'2026-11-18',30);
+assert.equal(noPayments.nextPayment,null,'Empty forecast must not invent a next payment');
 console.log('DomAIn attention regressions passed');
