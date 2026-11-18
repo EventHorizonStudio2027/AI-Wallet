@@ -362,7 +362,7 @@ function renderPaymentForecast(){
   const result=window.AIWalletModules.paymentForecast.summary(state.accounts,localDateKey(),Number(select.value));
   summary.innerHTML=`<div class="stats" style="margin:12px 0"><div class="stat"><small>PROJECTED PAYMENTS</small><strong>${result.count}</strong></div><div class="stat"><small>ESTIMATED TOTAL (USD)</small><strong>${money(result.total)}</strong></div><div class="stat"><small>ACCOUNTS</small><strong>${result.accounts}</strong></div></div>`;
   list.innerHTML=result.events.length?result.events.slice(0,40).map(e=>`<div class="history-item"><div><b>${esc(e.label)}</b><small>${esc(e.date)} · ${esc(e.cycle)} · scheduled estimate</small></div><div class="file-actions"><strong>${money(e.amount)}</strong><button class="secondary" type="button" data-forecast-review="${esc(e.accountId)}" aria-label="Review subscription for ${esc(e.label)}">Review</button></div></div>`).join('')+(result.events.length>40?`<p class="tiny muted">Showing 40 of ${result.events.length} projected payments; totals include all.</p>`:''):'<div class="empty">No scheduled paid renewals with valid dates in this window.</div>';
- $('[data-forecast-review]').forEach(button=>button.onclick=()=>editAccount(button.dataset.forecastReview));
+ $$('[data-forecast-review]').forEach(button=>button.onclick=()=>editAccount(button.dataset.forecastReview));
  }catch(error){summary.textContent='Forecast unavailable';list.textContent='Check your saved subscription dates.'}
 }
 document.querySelector('#paymentForecastWindow')?.addEventListener('change',renderPaymentForecast);
