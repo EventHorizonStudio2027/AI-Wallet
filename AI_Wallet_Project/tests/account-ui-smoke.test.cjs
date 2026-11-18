@@ -15,5 +15,6 @@ assert.match(app,/accountProviderOnly\?state\.accounts\.filter\(a=>a\.serviceId=
 assert.match(app,/accountProviderOnly=!accountProviderOnly;renderAccounts\(\)/,'Provider filter must update account list');
 assert.match(app,/No profiles for this provider/,'Provider-specific empty state must be visible');
 assert.match(app,/data-manage-service=/,'AI directory must expose profile management');
-assert.match(app,/accountProviderOnly=true;go\('accounts'\);render\(\)/,'Directory must open selected provider account hub');
+assert.match(app,/accountProviderOnly=true;go\('accounts',\{preserveAccountFilter:true\}\);render\(\)/,'Directory must preserve selected provider filter');
+assert.match(app,/if\(p==='accounts'&&!options\.preserveAccountFilter\)accountProviderOnly=false/,'Normal Accounts navigation must reset the provider filter');
 console.log('DomAIn account UI smoke checks passed');
