@@ -44,4 +44,6 @@ assert.ok(forecast.events.every(e=>e.accountId!=='no-renewal'),'Subscriptions wi
 const sameDay=window.AIWalletModules.paymentForecast.summary([{id:'a',label:'A',billingCycle:'monthly',renewalDate:'2026-11-25',cost:5.25},{id:'b',label:'B',billingCycle:'monthly',renewalDate:'2026-11-25',cost:6.75}],'2026-11-18',14);
 assert.equal(sameDay.byDate.length,1,'Same-day payments should group into one date');
 assert.equal(sameDay.byDate[0].total,12,'Same-day totals must sum in cents');
+assert.equal(forecast.missingDateAccounts[0].accountId,'no-renewal','Missing renewal records must link to the correct profile');
+assert.equal(sameDay.byDate[0].count,2,'Payment day summary must show number of renewals');
 console.log('DomAIn attention regressions passed');
