@@ -223,3 +223,10 @@ body{font-size:14px}
 #paymentForecastSummary .stat strong{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 @media(max-width:900px){#paymentForecastSummary .stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:540px){#paymentForecastSummary .stats{grid-template-columns:repeat(2,minmax(0,1fr))}#paymentForecastSummary .stat{padding:10px}}
+
+/* DomAIn v68: restrained next-payment summary for faster scanning */
+.forecast-next{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 12px;margin:8px 0 10px;background:#132748;border:1px solid #335785;border-radius:11px}
+.forecast-next span{font-size:11px;color:var(--muted);font-weight:600}
+.forecast-next strong{font-size:13px;letter-spacing:-.15px;font-variant-numeric:tabular-nums}
+.forecast-next small{margin-left:auto;font-size:11px;color:#b4d7f7}
+@media(max-width:560px){.forecast-next{gap:5px 10px;padding:10px}.forecast-next span{flex:1 1 100%}.forecast-next small{margin-left:0}}
