@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const app=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
-for(const selector of ['service','launch-service','addfor','switch','edit','open-account-service','account-add-selected','account-open-selected','account-toggle-filter']){
+for(const selector of ['service','launch-service','addfor','switch','edit','open-account-service','account-add-selected','account-open-selected','account-toggle-filter','manage-service']){
  assert.doesNotMatch(app,new RegExp('(?<!\\$)\\$\\(\\x27\\[data-'+selector+'\\]\\x27\\)\\.(?:forEach|find)'),'Single-node selector incorrectly used for '+selector);
  assert.match(app,new RegExp('\\$\\$\\(\\x27\\[data-'+selector+'\\]\\x27\\)\\.(?:forEach|find)'),'Missing multi-node selector for '+selector);
 }
@@ -14,4 +14,6 @@ assert.match(app,/a\.id===selectedAccount&&a\.serviceId===selectedService/,'Acti
 assert.match(app,/accountProviderOnly\?state\.accounts\.filter\(a=>a\.serviceId===selectedService\):state\.accounts/,'Provider filter must restrict displayed accounts');
 assert.match(app,/accountProviderOnly=!accountProviderOnly;renderAccounts\(\)/,'Provider filter must update account list');
 assert.match(app,/No profiles for this provider/,'Provider-specific empty state must be visible');
+assert.match(app,/data-manage-service=/,'AI directory must expose profile management');
+assert.match(app,/accountProviderOnly=true;go\('accounts'\);render\(\)/,'Directory must open selected provider account hub');
 console.log('DomAIn account UI smoke checks passed');
