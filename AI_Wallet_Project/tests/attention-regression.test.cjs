@@ -54,4 +54,9 @@ assert.equal(sameDay.nextPayment.amount,12,'Next payment amount must aggregate s
 assert.equal(sameDay.nextPayment.count,2,'Next payment count must reflect grouped renewals');
 const noPayments=window.AIWalletModules.paymentForecast.summary([],'2026-11-18',30);
 assert.equal(noPayments.nextPayment,null,'Empty forecast must not invent a next payment');
+const customThree={id:'three',label:'Three day warning',trialEnabled:true,trialStatus:'active',trialEnd:'2026-11-28',cancelBy:'2026-11-25',alertDays:3,billingCycle:'never'};
+assert.ok(!window.AIWalletModules.attention.overview([customThree],'2026-11-18').rows.some(r=>r.kind==='trial'),'Three-day warning must not show a cancellation seven days away');
+assert.ok(window.AIWalletModules.attention.overview([customThree],'2026-11-22').rows.some(r=>r.kind==='trial'),'Three-day warning must show cancellation three days away');
+const blankWarning=window.AIWalletModules.trialTimeline.trialTimeline([{...customThree,alertDays:''}],'2026-11-18');
+assert.equal(blankWarning.entries[0].alertDays,7,'Blank alert setting must default to seven days');
 console.log('DomAIn attention regressions passed');
