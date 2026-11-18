@@ -10,7 +10,7 @@ function overview(accounts,today){
    rows.push({kind:'review',accountId:t.accountId,label:t.label,date:t.cancelBy,days:t.daysToCancel,message:'Trial details need review: '+issues.join('; '),priority:1});
   }
   if(t.daysToCancel===null)continue;
-  if(t.daysToCancel>14)continue;
+  if(t.daysToCancel>Math.max(14,t.alertDays??7))continue;
   rows.push({kind:'trial',accountId:t.accountId,label:t.label,date:t.cancelBy,days:t.daysToCancel,message:t.daysToCancel<0?'Cancellation deadline passed — verify status':t.daysToCancel===0?'Cancel-by deadline today':`Cancel within ${t.daysToCancel} day(s)`,priority:t.daysToCancel<0?0:t.daysToCancel<=2?1:2});
  }
  for(const p of payments.events){
