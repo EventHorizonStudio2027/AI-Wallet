@@ -8,8 +8,10 @@ assert.match(app,/name:'Flow Music',domain:'www\.flowmusic\.app'.*url:'https:\/\
 assert.match(app,/function serviceLaunchUrl\(s\)/,'Service links must be normalized');
 assert.match(app,/url\.protocol!=='https:'/,'Only HTTPS service destinations are allowed');
 assert.match(app,/window\.location\.assign\(url\)/,'Provider navigation must use same-tab navigation, not popups');
-assert.match(app,/if\(a\)\{page='accounts';render\(\)/,'Top icons with existing accounts must show account management');
-assert.match(app,/else\{render\(\);openAccount\(selectedService\)\}/,'Top icons with no accounts must open setup');
+
+
+assert.match(app,/accountProviderOnly=true;page='accounts';render\(\)/,'Top icons must open provider-filtered account hub');
+assert.match(app,/existing\?\.id\|\|first\?\.id\|\|''/,'Top icons must preserve the selected provider account');
 assert.match(app,/go\('home'\);render\(\)/,'Switching account must refresh displayed account information');
 assert.match(app,/const chosen=state\.accounts\.find\(a=>a\.id===b\.dataset\.switch\)/,'Account switching must resolve a valid profile');
 assert.match(app,/data-open-account-service/,'Account profiles must provide direct provider navigation');
