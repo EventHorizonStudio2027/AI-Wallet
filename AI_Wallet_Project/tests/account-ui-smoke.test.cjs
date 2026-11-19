@@ -18,4 +18,7 @@ assert.match(app,/data-manage-service=/,'AI directory must expose profile manage
 assert.match(app,/accountProviderOnly=true;go\('accounts',\{preserveAccountFilter:true\}\);render\(\)/,'Directory must preserve selected provider filter');
 assert.match(app,/if\(p==='accounts'&&!options\.preserveAccountFilter\)accountProviderOnly=false/,'Normal Accounts navigation must reset the provider filter');
 assert.match(app,/data-forecast-review=/,'Payment forecast must expose subscription review');
+assert.match(app,/homeAttentionExpanded\?report\.rows\.length:6/,'Dashboard must render all alerts when expanded');
+assert.match(app,/data-attention-expand/,'Dashboard must provide an expand or collapse control');
+assert.match(app,/homeAttentionExpanded=!homeAttentionExpanded;renderHomeAttention\(\)/,'Alert expansion must rerender the dashboard');
 console.log('DomAIn account UI smoke checks passed');
