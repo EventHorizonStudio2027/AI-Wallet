@@ -224,6 +224,7 @@ function driveControls(){
  $('#driveConnectBtn').disabled=driveBusy;
  $('#driveSyncBtn').disabled=driveBusy||!ready;
  $('#driveBackupBtn').disabled=driveBusy||!ready;
+ $('#driveRestoreBtn').disabled=driveBusy||!ready;
  $('#driveDisconnectBtn').disabled=driveBusy||!driveToken;
  return ready;
 }
@@ -300,8 +301,25 @@ $('#driveBackupBtn').onclick=async()=>{
   window.AIWalletModules.backup.assertBackupSize(blob.size);
   const filename='domain-backup-'+new Date().toISOString().replace(/[.:]/g,'-')+'.json';
   const result=await driveAPI().uploadBackup(driveToken,blob,filename);
-  driveStatus('Private Google Drive backup saved: '+result.name+' ('+formatSize(blob.size)+'). Restore is not yet available in-app.');
+  driveStatus('Private Google Drive backup saved: '+result.name+' ('+formatSize(blob.size)+'). Use Download latest backup to retrieve it for restore.');
  }catch(error){console.warn('Google Drive backup failed',error);driveStatus('Backup failed: '+String(error.message||error).slice(0,160))}
+ finally{driveBusy=false;driveControls()}
+};
+$('#driveRestoreBtn').onclick=async()=>{
+ if(!driveControls()||driveBusy)return;
+ driveBusy=true;driveControls();driveStatus('Finding your latest private Drive backup…');
+ try{
+  const result=await driveAPI().listBackups(driveToken);
+  const backups=(result.files||[]).sort((a,b)=>String(b.createdTime||'').localeCompare(String(a.createdTime||'')));
+  if(!backups.length){driveStatus('No DomAIn backups found in Google Drive app data.');return}
+  const latest=backups[0];
+  const blob=await driveAPI().download(driveToken,latest.id);
+  if(blob.size>100*1024*1024)throw Error('Backup exceeds the supported 100 MB limit');
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=window.AIWalletModules.fileSafety.safeFilename(latest.name||'domain-backup.json');
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
+  driveStatus('Latest backup downloaded. Use DomAIn’s existing Import Backup control to restore it after reviewing the file.');
+ }catch(error){console.warn('Drive backup recovery failed',error);driveStatus('Recovery download failed: '+String(error.message||error).slice(0,145))}
  finally{driveBusy=false;driveControls()}
 };
 driveControls();
