@@ -2,7 +2,7 @@
 'use strict';
 function overview(accounts,today){
  const trials=global.AIWalletModules.trialTimeline.trialTimeline(accounts,today);
- const payments=global.AIWalletModules.paymentForecast.summary(accounts,today,30);
+ const payments=global.AIWalletModules.paymentForecast.summary(accounts,today,90);
  const rows=[];
  for(const t of trials.entries){
   const issues=t.issues||[];
@@ -22,7 +22,7 @@ function overview(accounts,today){
   rows.push({kind:'payment',accountId:p.accountId,label:p.label,date:p.date,days,amount:p.amount,message:'Estimated subscription renewal',priority:3});
  }
  rows.sort((a,b)=>a.priority-b.priority||(a.days??999)-(b.days??999)||a.label.localeCompare(b.label));
- return {trials:trials.active,urgentTrials:trials.urgent,missingTrials:trials.missing,projected30:payments.total,paymentCount30:payments.count,rows,hidden:Math.max(0,rows.length-6)};
+ return {trials:trials.active,urgentTrials:trials.urgent,missingTrials:trials.missing,projected30:Math.round(payments.events.filter(p=>global.AIWalletModules.billing.daysUntil(p.date,today)<30).reduce((sum,p)=>sum+Math.round(p.amount*100),0))/100,paymentCount30:payments.events.filter(p=>global.AIWalletModules.billing.daysUntil(p.date,today)<30).length,rows,hidden:Math.max(0,rows.length-6)};
 }
 global.AIWalletModules.attention=Object.freeze({overview});
 })(window);
