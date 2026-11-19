@@ -2,6 +2,7 @@
 'use strict';
 const API='https://www.googleapis.com/drive/v3/files';
 const UPLOAD='https://www.googleapis.com/upload/drive/v3/files';
+const MAX_PAGES=100;
 const SCOPES='https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.appdata';
 function assertToken(token){if(typeof token!=='string'||!token.trim())throw Error('Google Drive authorization required');return token}
 async function request(token,url,options={}){
@@ -20,13 +21,35 @@ async function listFolder(token,folderId,pageToken=''){
  return response.json();
 }
 async function listAllFolderFiles(token,folderId,max=5000){
- const files=[];let next='';
+ if(!Number.isSafeInteger(max)||max<1||max>5000)throw Error('Invalid sync file limit');
+ const files=[];let next='';const visited=new Set();let pages=0;
  do{
+  if(visited.has(next)||++pages>MAX_PAGES)throw Error('Google Drive pagination loop or page limit reached');
+  visited.add(next);
   const result=await listFolder(token,folderId,next);
   for(const file of result.files||[]){if(file.mimeType!=='application/vnd.google-apps.folder')files.push(file);if(files.length>max)throw Error('Folder exceeds the 5,000 file sync limit')}
+  if(result.nextPageToken!=null&&typeof result.nextPageToken!=='string')throw Error('Invalid Google Drive page token');
   next=result.nextPageToken||'';
  }while(next);
  return files;
+}
+function fingerprint(file){
+ if(!file||typeof file!=='object')throw Error('Invalid Drive file');
+ const id=String(file.id||'');if(!/^[A-Za-z0-9_-]{5,200}$/.test(id))throw Error('Invalid Drive file ID');
+ return 'google-drive:'+id;
+}
+function planIncrementalSync(remoteFiles,existingFiles=[]){
+ if(!Array.isArray(remoteFiles)||!Array.isArray(existingFiles))throw Error('Invalid sync inventory');
+ const existing=new Map(existingFiles.filter(Boolean).map(f=>[String(f.sourceKey||''),f]));
+ const seen=new Set(),added=[],changed=[],unchanged=[];
+ for(const file of remoteFiles){
+  const key=fingerprint(file);if(seen.has(key))continue;seen.add(key);
+  const previous=existing.get(key);
+  if(!previous)added.push(file);
+  else if(String(previous.modifiedTime||'')!==String(file.modifiedTime||'')||String(previous.checksum||'')!==String(file.md5Checksum||''))changed.push(file);
+  else unchanged.push(file);
+ }
+ return {added,changed,unchanged};
 }
 async function download(token,fileId){
  if(!/^[A-Za-z0-9_-]{5,200}$/.test(fileId))throw Error('Invalid Google Drive file ID');
@@ -48,5 +71,5 @@ async function uploadBackup(token,blob,name){
  return response.json();
 }
 global.AIWalletModules=global.AIWalletModules||{};
-global.AIWalletModules.driveSync=Object.freeze({SCOPES,listFolder,listAllFolderFiles,download,listBackups,uploadBackup});
+global.AIWalletModules.driveSync=Object.freeze({SCOPES,listFolder,listAllFolderFiles,fingerprint,planIncrementalSync,download,listBackups,uploadBackup});
 })(window);
