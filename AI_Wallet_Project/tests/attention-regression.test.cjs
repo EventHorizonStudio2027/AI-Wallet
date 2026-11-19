@@ -21,7 +21,7 @@ assert.ok(!report.rows.some(r=>r.kind==='payment'&&r.days<0),'Past payments must
 const missing={id:'missing',label:'Missing deadline',trialEnabled:true,trialStatus:'active',trialEnd:'2026-11-25',cancelBy:'',billingCycle:'never'};
 const missingReport=window.AIWalletModules.attention.overview([missing],'2026-11-18');
 assert.equal(missingReport.rows.filter(r=>r.accountId==='missing'&&r.kind==='review').length,1,'Missing cancel-by date should create exactly one review item');
-assert.ok(missingReport.rows[0].message.includes('Cancellation deadline missing'),'Missing deadline must be explained');
+assert.ok(missingReport.rows.some(r=>r.kind==='review'&&r.message.includes('Cancellation deadline missing')),'Missing deadline must be explained');
 const far={id:'far',label:'Far trial',trialEnabled:true,trialStatus:'active',trialStart:'2026-11-01',trialEnd:'2027-01-15',cancelBy:'2027-01-10',trialDays:75,billingCycle:'never'};
 const farReport=window.AIWalletModules.attention.overview([far],'2026-11-18');
 assert.equal(farReport.rows.length,0,'Valid distant trials should not clutter the urgent dashboard');
