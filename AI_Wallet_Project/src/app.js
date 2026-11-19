@@ -469,7 +469,9 @@ async function addFiles(files,{source='manual-import'}={}){
 $('#dropzone').ondragover=e=>{e.preventDefault();$('#dropzone').style.borderColor='#9b8cff'};$('#dropzone').ondrop=e=>{e.preventDefault();$('#dropzone').style.borderColor='';addFiles([...e.dataTransfer.files])};$('#dropzone').ondragleave=()=>{$('#dropzone').style.borderColor=''};
 ['fileSearch','fileProvider','fileType','fileStorage','fileSort'].forEach(id=>$('#'+id).addEventListener(id==='fileSearch'?'input':'change',()=>{if(id==='fileType')activeFolder=$('#fileType').value;renderFiles()}));
 async function downloadFile(id){let f=state.files.find(x=>x.id===id);if(!f)return;try{let blob=await getFileBlob(id);if(!blob&&f.data)blob=dataUrlToBlob(f.data);if(!blob)throw Error('File data not found');let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=window.AIWalletModules.fileSafety.safeFilename(f.name);a.style.display='none';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}catch(e){toast('Could not retrieve this file from browser storage')}}let activeMediaPreviewUrl=null;
+let mediaPreviewRequest=0;
 function closeMediaPreview(){
+ mediaPreviewRequest++;
  const dialog=$('#mediaPreviewDialog');
  if(dialog?.open)dialog.close();
  $('#mediaPreviewContent')?.replaceChildren();
@@ -483,9 +485,11 @@ async function previewMediaInline(f){
  const type=f.category==='Videos'?'video':f.category==='Audio'?'audio':null;
  if(!type)return false;
  if(f.storageMode==='remote'){toast('Linked media must be downloaded before preview');return true}
+ const request=++mediaPreviewRequest;
  try{
   let blob=await getFileBlob(f.id);
   if(!blob&&f.data)blob=dataUrlToBlob(f.data);
+  if(request!==mediaPreviewRequest)return true;
   if(!blob)throw Error('File contents unavailable');
   if(!blob.type.toLowerCase().startsWith(type+'/')||!window.AIWalletModules.fileSafety.canInlinePreview({name:f.name,type:blob.type}))throw Error('Unsupported media format');
   closeMediaPreview();
@@ -498,7 +502,7 @@ async function previewMediaInline(f){
   $('#mediaPreviewMeta').textContent=(type==='video'?'Video':'Audio')+' · '+formatSize(blob.size);
   $('#mediaPreviewContent').replaceChildren(player);
   dialog.showModal();
- }catch(error){toast('Media preview unavailable; try saving the file')}
+ }catch(error){if(request===mediaPreviewRequest||request+1===mediaPreviewRequest)toast('Media preview unavailable; try saving the file')}
  return true;
 }
 async function previewFile(id){
