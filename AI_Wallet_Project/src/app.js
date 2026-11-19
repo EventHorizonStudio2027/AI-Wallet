@@ -338,6 +338,8 @@ $('#driveBackupBtn').onclick=async()=>{
    if(processed%10===0||processed===state.files.length)driveStatus('Preparing backup: '+processed+' of '+state.files.length+' files.');
   }
   if(missing)throw Error(missing+' file(s) have missing content. Backup canceled to avoid incomplete protection.');
+  driveStatus('Validating backup structure before upload…');
+  window.AIWalletModules.backup.validateBackup(backup);
   const blob=new Blob([JSON.stringify(backup)],{type:'application/json'});
   window.AIWalletModules.backup.assertBackupSize(blob.size);
   const filename='domain-backup-'+new Date().toISOString().replace(/[.:]/g,'-')+'.json';
