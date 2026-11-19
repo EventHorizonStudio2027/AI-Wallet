@@ -36,4 +36,7 @@ assert.match(app,/source:'manual-import',storageMode:'local'/,'Manual import mus
 assert.match(app,/existing\.checksum===checksum&&existing\.size===f\.size/,'Import must detect matching content checksums');
 assert.match(app,/duplicates\+\+;continue/,'Import must skip duplicates without storing another blob');
 assert.match(app,/Stored · this browser/,'Library rows must disclose local storage');
+assert.match(app,/if\(state\.files\.length>=10000\)throw Error/,'Unique-file quota must be checked after duplicate detection');
+assert.match(app,/catch\(hashError\)/,'Checksum failure must not block a valid import');
+assert.match(app,/files\.filter\(f=>f\.storageMode!=='remote'\)\.length\+' local'/,'Library count must disclose local file totals');
 console.log('DomAIn account UI smoke checks passed');
