@@ -1,6 +1,6 @@
 /* AI Wallet offline shell. Wallet records are never written to Cache Storage. */
 const CACHE_PREFIX='ai-wallet-shell-';
-const CACHE=CACHE_PREFIX+'domain-v77';
+const CACHE=CACHE_PREFIX+'domain-v78';
 const SHELL=['./','./index.html','./styles/app.css','./src/app.js','./src/modules/creator.js','./src/modules/revenue-planning.js','./src/modules/reconciliation-review.js','./src/modules/payout-import.js','./src/modules/data-health.js','./src/modules/collections.js','./src/modules/intelligence.js','./src/modules/billing.js','./src/modules/reminders.js','./src/modules/payment-forecast.js','./src/modules/trial-timeline.js','./src/modules/attention.js','./src/modules/calendar-export.js','./src/modules/subscription-audit.js','./src/modules/analytics.js','./src/modules/memory.js','./src/modules/accounts.js','./src/modules/files.js','./src/modules/storage.js','./src/modules/backup.js','./src/modules/file-safety.js','./src/modules/events.js','./manifest.webmanifest','./assets/ai-wallet-icon.svg','./assets/flow-icon.svg','./assets/flow-music-icon.svg'];
 const SHELL_PATHS=new Set(SHELL.map(path=>new URL(path,self.registration.scope).pathname));
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
