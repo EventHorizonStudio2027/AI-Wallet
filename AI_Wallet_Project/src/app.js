@@ -218,7 +218,7 @@ updateWatchedFolderUI();
 // Google Drive OAuth: access tokens are session-only and never persisted.
 let driveToken='',driveTokenExpires=0,driveBusy=false,driveClient=null;
 const driveAPI=()=>window.AIWalletModules.driveSync;
-function driveStatus(message){const status=$('#driveSyncStatus');status.textContent=message;const connected=!!driveToken&&Date.now()<driveTokenExpires;status.dataset.state=connected?'connected':/failed|did not|error|blocked|invalid/i.test(message)?'error':'pending';const button=$('#driveConnectBtn');button.textContent=connected?'✓ Google Drive connected':'Connect Google Drive';button.setAttribute('aria-label',connected?'Google Drive connected for this session':'Connect Google Drive')}
+function driveStatus(message){const status=$('#driveSyncStatus');status.textContent=message;const connected=!!driveToken&&Date.now()<driveTokenExpires;status.dataset.state=/failed|did not|error|blocked|invalid|expired|stopped|missing|exceeds|canceled|could not|not found|empty/i.test(message)?'error':/^(?:✓|Drive import complete)/.test(message)?'success':connected?'connected':'pending';const button=$('#driveConnectBtn');button.textContent=connected?'✓ Google Drive connected':'Connect Google Drive';button.setAttribute('aria-label',connected?'Google Drive connected for this session':'Connect Google Drive')}
 function driveControls(){
  const ready=!!driveToken&&Date.now()<driveTokenExpires;
  $('#driveConnectBtn').disabled=driveBusy||ready;
@@ -227,7 +227,7 @@ function driveControls(){
  $('#driveBackupBtn').disabled=driveBusy||!ready;
  $('#driveRestoreBtn').disabled=driveBusy||!ready;
  $('#driveDisconnectBtn').disabled=driveBusy||!driveToken;
- if(!ready&&driveToken&&Date.now()>=driveTokenExpires){driveToken='';driveTokenExpires=0;driveStatus('Google Drive authorization expired. Connect again to import files or save a backup.');}
+ if(!ready&&driveToken&&Date.now()>=driveTokenExpires){driveToken='';driveTokenExpires=0;driveStatus('Google Drive authorization expired. Connect again to import files or save a backup.');$('#driveDisconnectBtn').disabled=true;}
  return ready;
 }
 let googleIdentityLoading=null;
