@@ -59,4 +59,12 @@ assert.ok(!window.AIWalletModules.attention.overview([customThree],'2026-11-18')
 assert.ok(window.AIWalletModules.attention.overview([customThree],'2026-11-22').rows.some(r=>r.kind==='trial'),'Three-day warning must show cancellation three days away');
 const blankWarning=window.AIWalletModules.trialTimeline.trialTimeline([{...customThree,alertDays:''}],'2026-11-18');
 assert.equal(blankWarning.entries[0].alertDays,7,'Blank alert setting must default to seven days');
+const renewalAlerts=[{id:'renewal',label:'Renewal lead',billingCycle:'monthly',renewalDate:'2026-12-08',cost:12,alertDays:30}];
+assert.ok(window.AIWalletModules.attention.overview(renewalAlerts,'2026-11-18').rows.some(r=>r.kind==='payment'),'30-day renewal alert should show payment 20 days away');
+assert.ok(!window.AIWalletModules.attention.overview([{...renewalAlerts[0],alertDays:7}],'2026-11-18').rows.some(r=>r.kind==='payment'),'Seven-day renewal alert should not appear 20 days early');
+assert.ok(!window.AIWalletModules.attention.overview([{...renewalAlerts[0],alertDays:0}],'2026-11-18').rows.some(r=>r.kind==='payment'),'Zero-day renewal alert should not appear before due date');
+const longLead={...renewalAlerts[0],renewalDate:'2027-01-17',alertDays:90};
+const longLeadOverview=window.AIWalletModules.attention.overview([longLead],'2026-11-18');
+assert.ok(longLeadOverview.rows.some(r=>r.kind==='payment'),'90-day lead must include renewals beyond 30-day forecast');
+assert.equal(longLeadOverview.projected30,0,'30-day dashboard total must exclude payments beyond 30 days');
 console.log('DomAIn attention regressions passed');
