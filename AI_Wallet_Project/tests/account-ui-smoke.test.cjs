@@ -21,4 +21,8 @@ assert.match(app,/data-forecast-review=/,'Payment forecast must expose subscript
 assert.match(app,/homeAttentionExpanded\?report\.rows\.length:6/,'Dashboard must render all alerts when expanded');
 assert.match(app,/data-attention-expand/,'Dashboard must provide an expand or collapse control');
 assert.match(app,/homeAttentionExpanded=!homeAttentionExpanded;renderHomeAttention\(\)/,'Alert expansion must rerender the dashboard');
+assert.match(app,/\$\$\('\[data-home-attention\]'\)\.forEach/,'Dashboard review buttons must use multi-element selection');
+assert.match(app,/\$\$\('\[data-attention-expand\]'\)\.forEach/,'Dashboard expand buttons must use multi-element selection');
+assert.doesNotMatch(app,/(?<!\$)\$\('\[data-(?:home-attention|attention-expand)\]'\)\.forEach/,'Dashboard controls must not regress to single-element selectors');
+assert.match(app,/attention-type-\$\{esc\(row\.kind\)\}/,'Attention feed must visually distinguish alert types');
 console.log('DomAIn account UI smoke checks passed');
