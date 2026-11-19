@@ -13,6 +13,9 @@ function overview(accounts,today){
   if(t.daysToCancel>(t.alertDays??7))continue;
   rows.push({kind:'trial',accountId:t.accountId,label:t.label,date:t.cancelBy,days:t.daysToCancel,message:t.daysToCancel<0?'Cancellation deadline passed — verify status':t.daysToCancel===0?'Cancel-by deadline today':`Cancel within ${t.daysToCancel} day(s)`,priority:t.daysToCancel<0?0:t.daysToCancel<=2?1:2});
  }
+ for(const missing of payments.missingDateAccounts){
+  rows.push({kind:'renewal_review',accountId:missing.accountId,label:missing.label,date:null,days:null,message:'Paid subscription needs a renewal date for reliable forecasts and reminders',priority:2});
+ }
  const accountById=new Map((Array.isArray(accounts)?accounts:[]).filter(a=>a&&a.id).map(a=>[a.id,a]));
  for(const p of payments.events){
   const days=global.AIWalletModules.billing.daysUntil(p.date,today);
@@ -22,7 +25,7 @@ function overview(accounts,today){
   rows.push({kind:'payment',accountId:p.accountId,label:p.label,date:p.date,days,amount:p.amount,message:'Estimated subscription renewal',priority:3});
  }
  rows.sort((a,b)=>a.priority-b.priority||(a.days??999)-(b.days??999)||a.label.localeCompare(b.label));
- return {trials:trials.active,urgentTrials:trials.urgent,missingTrials:trials.missing,projected30:Math.round(payments.events.filter(p=>global.AIWalletModules.billing.daysUntil(p.date,today)<30).reduce((sum,p)=>sum+Math.round(p.amount*100),0))/100,paymentCount30:payments.events.filter(p=>global.AIWalletModules.billing.daysUntil(p.date,today)<30).length,rows,hidden:Math.max(0,rows.length-6)};
+ return {trials:trials.active,urgentTrials:trials.urgent,missingTrials:trials.missing,missingRenewals:payments.missingDates,projected30:Math.round(payments.events.filter(p=>global.AIWalletModules.billing.daysUntil(p.date,today)<30).reduce((sum,p)=>sum+Math.round(p.amount*100),0))/100,paymentCount30:payments.events.filter(p=>global.AIWalletModules.billing.daysUntil(p.date,today)<30).length,rows,hidden:Math.max(0,rows.length-6)};
 }
 global.AIWalletModules.attention=Object.freeze({overview});
 })(window);
