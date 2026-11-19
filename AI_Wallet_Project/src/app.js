@@ -228,15 +228,18 @@ function driveControls(){
  $('#driveDisconnectBtn').disabled=driveBusy||!driveToken;
  return ready;
 }
+let googleIdentityLoading=null;
 function loadGoogleIdentity(){
  if(window.google?.accounts?.oauth2)return Promise.resolve();
- return new Promise((resolve,reject)=>{
+ if(googleIdentityLoading)return googleIdentityLoading;
+ googleIdentityLoading=new Promise((resolve,reject)=>{
   const script=document.createElement('script');
   script.src='https://accounts.google.com/gsi/client';script.async=true;
   script.onload=()=>window.google?.accounts?.oauth2?resolve():reject(Error('Google authorization unavailable'));
   script.onerror=()=>reject(Error('Could not load Google authorization'));
   document.head.appendChild(script);
- });
+ }).catch(error=>{googleIdentityLoading=null;throw error});
+ return googleIdentityLoading;
 }
 // Preload Google Identity so the first click can launch authorization.
 loadGoogleIdentity().catch(()=>{});
