@@ -162,7 +162,6 @@ $('#fileInput').onchange=e=>addFiles([...e.target.files]);
 async function addFiles(files){
  if(fileUploadBusy||window._walletImportBusy||backupExportBusy){toast('Wait for the current file operation to finish');return}
  if(!files.length)return;
- if(state.files.length+files.length>10000){toast('The file library limit is 10,000 files');return}
  const maxSize=window.AIWalletModules.backup.MAX_FILE_BYTES;
  if(files.some(f=>!f||!Number.isFinite(f.size)||f.size<0||f.size>maxSize)){toast('One or more files exceed the supported file size');return}
  fileUploadBusy=true;
@@ -173,10 +172,13 @@ async function addFiles(files){
   for(let f of files){
    let checksum='';
    if(f.size<=64*1024*1024&&globalThis.crypto?.subtle){
-    const digest=await crypto.subtle.digest('SHA-256',await f.arrayBuffer());
-    checksum=[...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('');
+    try{
+     const digest=await crypto.subtle.digest('SHA-256',await f.arrayBuffer());
+     checksum=[...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('');
+    }catch(hashError){console.warn('File checksum unavailable; importing without deduplication',hashError)}
    }
    if(checksum&&state.files.some(existing=>existing.checksum===checksum&&existing.size===f.size)){duplicates++;continue}
+   if(state.files.length>=10000)throw Error('The file library limit is 10,000 unique files');
    let fid=id();
    await putFileBlob(fid,f);
    stored.push(fid);
