@@ -32,7 +32,8 @@ assert.match(app,/\$\$\('\[data-attention-filter\]'\)\.forEach/,'Filter handlers
 assert.match(app,/attention-filter-summary/,'Dashboard must summarize the selected alert category');
 assert.match(app,/aria-label="Review \$\{esc\(row\.label\)\} account"/,'Alert review actions must name the account for assistive technology');
 assert.match(app,/checksumAlgorithm:checksum\?'sha256':null/,'Manual import must record checksum algorithm');
-assert.match(app,/source:'manual-import',storageMode:'local'/,'Manual import must preserve local provenance');
+assert.match(app,/async function addFiles\(files,\{source='manual-import'\}=\{\}\)/,'Manual import must remain the default provenance');
+assert.match(app,/source,storageMode:'local'/,'Imported files must preserve local storage status');
 assert.match(app,/existing\.checksum===checksum&&existing\.size===f\.size/,'Import must detect matching content checksums');
 assert.match(app,/duplicates\+\+;continue/,'Import must skip duplicates without storing another blob');
 assert.match(app,/Stored · this browser/,'Library rows must disclose local storage');
@@ -40,7 +41,7 @@ assert.match(app,/if\(state\.files\.length>=10000\)throw Error/,'Unique-file quo
 assert.match(app,/catch\(hashError\)/,'Checksum failure must not block a valid import');
 assert.match(app,/files\.filter\(f=>f\.storageMode!=='remote'\)\.length\+' local'/,'Library count must disclose local file totals');
 assert.match(app,/folderInput'\)\.onchange=e=>addFiles/,'Folder selection must use the existing import pipeline');
-assert.match(app,/sourcePath:source==='folder-import'/,'Folder imports must record relative source paths');
+assert.match(app,/sourcePath:\['folder-import','watched-folder'\]\.includes\(source\)/,'Folder imports must record relative source paths');
 assert.match(app,/window\.showDirectoryPicker\(\{mode:'read'\}\)/,'Watched folder must use permission-based directory picker');
 assert.match(app,/watchedFolderTimer=setInterval/,'Watched folder must schedule periodic checks');
 assert.match(app,/queryPermission\(\{mode:'read'\}\)/,'Watched folder must verify read permission before scanning');
