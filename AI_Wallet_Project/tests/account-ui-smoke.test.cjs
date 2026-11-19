@@ -31,4 +31,9 @@ assert.match(app,/aria-pressed="\$\{homeAttentionFilter===category\.id\}"/,'Filt
 assert.match(app,/\$\$\('\[data-attention-filter\]'\)\.forEach/,'Filter handlers must use multi-node selector');
 assert.match(app,/attention-filter-summary/,'Dashboard must summarize the selected alert category');
 assert.match(app,/aria-label="Review \$\{esc\(row\.label\)\} account"/,'Alert review actions must name the account for assistive technology');
+assert.match(app,/checksumAlgorithm:checksum\?'sha256':null/,'Manual import must record checksum algorithm');
+assert.match(app,/source:'manual-import',storageMode:'local'/,'Manual import must preserve local provenance');
+assert.match(app,/existing\.checksum===checksum&&existing\.size===f\.size/,'Import must detect matching content checksums');
+assert.match(app,/duplicates\+\+;continue/,'Import must skip duplicates without storing another blob');
+assert.match(app,/Stored · this browser/,'Library rows must disclose local storage');
 console.log('DomAIn account UI smoke checks passed');
