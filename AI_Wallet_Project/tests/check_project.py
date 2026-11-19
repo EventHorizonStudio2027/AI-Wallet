@@ -117,8 +117,9 @@ for identifier in ("mediaPreviewDialog", "mediaPreviewTitle", "mediaPreviewMeta"
 check("previewMediaInline" in app_js and "closeMediaPreview" in app_js, "Media preview handlers missing")
 check(".media-preview-dialog" in css, "Media preview dialog styling missing")
 check("Save original file" in app_js and ".media-preview-actions" in css, "Media save fallback missing or unstyled")
-check("Backup uploaded. Verifying the saved recovery copy" in app_js, "Drive backup recovery verification missing")
+check("Backup uploaded. Checking Drive recovery and SHA-256 integrity" in app_js, "Drive backup recovery verification missing")
 check("verifiedBlob.size!==blob.size" in app_js, "Drive backup recovered size comparison missing")
+check("crypto.subtle.digest('SHA-256'" in app_js, "Drive backup checksum verification missing")
 check('class="brand-name">dom<span' in html, "Sidebar wordmark must begin with lowercase d")
 check("DomAIn" not in html, "Outdated uppercase-D branding in HTML")
 if errors:
