@@ -1,0 +1,29 @@
+'use strict';
+const assert=require('node:assert/strict');
+const vm=require('node:vm');
+const fs=require('node:fs');
+const path=require('node:path');
+(async()=>{
+ const code=fs.readFileSync(path.join(__dirname,'../src/modules/drive-sync.js'),'utf8');
+ const calls=[];
+ let responseBody={id:'backup-id',name:'domain-backup-2026-11-19T12-00-00-000Z.json',size:'2'};
+ const sandbox={window:{},Blob,Headers,URLSearchParams,Math,Promise,setTimeout,fetch:async(url,options)=>{
+  calls.push({url,options});
+  return {ok:true,status:200,json:async()=>responseBody};
+ }};
+ vm.runInNewContext(code,sandbox,{filename:'drive-sync.js'});
+ const api=sandbox.window.AIWalletModules.driveSync;
+ const name='domain-backup-2026-11-19T12-00-00-000Z.json';
+ const blob=new Blob(['{}'],{type:'application/json'});
+ const result=await api.uploadBackup('fake-token',blob,name);
+ assert.equal(result.id,'backup-id');
+ assert.equal(calls.length,1);
+ assert.match(calls[0].url,/uploadType=multipart/);
+ assert.equal(calls[0].options.method,'POST');
+ responseBody={name};
+ await assert.rejects(api.uploadBackup('fake-token',blob,name),/did not confirm/);
+ responseBody={id:'backup-id',name:'wrong-name.json'};
+ await assert.rejects(api.uploadBackup('fake-token',blob,name),/did not confirm/);
+ await assert.rejects(api.uploadBackup('fake-token',blob,'bad.json'),/Invalid backup filename/);
+ console.log('Drive upload acknowledgement checks passed');
+})().catch(error=>{console.error(error);process.exitCode=1});
