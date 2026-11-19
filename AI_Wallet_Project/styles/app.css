@@ -366,3 +366,9 @@ body{font-size:14px}
 #fileList.file-grid .file-grid-thumbnail{display:block;width:100%;height:100%;max-height:160px;min-height:88px;object-fit:cover;border-radius:10px;background:rgba(8,20,35,.55)}
 #fileList.file-grid .file-type:has(.file-grid-thumbnail){padding:0;overflow:hidden;align-items:stretch;min-height:88px}
 @media(prefers-reduced-motion:no-preference){#fileList.file-grid>.file-row{transition:border-color .16s ease,transform .16s ease}#fileList.file-grid>.file-row:hover{border-color:rgba(126,192,255,.52);transform:translateY(-2px)}}
+
+/* Media types are recognizable without opening a file. */
+#fileList.file-grid .file-type{position:relative}
+#fileList.file-grid .media-type-label{position:absolute;right:9px;bottom:9px;padding:4px 7px;border:1px solid rgba(163,209,255,.3);border-radius:7px;background:rgba(7,19,35,.82);font:700 10px/1.2 system-ui,sans-serif;letter-spacing:.09em;color:#d9efff}
+#fileList:not(.file-grid) .media-type-label{display:none}
+#fileList.file-grid>.file-row:focus-within{outline:2px solid #8fc9ff;outline-offset:2px}
