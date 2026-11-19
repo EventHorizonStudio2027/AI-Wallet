@@ -391,6 +391,10 @@ $('#driveBackupBtn').onclick=async()=>{
   const verified=JSON.parse(await verifiedBlob.text());
   window.AIWalletModules.backup.validateBackup(verified);
   if(verified.exportedAt!==backup.exportedAt||verified.files.length!==backup.files.length)throw Error('Recovered backup does not match the current export');
+  const originalHash=await crypto.subtle.digest('SHA-256',await blob.arrayBuffer());
+  const recoveredHash=await crypto.subtle.digest('SHA-256',await verifiedBlob.arrayBuffer());
+  const originalBytes=new Uint8Array(originalHash),recoveredBytes=new Uint8Array(recoveredHash);
+  if(!originalBytes.every((value,index)=>value===recoveredBytes[index]))throw Error('Recovered backup content differs from the uploaded file');
   driveStatus('✓ Backup uploaded and recovery-tested: '+result.name+' ('+formatSize(blob.size)+'). Retrieve latest backup to save a separate copy.');
  }catch(error){console.warn('Google Drive backup failed',error);driveStatus('Backup failed: '+String(error.message||error).slice(0,160))}
  finally{driveBusy=false;driveControls()}
