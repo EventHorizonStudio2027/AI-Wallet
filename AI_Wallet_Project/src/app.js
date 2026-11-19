@@ -355,9 +355,11 @@ $('#driveRestoreBtn').onclick=async()=>{
   const backups=(result.files||[]).sort((a,b)=>String(b.createdTime||'').localeCompare(String(a.createdTime||'')));
   if(!backups.length){driveStatus('No DomAIn backups found in Google Drive app data.');return}
   const latest=backups[0];
+  driveStatus('Downloading '+latest.name+' from private Google Drive storage…');
   const blob=await driveAPI().download(driveToken,latest.id);
   if(blob.size>100*1024*1024)throw Error('Backup exceeds the supported 100 MB limit');
   if(blob.size===0)throw Error('Downloaded backup is empty');
+  if(!String(latest.name).endsWith('.json'))throw Error('Unexpected backup file type');
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=window.AIWalletModules.fileSafety.safeFilename(latest.name||'domain-backup.json');
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
