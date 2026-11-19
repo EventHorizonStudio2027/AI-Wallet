@@ -14,6 +14,6 @@ assert.equal(accounts.resolveActive(profiles,'','claude').id,'b');
 assert.equal(accounts.resolveActive([],null,'chatgpt'),null);
 assert.equal(billing.summarize(profiles).monthly,25);
 const app=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
-assert.match(app,/selectedAccount=a\?\.id\|\|'';render\(\)/,'Switching providers must clear a stale account');
+assert.match(app,/selectedAccount=existing\?\.id\|\|first\?\.id\|\|''/,'Switching providers must select a valid account or clear a stale account');
 assert.match(app,/billing\.summarize\(state\.accounts\)\.monthly/,'Home total must use billing engine');
 console.log('DomAIn provider switching and subscription totals passed.');
