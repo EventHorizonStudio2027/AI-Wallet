@@ -6,7 +6,7 @@ const window={AIWalletModules:{}};
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../src/modules/files.js'),'utf8'),{window});
 const files=window.AIWalletModules.files;
 const sample=[
- {id:'a',name:'image.png',category:'Images',source:'manual-import',storageMode:'local',checksum:'abc123',added:1},
+ {id:'a',name:'image.png',category:'Images',source:'manual-import',storageMode:'local',checksum:'abc123',sourcePath:'AI Export/images/image.png',added:1},
  {id:'b',name:'clip.mp4',category:'Videos',source:'cloud-link',storageMode:'remote',checksum:'def456',added:2}
 ];
 assert.equal(files.filterAndSort(sample,{query:'manual-import'}).length,1,'Provenance search must find manual imports');
@@ -21,4 +21,5 @@ assert.equal(files.storageStatus({}),'local','Legacy file records remain local')
 assert.equal(files.filterAndSort(sample,{storage:'local'}).length,1,'Storage filter selects local files');
 assert.equal(files.filterAndSort(sample,{storage:'linked'}).length,1,'Storage filter selects linked files');
 assert.equal(files.filterAndSort(sample,{storage:'backup'}).length,0,'Storage filter shows no nonexistent backups');
+assert.equal(files.filterAndSort(sample,{query:'AI Export/images'}).length,1,'Source folder paths must be searchable');
 console.log('DomAIn media provenance search checks passed');
