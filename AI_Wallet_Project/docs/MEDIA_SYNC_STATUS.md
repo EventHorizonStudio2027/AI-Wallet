@@ -1,3 +1,11 @@
+## v81 Google Drive connector (implementation, pending live authorization)
+
+- Uses Google Identity Services OAuth token client with a user-provided **Web application OAuth client ID**; authorized JavaScript origin must include `https://fatespassage.github.io`. Google Drive API must be enabled in the same Google Cloud project, and the OAuth consent screen configured. Depending on Google verification and test-user status, the account may need to be added as a test user. **Do not enter a client secret.**
+- Requests `drive.readonly` for reading user-selected folder IDs and `drive.appdata` for creating and listing private DomAIn backups in Google Drive's appDataFolder. These scopes can require Google verification for public deployment. Tokens are held in memory and revoked on disconnect; no OAuth credentials are persisted to local storage or committed to GitHub.
+- Lists a chosen Drive folder (including pagination), downloads ordinary binary files to local browser storage, records source IDs and timestamps, and skips unchanged remote files. Nested folders, native Google Docs/Sheets/Slides exports, background sync with a closed tab, robust partial-import retries, and content updates for previously imported remote IDs need additional work.
+- Uploads a full JSON backup including local file bytes to Google Drive's private appDataFolder, subject to the existing 100 MB backup limit. Refuses incomplete backups with missing file contents. Offers download of the latest backup for the existing manual Import Backup flow. **Cloud backups are unencrypted beyond Google's transport/storage controls**; do not assume end-to-end encryption.
+- **Verification status:** API module tests are mocked; OAuth consent, Drive permissions, live upload/download, cross-device recovery, and GitHub Actions are not independently verified. Do not mark Issue #1 closed until an authorized test account completes an end-to-end run.
+
 # Unified AI media library — implementation status (v80)
 
 Tracking: https://github.com/FatesPassage/AI-Wallet/issues/1
