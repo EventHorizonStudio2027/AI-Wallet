@@ -293,3 +293,9 @@ body{font-size:14px}
 #fileCount{font-variant-numeric:tabular-nums;letter-spacing:.01em;white-space:normal;text-align:right;line-height:1.4}
 #fileListTitle{letter-spacing:-.015em}
 @media(max-width:540px){#fileCount{font-size:10px;max-width:45%;overflow-wrap:anywhere}}
+
+/* DomAIn v78: refined media library filter rhythm */
+#page-files .toolbar{align-items:center;gap:8px}
+#fileStorage{min-width:128px;border-color:#3c527a;background-color:#152747}
+#fileStorage:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+@media(max-width:560px){#page-files .toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#page-files .toolbar #fileSearch{grid-column:1/-1;width:100%;max-width:none}#page-files .toolbar select{min-width:0;width:100%}}
