@@ -492,11 +492,13 @@ async function previewMediaInline(f){
   if(request!==mediaPreviewRequest)return true;
   if(!blob)throw Error('File contents unavailable');
   if(!blob.type.toLowerCase().startsWith(type+'/')||!window.AIWalletModules.fileSafety.canInlinePreview({name:f.name,type:blob.type}))throw Error('Unsupported media format');
+  if(request!==mediaPreviewRequest)return true;
   closeMediaPreview(false);
   const url=URL.createObjectURL(blob);
   activeMediaPreviewUrl=url;
   const player=document.createElement(type);
   player.controls=true;player.preload='metadata';player.src=url;
+  player.addEventListener('loadedmetadata',()=>{if(activeMediaPreviewUrl===url){const duration=Number.isFinite(player.duration)?Math.round(player.duration):null;$('#mediaPreviewMeta').textContent=(type==='video'?'Video':'Audio')+' · '+formatSize(blob.size)+(duration!==null?' · '+Math.floor(duration/60)+':'+String(duration%60).padStart(2,'0'):'')}});
   player.setAttribute('aria-label',f.name);
   player.addEventListener('error',()=>{if(activeMediaPreviewUrl===url)$('#mediaPreviewMeta').textContent='This format cannot be played in this browser. Save the file to open it in another app.'});
   if(type==='video')player.playsInline=true;
