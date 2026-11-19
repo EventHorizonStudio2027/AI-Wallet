@@ -251,12 +251,16 @@ $('#driveConnectBtn').onclick=async()=>{
   if(!window.google?.accounts?.oauth2){await loadGoogleIdentity();driveBusy=false;driveControls();driveStatus('Google sign-in is ready. Click Connect Google Drive once more to authorize.');return}
   driveClient=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:driveAPI().SCOPES,callback:response=>{
    driveBusy=false;
-   if(response.error||!response.access_token){driveStatus('Google authorization declined or failed.');driveControls();return}
+   if(response.error||!response.access_token){driveStatus('Google authorization did not complete: '+String(response.error_description||response.error||'No access token returned').slice(0,160));driveControls();return}
    driveToken=response.access_token;driveTokenExpires=Date.now()+Math.max(0,Number(response.expires_in||3600)-90)*1000;
-   driveStatus('Connected to Google Drive for this session. Choose Import folder or Back up to Drive.');
+   driveStatus('✓ Connected to Google Drive for this session. You can now import a folder or save a backup.');
+   driveControls();
+  },error_callback:error=>{
+   driveBusy=false;
+   driveStatus('Google sign-in did not finish: '+String(error?.message||error?.type||'Popup closed or blocked').slice(0,160)+'. Try connecting again.');
    driveControls();
   }});
-  driveBusy=false;driveControls();
+  driveStatus('Waiting for Google to finish authorization…');
   driveClient.requestAccessToken({prompt:'consent'});
  }catch(error){driveBusy=false;driveControls();driveStatus('Google connection failed: '+String(error.message||error).slice(0,140))}
 };
