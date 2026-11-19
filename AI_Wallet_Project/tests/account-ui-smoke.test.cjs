@@ -48,4 +48,10 @@ assert.match(app,/queryPermission\(\{mode:'read'\}\)/,'Watched folder must verif
 assert.match(app,/source:'watched-folder'/,'Watched folder must track imported file provenance');
 assert.match(app,/document\.visibilityState==='visible'/,'Background folder polling must respect tab visibility');
 assert.match(app,/disconnectWatchedFolder\(\)/,'Watched folder must allow disconnection');
+assert.match(app,/google\.accounts\.oauth2\.initTokenClient/,'Drive authorization must use Google Identity Services');
+assert.match(app,/driveTokenExpires=Date\.now\(\)/,'Drive token must expire');
+assert.match(app,/driveAPI\(\)\.listAllFolderFiles/,'Drive import must list remote files');
+assert.match(app,/driveAPI\(\)\.uploadBackup/,'Drive backup must upload remote file');
+assert.match(app,/driveAPI\(\)\.listBackups/,'Drive recovery must list saved backups');
+assert.match(app,/driveToken='';driveTokenExpires=0/,'Disconnect must clear in-memory token');
 console.log('DomAIn account UI smoke checks passed');
