@@ -243,7 +243,7 @@ $('#driveConnectBtn').onclick=async()=>{
  if(!/^[0-9]+-[a-zA-Z0-9_-]+\.apps\.googleusercontent\.com$/.test(clientId)){driveStatus('Enter a valid Google OAuth web client ID.');return}
  try{
   driveBusy=true;driveControls();driveStatus('Loading Google authorization…');
-  await loadGoogleIdentity();
+  if(!window.google?.accounts?.oauth2){await loadGoogleIdentity();driveBusy=false;driveControls();driveStatus('Google authorization is ready. Click Connect Google again to approve access.');return}
   driveClient=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:driveAPI().SCOPES,callback:response=>{
    driveBusy=false;
    if(response.error||!response.access_token){driveStatus('Google authorization declined or failed.');driveControls();return}
