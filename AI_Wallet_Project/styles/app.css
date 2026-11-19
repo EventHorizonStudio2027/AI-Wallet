@@ -361,3 +361,8 @@ body{font-size:14px}
 #fileList.file-grid>.empty{grid-column:1/-1}
 @media(max-width:560px){.library-view-controls{width:100%;justify-content:space-between}#fileList.file-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#fileList.file-grid>.file-row{padding:10px}#fileList.file-grid>.file-row .file-actions{grid-template-columns:1fr 1fr}}
 @media(max-width:370px){#fileList.file-grid{grid-template-columns:1fr}}
+
+/* Image thumbnails stay contained within the media tiles. */
+#fileList.file-grid .file-grid-thumbnail{display:block;width:100%;height:100%;max-height:160px;min-height:88px;object-fit:cover;border-radius:10px;background:rgba(8,20,35,.55)}
+#fileList.file-grid .file-type:has(.file-grid-thumbnail){padding:0;overflow:hidden;align-items:stretch;min-height:88px}
+@media(prefers-reduced-motion:no-preference){#fileList.file-grid>.file-row{transition:border-color .16s ease,transform .16s ease}#fileList.file-grid>.file-row:hover{border-color:rgba(126,192,255,.52);transform:translateY(-2px)}}
