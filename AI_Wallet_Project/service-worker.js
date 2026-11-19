@@ -17,6 +17,8 @@ self.addEventListener('fetch',event=>{
    try{const response=await fetch(request);if(response.ok&&response.type==='basic')await cache.put(request,response.clone());return response}
    catch(error){const fallback=await cache.match(request)||await cache.match('./index.html');if(fallback)return fallback;throw error}
   }
+  const cached=await cache.match(request);
+  if(cached)return cached;
   try{
    const response=await fetch(request,{cache:'no-cache'});
    if(response.ok&&response.type==='basic')await cache.put(request,response.clone());
