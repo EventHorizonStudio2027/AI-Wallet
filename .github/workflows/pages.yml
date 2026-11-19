@@ -77,3 +77,10 @@ jobs:
           test -s /tmp/domain-live-app.js
           curl --fail --location --silent --show-error --retry 5 --retry-delay 5 --retry-all-errors --max-time 20 "${PAGE_URL%/}/styles/app.css" -o /tmp/domain-live-app.css
           test -s /tmp/domain-live-app.css
+          # Verify the live site serves this release, not a stale Pages artifact.
+          curl --fail --location --silent --show-error --retry 5 --retry-delay 5 --retry-all-errors --max-time 20 "${PAGE_URL%/}/service-worker.js" -o /tmp/domain-live-sw.js
+          test -s /tmp/domain-live-sw.js
+          cmp AI_Wallet_Project/service-worker.js /tmp/domain-live-sw.js
+          cmp AI_Wallet_Project/src/app.js /tmp/domain-live-app.js
+          cmp AI_Wallet_Project/styles/app.css /tmp/domain-live-app.css
+          echo "Verified live domAIn assets match this GitHub commit."
