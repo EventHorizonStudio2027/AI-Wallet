@@ -318,3 +318,13 @@ body{font-size:14px}
 .library-live-actions button{min-height:40px;font-size:11px}
 .library-live-actions button:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:680px){.library-live-sync{flex-direction:column;align-items:stretch;padding:12px}.library-live-actions{justify-content:stretch}.library-live-actions button{flex:1;min-width:90px;min-height:44px}}
+
+/* DomAIn v81: cloud connector with clear hierarchy and responsive actions */
+.drive-connector{border:1px solid #436e94;border-radius:14px;padding:15px;margin:0 0 13px;background:linear-gradient(125deg,#172c48,#101e35);box-shadow:0 7px 24px #02091630}
+.drive-connector-heading strong{font-size:14px;color:#f2f7ff}
+.drive-connector-heading small{display:block;font-size:11px;color:#c4d5e9;line-height:1.5;margin-top:5px}
+.drive-connector-config{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}
+.drive-connector-config input{min-width:0;width:100%;max-width:none}
+.drive-connector .library-live-actions{justify-content:flex-start}
+.drive-connector-note{display:block;font-size:10px;line-height:1.55;color:#a6b9d1;margin-top:11px}
+@media(max-width:600px){.drive-connector{padding:12px}.drive-connector-config{grid-template-columns:1fr}.drive-connector .library-live-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.drive-connector .library-live-actions button{min-width:0}}
