@@ -215,6 +215,96 @@ $('#syncFolderBtn').onclick=()=>syncWatchedFolder();
 $('#disconnectFolderBtn').onclick=()=>disconnectWatchedFolder();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&watchedDirectory)syncWatchedFolder()});
 updateWatchedFolderUI();
+// Google Drive OAuth: access tokens are session-only and never persisted.
+let driveToken='',driveTokenExpires=0,driveBusy=false,driveClient=null;
+const driveAPI=()=>window.AIWalletModules.driveSync;
+function driveStatus(message){$('#driveSyncStatus').textContent=message}
+function driveControls(){
+ const ready=!!driveToken&&Date.now()<driveTokenExpires;
+ $('#driveConnectBtn').disabled=driveBusy;
+ $('#driveSyncBtn').disabled=driveBusy||!ready;
+ $('#driveBackupBtn').disabled=driveBusy||!ready;
+ $('#driveDisconnectBtn').disabled=driveBusy||!driveToken;
+ return ready;
+}
+function loadGoogleIdentity(){
+ if(window.google?.accounts?.oauth2)return Promise.resolve();
+ return new Promise((resolve,reject)=>{
+  const script=document.createElement('script');
+  script.src='https://accounts.google.com/gsi/client';script.async=true;
+  script.onload=()=>window.google?.accounts?.oauth2?resolve():reject(Error('Google authorization unavailable'));
+  script.onerror=()=>reject(Error('Could not load Google authorization'));
+  document.head.appendChild(script);
+ });
+}
+$('#driveConnectBtn').onclick=async()=>{
+ const clientId=$('#driveClientId').value.trim();
+ if(!/^[0-9]+-[a-zA-Z0-9_-]+\.apps\.googleusercontent\.com$/.test(clientId)){driveStatus('Enter a valid Google OAuth web client ID.');return}
+ try{
+  driveBusy=true;driveControls();driveStatus('Loading Google authorization…');
+  await loadGoogleIdentity();
+  driveClient=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:driveAPI().SCOPES,callback:response=>{
+   driveBusy=false;
+   if(response.error||!response.access_token){driveStatus('Google authorization declined or failed.');driveControls();return}
+   driveToken=response.access_token;driveTokenExpires=Date.now()+Math.max(0,Number(response.expires_in||3600)-90)*1000;
+   driveStatus('Connected to Google Drive for this session. Choose Import folder or Back up to Drive.');
+   driveControls();
+  }});
+  driveBusy=false;driveControls();
+  driveClient.requestAccessToken({prompt:'consent'});
+ }catch(error){driveBusy=false;driveControls();driveStatus('Google connection failed: '+String(error.message||error).slice(0,140))}
+};
+$('#driveDisconnectBtn').onclick=()=>{
+ if(driveToken&&window.google?.accounts?.oauth2)google.accounts.oauth2.revoke(driveToken,()=>{});
+ driveToken='';driveTokenExpires=0;driveClient=null;driveControls();
+ driveStatus('Disconnected. Previously imported files remain on this device.');
+};
+$('#driveSyncBtn').onclick=async()=>{
+ if(!driveControls()||driveBusy)return;
+ const folderId=$('#driveFolderId').value.trim();
+ driveBusy=true;driveControls();driveStatus('Checking Google Drive folder…');
+ const added=[];
+ try{
+  const files=await driveAPI().listAllFolderFiles(driveToken,folderId);
+  let skipped=0;
+  for(const remote of files){
+   if(remote.mimeType?.startsWith('application/vnd.google-apps.')){skipped++;continue}
+   const remoteModified=Date.parse(remote.modifiedTime||'')||0;
+   if(state.files.some(f=>f.source==='google-drive'&&f.remoteFileId===remote.id&&f.originalModified===remoteModified)){skipped++;continue}
+   if(state.files.length>=10000)throw Error('Library limit of 10,000 files reached');
+   if(Number(remote.size||0)>window.AIWalletModules.backup.MAX_FILE_BYTES){skipped++;continue}
+   const blob=await driveAPI().download(driveToken,remote.id);
+   const fid=id();await putFileBlob(fid,blob);added.push(fid);
+   state.files.push({id:fid,name:remote.name||'Drive file',type:remote.mimeType||blob.type||'',size:blob.size,category:fileCategory(remote.name||'',remote.mimeType||''),serviceId:'',accountId:'',added:Date.now(),source:'google-drive',storageMode:'local',remoteFileId:remote.id,originalModified:remoteModified,sourcePath:'Google Drive/'+folderId,originalUrl:remote.webViewLink||'',checksum:'',checksumAlgorithm:null});
+   if(!save())throw Error('Could not save Drive import metadata');
+  }
+  render();
+  driveStatus('Drive import complete: '+added.length+' new files, '+skipped+' skipped. Files are stored locally; use Back up to Drive for cloud backup.');
+ }catch(error){console.warn('Google Drive import error',error);render();driveStatus('Drive import stopped: '+String(error.message||error).slice(0,150)+' · '+added.length+' files saved before error.')}
+ finally{driveBusy=false;driveControls()}
+};
+$('#driveBackupBtn').onclick=async()=>{
+ if(!driveControls()||driveBusy||fileUploadBusy||window._walletImportBusy||backupExportBusy)return;
+ driveBusy=true;driveControls();driveStatus('Preparing private Drive backup…');
+ try{
+  const backup=window.AIWalletModules.backup.createEnvelope(state);
+  let missing=0;
+  for(const f of state.files){
+   let blob=await getFileBlob(f.id);
+   if(!blob&&f.data)blob=dataUrlToBlob(f.data);
+   if(!blob){missing++;backup.files.push({...f,data:null})}
+   else backup.files.push({...f,data:await blobToDataUrl(blob)});
+  }
+  if(missing)throw Error(missing+' file(s) have missing content. Backup canceled to avoid incomplete protection.');
+  const blob=new Blob([JSON.stringify(backup)],{type:'application/json'});
+  window.AIWalletModules.backup.assertBackupSize(blob.size);
+  const filename='domain-backup-'+new Date().toISOString().replace(/[.:]/g,'-')+'.json';
+  const result=await driveAPI().uploadBackup(driveToken,blob,filename);
+  driveStatus('Private Google Drive backup saved: '+result.name+' ('+formatSize(blob.size)+'). Restore is not yet available in-app.');
+ }catch(error){console.warn('Google Drive backup failed',error);driveStatus('Backup failed: '+String(error.message||error).slice(0,160))}
+ finally{driveBusy=false;driveControls()}
+};
+driveControls();
 $('#uploadBtn').onclick=()=>{if(!fileUploadBusy&&!window._walletImportBusy&&!backupExportBusy)$('#fileInput').click()};
 $('#fileInput').onchange=e=>addFiles([...e.target.files]);
 $('#importFolderBtn').onclick=()=>{if(!fileUploadBusy&&!window._walletImportBusy&&!backupExportBusy)$('#folderInput').click()};
