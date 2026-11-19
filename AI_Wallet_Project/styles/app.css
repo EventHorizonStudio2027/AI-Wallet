@@ -265,3 +265,12 @@ body{font-size:14px}
 .attention-item small{display:block;line-height:1.5;overflow-wrap:anywhere}
 .attention-item button{min-height:38px;flex-shrink:0}
 @media(max-width:520px){.attention-item{gap:9px}.attention-item button{min-height:44px}}
+
+/* DomAIn v74: quiet segmented attention filters and clear selected state */
+.attention-filters{display:flex;gap:6px;flex-wrap:wrap;margin:11px 0 7px}
+.attention-filter{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:7px 10px;border:1px solid #31476e;border-radius:9px;background:#111e37;color:#b7c5de;font-size:11px;font-weight:600}
+.attention-filter span{font-size:10px;font-variant-numeric:tabular-nums;opacity:.78}
+.attention-filter.active{background:#1b355b;border-color:#5b91c9;color:#f1f8ff}
+.attention-filter:hover{border-color:#6485ae}
+.attention-filter:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+@media(max-width:520px){.attention-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.attention-filter{justify-content:space-between;min-height:44px}}
