@@ -384,7 +384,14 @@ $('#driveBackupBtn').onclick=async()=>{
   const filename='domain-backup-'+new Date().toISOString().replace(/[.:]/g,'-')+'.json';
   driveStatus('Uploading '+formatSize(blob.size)+' backup to Google Drive over HTTPS…');
   const result=await driveAPI().uploadBackup(driveToken,blob,filename);
-  driveStatus('✓ Backup saved to Google Drive: '+result.name+' ('+formatSize(blob.size)+'). Use Retrieve latest backup to download a recovery copy.');
+  if(result.size!=null&&Number(result.size)!==blob.size)throw Error('Drive reported a different backup size; verify recovery before relying on this copy');
+  driveStatus('Backup uploaded. Verifying the saved recovery copy…');
+  const verifiedBlob=await driveAPI().download(driveToken,result.id);
+  if(verifiedBlob.size!==blob.size)throw Error('Uploaded backup size differs from recovered copy');
+  const verified=JSON.parse(await verifiedBlob.text());
+  window.AIWalletModules.backup.validateBackup(verified);
+  if(verified.exportedAt!==backup.exportedAt||verified.files.length!==backup.files.length)throw Error('Recovered backup does not match the current export');
+  driveStatus('✓ Backup uploaded and recovery-tested: '+result.name+' ('+formatSize(blob.size)+'). Retrieve latest backup to save a separate copy.');
  }catch(error){console.warn('Google Drive backup failed',error);driveStatus('Backup failed: '+String(error.message||error).slice(0,160))}
  finally{driveBusy=false;driveControls()}
 };
