@@ -159,7 +159,9 @@ $('#addService').onclick=()=>openModal('serviceModal');$('#serviceForm').onsubmi
 let fileUploadBusy=false;
 $('#uploadBtn').onclick=()=>{if(!fileUploadBusy&&!window._walletImportBusy&&!backupExportBusy)$('#fileInput').click()};
 $('#fileInput').onchange=e=>addFiles([...e.target.files]);
-async function addFiles(files){
+$('#importFolderBtn').onclick=()=>{if(!fileUploadBusy&&!window._walletImportBusy&&!backupExportBusy)$('#folderInput').click()};
+$('#folderInput').onchange=e=>addFiles([...e.target.files],{source:'folder-import'});
+async function addFiles(files,{source='manual-import'}={}){
  if(fileUploadBusy||window._walletImportBusy||backupExportBusy){toast('Wait for the current file operation to finish');return}
  if(!files.length)return;
  const maxSize=window.AIWalletModules.backup.MAX_FILE_BYTES;
@@ -167,6 +169,7 @@ async function addFiles(files){
  fileUploadBusy=true;
  const uploadButton=$('#uploadBtn');if(uploadButton)uploadButton.disabled=true;
  let svc=selectedService,acct=state.accounts.find(a=>a.id===selectedAccount&&a.serviceId===selectedService),previous=cloneState(state),stored=[],committed=false;
+ const folderButton=$('#importFolderBtn');if(folderButton)folderButton.disabled=true;
  try{
   let duplicates=0;
   for(let f of files){
@@ -182,7 +185,7 @@ async function addFiles(files){
    let fid=id();
    await putFileBlob(fid,f);
    stored.push(fid);
-   state.files.push({id:fid,name:f.name,type:f.type,size:f.size,category:fileCategory(f.name,f.type),serviceId:acct?.serviceId||svc,accountId:acct?.id||'',added:Date.now(),source:'manual-import',storageMode:'local',originalModified:f.lastModified||null,checksum,checksumAlgorithm:checksum?'sha256':null});
+   state.files.push({id:fid,name:f.name,type:f.type,size:f.size,category:fileCategory(f.name,f.type),serviceId:acct?.serviceId||svc,accountId:acct?.id||'',added:Date.now(),source,storageMode:'local',sourcePath:source==='folder-import'?String(f.webkitRelativePath||'').slice(0,512):'',originalModified:f.lastModified||null,checksum,checksumAlgorithm:checksum?'sha256':null});
   }
   if(!save())throw Error('Could not save uploaded file metadata');
   committed=true;
@@ -201,7 +204,9 @@ async function addFiles(files){
  }finally{
   fileUploadBusy=false;
   if(uploadButton)uploadButton.disabled=false;
+  if(folderButton)folderButton.disabled=false;
   $('#fileInput').value='';
+  $('#folderInput').value='';
  }
 }
 $('#dropzone').ondragover=e=>{e.preventDefault();$('#dropzone').style.borderColor='#9b8cff'};$('#dropzone').ondrop=e=>{e.preventDefault();$('#dropzone').style.borderColor='';addFiles([...e.dataTransfer.files])};$('#dropzone').ondragleave=()=>{$('#dropzone').style.borderColor=''};
