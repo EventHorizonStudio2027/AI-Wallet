@@ -13,9 +13,12 @@ function overview(accounts,today){
   if(t.daysToCancel>(t.alertDays??7))continue;
   rows.push({kind:'trial',accountId:t.accountId,label:t.label,date:t.cancelBy,days:t.daysToCancel,message:t.daysToCancel<0?'Cancellation deadline passed — verify status':t.daysToCancel===0?'Cancel-by deadline today':`Cancel within ${t.daysToCancel} day(s)`,priority:t.daysToCancel<0?0:t.daysToCancel<=2?1:2});
  }
+ const accountById=new Map((Array.isArray(accounts)?accounts:[]).filter(a=>a&&a.id).map(a=>[a.id,a]));
  for(const p of payments.events){
   const days=global.AIWalletModules.billing.daysUntil(p.date,today);
-  if(days===null||days<0||days>14)continue;
+  const rawAlert=accountById.get(p.accountId)?.alertDays;
+  const lead=rawAlert!==''&&rawAlert!=null&&Number.isInteger(Number(rawAlert))&&Number(rawAlert)>=0&&Number(rawAlert)<=90?Number(rawAlert):7;
+  if(days===null||days<0||days>lead)continue;
   rows.push({kind:'payment',accountId:p.accountId,label:p.label,date:p.date,days,amount:p.amount,message:'Estimated subscription renewal',priority:3});
  }
  rows.sort((a,b)=>a.priority-b.priority||(a.days??999)-(b.days??999)||a.label.localeCompare(b.label));
