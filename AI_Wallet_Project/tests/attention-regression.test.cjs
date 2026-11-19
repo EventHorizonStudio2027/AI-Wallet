@@ -67,4 +67,8 @@ const longLead={...renewalAlerts[0],renewalDate:'2027-01-17',alertDays:90};
 const longLeadOverview=window.AIWalletModules.attention.overview([longLead],'2026-11-18');
 assert.ok(longLeadOverview.rows.some(r=>r.kind==='payment'),'90-day lead must include renewals beyond 30-day forecast');
 assert.equal(longLeadOverview.projected30,0,'30-day dashboard total must exclude payments beyond 30 days');
+const noRenewalAlert=window.AIWalletModules.attention.overview([{id:'undated',label:'Undated subscription',billingCycle:'monthly',cost:14.25,renewalDate:''}],'2026-11-18');
+assert.equal(noRenewalAlert.missingRenewals,1,'Dashboard must count missing paid renewal dates');
+assert.ok(noRenewalAlert.rows.some(r=>r.kind==='renewal_review'&&r.accountId==='undated'),'Dashboard must provide an actionable renewal-date review');
+assert.ok(!noRenewalAlert.rows.some(r=>r.kind==='payment'),'Missing renewal date must not generate a guessed payment');
 console.log('DomAIn attention regressions passed');
