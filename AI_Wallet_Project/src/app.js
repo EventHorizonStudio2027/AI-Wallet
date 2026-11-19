@@ -213,6 +213,7 @@ $('#watchFolderBtn').onclick=async()=>{
 };
 $('#syncFolderBtn').onclick=()=>syncWatchedFolder();
 $('#disconnectFolderBtn').onclick=()=>disconnectWatchedFolder();
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&watchedDirectory)syncWatchedFolder()});
 updateWatchedFolderUI();
 $('#uploadBtn').onclick=()=>{if(!fileUploadBusy&&!window._walletImportBusy&&!backupExportBusy)$('#fileInput').click()};
 $('#fileInput').onchange=e=>addFiles([...e.target.files]);
