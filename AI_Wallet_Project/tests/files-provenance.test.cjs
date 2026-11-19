@@ -14,4 +14,11 @@ assert.equal(files.filterAndSort(sample,{query:'remote'}).length,1,'Storage-mode
 assert.equal(files.filterAndSort(sample,{query:'abc123'})[0].id,'a','Checksum search must find a matching file');
 assert.equal(files.filterAndSort(sample,{query:'clip'})[0].id,'b','Filename search must continue to work');
 assert.equal(files.filterAndSort(sample,{provider:'missing'}).length,0,'Provider filter must remain effective');
+assert.equal(files.storageStatus(sample[0]),'local','Manual import is local');
+assert.equal(files.storageStatus(sample[1]),'linked','Remote file status must be explicit');
+assert.equal(files.storageStatus({storageMode:'backup'}),'backup','Backed-up files must be distinguishable');
+assert.equal(files.storageStatus({}),'local','Legacy file records remain local');
+assert.equal(files.filterAndSort(sample,{storage:'local'}).length,1,'Storage filter selects local files');
+assert.equal(files.filterAndSort(sample,{storage:'linked'}).length,1,'Storage filter selects linked files');
+assert.equal(files.filterAndSort(sample,{storage:'backup'}).length,0,'Storage filter shows no nonexistent backups');
 console.log('DomAIn media provenance search checks passed');
