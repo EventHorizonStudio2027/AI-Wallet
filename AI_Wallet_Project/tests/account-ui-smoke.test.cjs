@@ -18,11 +18,15 @@ assert.match(app,/data-manage-service=/,'AI directory must expose profile manage
 assert.match(app,/accountProviderOnly=true;go\('accounts',\{preserveAccountFilter:true\}\);render\(\)/,'Directory must preserve selected provider filter');
 assert.match(app,/if\(p==='accounts'&&!options\.preserveAccountFilter\)accountProviderOnly=false/,'Normal Accounts navigation must reset the provider filter');
 assert.match(app,/data-forecast-review=/,'Payment forecast must expose subscription review');
-assert.match(app,/homeAttentionExpanded\?report\.rows\.length:6/,'Dashboard must render all alerts when expanded');
+assert.match(app,/homeAttentionExpanded\?filtered\.length:6/,'Dashboard must render all filtered alerts when expanded');
 assert.match(app,/data-attention-expand/,'Dashboard must provide an expand or collapse control');
 assert.match(app,/homeAttentionExpanded=!homeAttentionExpanded;renderHomeAttention\(\)/,'Alert expansion must rerender the dashboard');
 assert.match(app,/\$\$\('\[data-home-attention\]'\)\.forEach/,'Dashboard review buttons must use multi-element selection');
 assert.match(app,/\$\$\('\[data-attention-expand\]'\)\.forEach/,'Dashboard expand buttons must use multi-element selection');
 assert.doesNotMatch(app,/(?<!\$)\$\('\[data-(?:home-attention|attention-expand)\]'\)\.forEach/,'Dashboard controls must not regress to single-element selectors');
 assert.match(app,/attention-type-\$\{esc\(row\.kind\)\}/,'Attention feed must visually distinguish alert types');
+assert.match(app,/data-attention-filter/,'Dashboard must offer alert category filters');
+assert.match(app,/homeAttentionFilter=button\.dataset\.attentionFilter;homeAttentionExpanded=false;renderHomeAttention\(\)/,'Changing alert filter must reset expansion and rerender');
+assert.match(app,/aria-pressed="\$\{homeAttentionFilter===category\.id\}"/,'Filter buttons must expose selected state');
+assert.match(app,/\$\$\('\[data-attention-filter\]'\)\.forEach/,'Filter handlers must use multi-node selector');
 console.log('DomAIn account UI smoke checks passed');
