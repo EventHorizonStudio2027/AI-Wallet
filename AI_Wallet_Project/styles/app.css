@@ -344,3 +344,20 @@ body{font-size:14px}
 #clearFileFiltersBtn{white-space:nowrap;min-height:38px;padding:8px 12px;border-radius:10px;flex-shrink:0}
 #clearFileFiltersBtn:hover{border-color:#75b9ff;background:rgba(73,142,214,.16)}
 @media(max-width:680px){#clearFileFiltersBtn{width:100%;min-height:42px}}
+
+/* Media Library layout: comfortable rows or compact visual tiles. */
+.library-view-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.library-view-switch{display:inline-flex;gap:3px;padding:3px;border:1px solid rgba(125,163,204,.25);border-radius:12px;background:rgba(14,29,48,.65)}
+.library-view-switch button{padding:6px 11px;min-height:34px;border-radius:9px;white-space:nowrap}
+.library-view-switch button[aria-pressed="true"]{background:rgba(79,155,239,.24);border-color:rgba(115,186,255,.55);color:#e6f4ff}
+#fileList.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,245px),1fr));gap:12px;align-items:stretch}
+#fileList.file-grid>.file-row{min-width:0;display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:16px;border:1px solid rgba(119,158,207,.22);border-radius:16px;background:linear-gradient(160deg,rgba(53,85,124,.15),rgba(16,30,49,.30))}
+#fileList.file-grid>.file-row .file-type{display:flex;align-items:center;justify-content:center;min-height:88px;border-radius:12px;background:rgba(85,143,206,.12);font-size:34px}
+#fileList.file-grid>.file-row .file-info{min-width:0;flex:1}
+#fileList.file-grid>.file-row .file-info b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#fileList.file-grid>.file-row .file-info small{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+#fileList.file-grid>.file-row .file-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;width:100%}
+#fileList.file-grid>.file-row .file-actions button{min-width:0}
+#fileList.file-grid>.empty{grid-column:1/-1}
+@media(max-width:560px){.library-view-controls{width:100%;justify-content:space-between}#fileList.file-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#fileList.file-grid>.file-row{padding:10px}#fileList.file-grid>.file-row .file-actions{grid-template-columns:1fr 1fr}}
+@media(max-width:370px){#fileList.file-grid{grid-template-columns:1fr}}
