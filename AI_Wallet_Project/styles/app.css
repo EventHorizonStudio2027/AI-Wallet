@@ -335,3 +335,7 @@ body{font-size:14px}
 #driveSyncStatus[data-state="error"]{border-color:#d18c65;background:#493026;color:#ffe8d8}
 #driveConnectBtn[aria-busy="true"]{opacity:.65}
 #driveConnectBtn:disabled:not([aria-busy="true"]){opacity:1;background:#215347;color:#d6ffeb;border-color:#438d78}
+
+/* Distinguish successful operations from an authorized connection. */
+#driveSyncStatus[data-state="success"]{border-color:#48b99b;background:#16443b;color:#e3fff4}
+#driveSyncStatus[data-state="pending"]{border-color:#57769b;background:#1a304c;color:#e0eafa}
