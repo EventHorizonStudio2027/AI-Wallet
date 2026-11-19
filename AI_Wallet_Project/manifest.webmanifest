@@ -1,6 +1,6 @@
 {
-  "name": "DomAIn — Your AI. Your Domain.",
-  "short_name": "DomAIn",
+  "name": "domAIn — Your AI. Your Domain.",
+  "short_name": "domAIn",
   "description": "Your AI accounts, media library, usage, subscriptions and creator income in one connected home.",
   "start_url": "./",
   "scope": "./",
