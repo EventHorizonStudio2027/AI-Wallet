@@ -99,7 +99,7 @@ async function renderFileThumbnails(){
  for(const tile of tiles){
   if(generation!==fileThumbnailGeneration||fileViewMode!=='grid')return;
   const file=state.files.find(f=>f.id===tile.dataset.fileDrag);
-  if(!file||file.category!=='Images'||file.storageMode==='remote')continue;
+  if(!file||file.category!=='Images'||file.storageMode==='remote'||(Number(file.size)||0)>12*1024*1024)continue;
   if(fileThumbnailUrls.has(file.id))continue;
   const target=tile.querySelector('.file-type');
   if(!target)continue;
@@ -111,7 +111,7 @@ async function renderFileThumbnails(){
    const url=URL.createObjectURL(blob);
    fileThumbnailUrls.set(file.id,url);
    const img=document.createElement('img');
-   img.src=url;img.alt='';img.loading='lazy';img.decoding='async';img.className='file-grid-thumbnail';img.onerror=()=>{if(fileThumbnailUrls.get(file.id)===url){fileThumbnailUrls.delete(file.id);URL.revokeObjectURL(url)}img.remove()};
+   img.src=url;img.alt='';img.loading='lazy';img.decoding='async';img.className='file-grid-thumbnail';img.title=file.name;img.onerror=()=>{if(fileThumbnailUrls.get(file.id)===url){fileThumbnailUrls.delete(file.id);URL.revokeObjectURL(url)}img.remove()};
    target.replaceChildren(img);
    await new Promise(resolve=>setTimeout(resolve,0));
   }catch(error){console.warn('Thumbnail unavailable',error)}
