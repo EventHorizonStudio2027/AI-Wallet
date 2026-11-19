@@ -235,3 +235,9 @@ body{font-size:14px}
 .field-hint{display:block;margin-top:5px;color:var(--muted);font-size:10px;line-height:1.4;font-weight:400;letter-spacing:0}
 #accountForm label:focus-within .field-hint{color:#b8dffb}
 #accountForm input:focus-visible,#accountForm select:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+/* DomAIn v70: readable compact alert controls and refined card rhythm */
+#accountForm #aAlertDays{font-variant-numeric:tabular-nums}
+#accountForm label:has(#aAlertDays){padding-bottom:2px}
+#accountForm label:has(#aAlertDays) .field-hint{max-width:34ch}
+@media(max-width:520px){#accountForm label:has(#aAlertDays) .field-hint{max-width:none}}
