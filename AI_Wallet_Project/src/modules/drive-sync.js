@@ -9,7 +9,15 @@ function assertToken(token){if(typeof token!=='string'||!token.trim())throw Erro
 async function request(token,url,options={}){
  const headers=new Headers(options.headers||{});
  headers.set('Authorization','Bearer '+assertToken(token));
- const response=await fetch(url,{...options,headers,cache:'no-store'});
+ let response;
+ for(let attempt=0;attempt<3;attempt++){
+  try{response=await fetch(url,{...options,headers,cache:'no-store'})}
+  catch(error){if(attempt===2||options.method&&options.method!=='GET')throw error;await new Promise(resolve=>setTimeout(resolve,250*(attempt+1)));continue}
+  if(response.ok||![429,502,503,504].includes(response.status)||options.method&&options.method!=='GET'||attempt===2)break;
+  const retryAfter=Number(response.headers?.get?.('Retry-After'));
+  const wait=Number.isFinite(retryAfter)&&retryAfter>=0?Math.min(2000,retryAfter*1000):250*(attempt+1);
+  await new Promise(resolve=>setTimeout(resolve,wait));
+ }
  if(!response.ok){let message='Google Drive request failed ('+response.status+')';try{const body=await response.json();message=body.error?.message||message}catch{}throw Error(message)}
  return response;
 }

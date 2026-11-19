@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const context={window:{},Headers,URLSearchParams,Blob,fetch:async()=>{throw Error('Unexpected network')}};
+const context={window:{},Headers,URLSearchParams,Blob,setTimeout:(fn)=>fn(),fetch:(...args)=>context.fetchImpl(...args),fetchImpl:async()=>{throw Error('Unexpected network')}};
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../src/modules/drive-sync.js'),'utf8'),context);
 const api=context.window.AIWalletModules.driveSync;
 const a={id:'abcde12345',modifiedTime:'2026-01-02',md5Checksum:'x'};
@@ -16,16 +16,26 @@ assert.equal(plan.changed.length,1);
 assert.throws(()=>api.planIncrementalSync(null),/Invalid sync inventory/);
 (async()=>{
  await assert.rejects(api.listAllFolderFiles('token',a.id,5001),/Invalid sync file limit/);
- context.fetch=async()=>({ok:true,json:async()=>({files:[],nextPageToken:'repeat'})});
+ context.fetchImpl=async()=>({ok:true,json:async()=>({files:[],nextPageToken:'repeat'})});
  await assert.rejects(api.listAllFolderFiles('token',a.id),/pagination loop/);
  let n=0;
- context.fetch=async()=>({ok:true,json:async()=>++n===1?{files:[{id:'backup111',name:'first'}],nextPageToken:'next'}:{files:[{id:'backup222',name:'second'}]}});
+ context.fetchImpl=async()=>({ok:true,json:async()=>++n===1?{files:[{id:'backup111',name:'first'}],nextPageToken:'next'}:{files:[{id:'backup222',name:'second'}]}});
  const backups=await api.listBackups('token');
  assert.equal(backups.files.length,2,'backup list must include all pages');
- context.fetch=async()=>({ok:true,json:async()=>({files:[],nextPageToken:'loop'})});
+ context.fetchImpl=async()=>({ok:true,json:async()=>({files:[],nextPageToken:'loop'})});
  await assert.rejects(api.listBackups('token'),/pagination loop/);
- context.fetch=async()=>({ok:true,json:async()=>({invalid:true})});
+ context.fetchImpl=async()=>({ok:true,json:async()=>({invalid:true})});
  await assert.rejects(api.listAllFolderFiles('token',a.id),/Malformed Google Drive file listing/);
  await assert.rejects(api.listBackups('token'),/Malformed Google Drive backup listing/);
+ let attempts=0;
+ context.fetchImpl=async()=>{attempts++;return attempts<3?{ok:false,status:503,headers:{get:()=>null},json:async()=>({})}:{ok:true,json:async()=>({files:[]})}};
+ const retryResult=await api.listAllFolderFiles('token',a.id);
+ assert.equal(retryResult.length,0);
+ assert.equal(attempts,3,'transient read failures should retry');
+ attempts=0;
+ context.fetchImpl=async()=>{attempts++;return {ok:false,status:503,headers:{get:()=>null},json:async()=>({error:{message:'busy'}})}};
+ await assert.rejects(api.uploadBackup('token',new Blob(['{}']),'domain-backup-2026-11-18T10-00-00-000Z.json'),/busy/);
+ assert.equal(attempts,1,'uploads must never be retried automatically');
+
  console.log('Drive sync planning, backup pagination, and malformed response safeguards passed');
 })().catch(e=>{console.error(e);process.exitCode=1});

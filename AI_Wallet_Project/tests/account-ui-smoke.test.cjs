@@ -39,7 +39,7 @@ assert.match(app,/duplicates\+\+;continue/,'Import must skip duplicates without 
 assert.match(app,/Stored · this browser/,'Library rows must disclose local storage');
 assert.match(app,/if\(state\.files\.length>=10000\)throw Error/,'Unique-file quota must be checked after duplicate detection');
 assert.match(app,/catch\(hashError\)/,'Checksum failure must not block a valid import');
-assert.match(app,/files\.filter\(f=>f\.storageMode!=='remote'\)\.length\+' local'/,'Library count must disclose local file totals');
+assert.match(app,/files\.filter\(f=>window\.AIWalletModules\.files\.storageStatus\(f\)==='local'\)\.length\+' local'/,'Library count must disclose local file totals');
 assert.match(app,/folderInput'\)\.onchange=e=>addFiles/,'Folder selection must use the existing import pipeline');
 assert.match(app,/sourcePath:\['folder-import','watched-folder'\]\.includes\(source\)/,'Folder imports must record relative source paths');
 assert.match(app,/window\.showDirectoryPicker\(\{mode:'read'\}\)/,'Watched folder must use permission-based directory picker');
