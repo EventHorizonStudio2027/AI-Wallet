@@ -341,6 +341,7 @@ $('#driveBackupBtn').onclick=async()=>{
   const blob=new Blob([JSON.stringify(backup)],{type:'application/json'});
   window.AIWalletModules.backup.assertBackupSize(blob.size);
   const filename='domain-backup-'+new Date().toISOString().replace(/[.:]/g,'-')+'.json';
+  driveStatus('Uploading '+formatSize(blob.size)+' encrypted-transport backup to Google Drive…');
   const result=await driveAPI().uploadBackup(driveToken,blob,filename);
   driveStatus('✓ Backup saved to Google Drive: '+result.name+' ('+formatSize(blob.size)+'). Use Retrieve latest backup to download a recovery copy.');
  }catch(error){console.warn('Google Drive backup failed',error);driveStatus('Backup failed: '+String(error.message||error).slice(0,160))}
@@ -356,6 +357,7 @@ $('#driveRestoreBtn').onclick=async()=>{
   const latest=backups[0];
   const blob=await driveAPI().download(driveToken,latest.id);
   if(blob.size>100*1024*1024)throw Error('Backup exceeds the supported 100 MB limit');
+  if(blob.size===0)throw Error('Downloaded backup is empty');
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=window.AIWalletModules.fileSafety.safeFilename(latest.name||'domain-backup.json');
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
