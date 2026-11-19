@@ -157,6 +157,63 @@ $('#addAccount').onclick=()=>openAccount();$('#addAccountTop').onclick=()=>openA
 function openChatMemory(accountId='',chatId=''){let editing=!!chatId,account=state.accounts.find(a=>a.id===accountId)||state.accounts.find(a=>a.id===selectedAccount)||state.accounts[0],chat=editing?state.accounts.flatMap(a=>(a.chats||[]).map(c=>({account:a,chat:c}))).find(x=>x.chat.id===chatId)?.chat:null;if(!account){toast('Add an account first');return}$('#chatMemoryTitle').textContent=editing?'Edit conversation memory':'Add conversation memory';$('#chatMemoryId').value=chatId||'';$('#chatMemoryAccount').innerHTML=state.accounts.map(a=>`<option value="${esc(a.id)}">${esc(service(a.serviceId).name)} · ${esc(a.label)}</option>`).join('');$('#chatMemoryAccount').value=account.id;$('#chatMemoryName').value=chat?.name||'';$('#chatMemoryUsed').value=chat?.used??0;$('#chatMemoryCapacity').value=chat?.capacity??0;$('#chatMemoryUnit').value=chat?.unit||'tokens';$('#chatMemoryRefresh').value=chat?.refreshAt||'';$('#chatMemoryCycle').value=chat?.refreshCycle||'conversation';openModal('chatMemoryModal')}$('#addChatMemory').onclick=()=>openChatMemory();$('#chatMemoryForm').onsubmit=e=>{e.preventDefault();let account=state.accounts.find(a=>a.id===$('#chatMemoryAccount').value);if(!account){toast('Choose a valid account');return}let name=$('#chatMemoryName').value.trim(),used=Number($('#chatMemoryUsed').value),capacity=Number($('#chatMemoryCapacity').value),refreshAt=$('#chatMemoryRefresh').value,cycle=$('#chatMemoryCycle').value,chatId=$('#chatMemoryId').value;if(!name||!Number.isFinite(used)||!Number.isFinite(capacity)||used<0||capacity<0||used>capacity&&capacity>0){toast('Check the conversation name and context values');return}if(refreshAt&&!/^\d{4}-\d{2}-\d{2}$/.test(refreshAt)){toast('Choose a valid refresh date');return}let previous=cloneState(state);let source=chatId?state.accounts.find(a=>(a.chats||[]).some(c=>c.id===chatId)):null;let chat=source?.chats.find(c=>c.id===chatId);if(!account.chats)account.chats=[];let snapshot={at:Date.now(),used,capacity,reason:chat?'updated':'created'};if(chat){let changed=chat.used!==used||chat.capacity!==capacity||chat.unit!==($('#chatMemoryUnit').value.trim()||'tokens');chat.name=name;chat.used=used;chat.capacity=capacity;chat.unit=$('#chatMemoryUnit').value.trim()||'tokens';chat.refreshAt=refreshAt;chat.refreshCycle=cycle;chat.updatedAt=snapshot.at;chat.memoryHistory=chat.memoryHistory||[];if(changed)chat.memoryHistory.push(snapshot);if(source!==account){source.chats=source.chats.filter(c=>c.id!==chatId);account.chats.push(chat)}}else{chat={id:id(),name,used,capacity,unit:$('#chatMemoryUnit').value.trim()||'tokens',refreshAt,refreshCycle:cycle,updatedAt:snapshot.at,memoryHistory:[snapshot]};account.chats.push(chat)}if(!commitState(previous))return;$('#chatMemoryModal').classList.remove('open');renderUsage();toast(chat?'Conversation memory updated':'Conversation memory added')};
 $('#addService').onclick=()=>openModal('serviceModal');$('#serviceForm').onsubmit=e=>{e.preventDefault();let name=$('#sName').value.trim(),s={id:id(),name,domain:'',fallback:$('#sIcon').value||'✦',color:'#8e8aff',custom:true,url:$('#sUrl').value.trim()};let previous=cloneState(state);state.services.push(s);selectedService=s.id;if(!commitState(previous))return;$('#serviceModal').classList.remove('open');render();toast('AI service added')};
 let fileUploadBusy=false;
+// Watched folders require explicit browser permission; handles are session-only.
+let watchedDirectory=null,watchedFolderTimer=null,watchedFolderBusy=false,watchedFolderLastSync=null;
+const watchStatus=()=>$('#liveFolderStatus');
+function updateWatchedFolderUI(message){
+ const supported=typeof window.showDirectoryPicker==='function';
+ $('#watchFolderBtn').disabled=!supported||watchedFolderBusy;
+ $('#syncFolderBtn').disabled=!watchedDirectory||watchedFolderBusy;
+ $('#disconnectFolderBtn').disabled=!watchedDirectory||watchedFolderBusy;
+ watchStatus().textContent=message||(watchedDirectory?'Connected: '+watchedDirectory.name+(watchedFolderLastSync?' · Last checked '+watchedFolderLastSync:''):'Watched folder requires Chrome or Edge with folder access. No files are uploaded to a server.');
+}
+async function collectWatchedFiles(directory,prefix='',output=[]){
+ for await(const [name,entry] of directory.entries()){
+  if(output.length>=10000)throw Error('Folder contains more than 10,000 files');
+  if(entry.kind==='directory')await collectWatchedFiles(entry,prefix+name+'/',output);
+  else if(entry.kind==='file'){
+   const file=await entry.getFile();
+   output.push({file,path:prefix+name});
+  }
+ }
+ return output;
+}
+async function syncWatchedFolder(){
+ if(!watchedDirectory||watchedFolderBusy||fileUploadBusy||window._walletImportBusy||backupExportBusy)return;
+ watchedFolderBusy=true;updateWatchedFolderUI('Checking watched folder…');
+ try{
+  const permission=await watchedDirectory.queryPermission({mode:'read'});
+  if(permission!=='granted'){updateWatchedFolderUI('Folder permission expired. Connect again to authorize.');disconnectWatchedFolder();return}
+  const entries=await collectWatchedFiles(watchedDirectory);
+  const known=new Set(state.files.filter(f=>f.source==='watched-folder').map(f=>[f.sourcePath,f.size,f.originalModified].join('|')));
+  const incoming=entries.filter(entry=>!known.has([entry.path,entry.file.size,entry.file.lastModified].join('|')));
+  if(incoming.length){
+   const files=incoming.map(entry=>{const file=entry.file;return {name:file.name,type:file.type,size:file.size,lastModified:file.lastModified,webkitRelativePath:entry.path,arrayBuffer:()=>file.arrayBuffer(),slice:(...args)=>file.slice(...args)}});
+   await addFiles(files,{source:'watched-folder'});
+  }
+  watchedFolderLastSync=new Date().toLocaleTimeString();
+  updateWatchedFolderUI('Connected: '+watchedDirectory.name+' · Checked '+watchedFolderLastSync+' · '+incoming.length+' changed/new file(s) detected');
+ }catch(error){console.warn('Watched folder sync failed',error);updateWatchedFolderUI('Sync failed: '+String(error.message||error).slice(0,130))}
+ finally{watchedFolderBusy=false;updateWatchedFolderUI(watchStatus().textContent)}
+}
+function disconnectWatchedFolder(){
+ if(watchedFolderTimer)clearInterval(watchedFolderTimer);
+ watchedFolderTimer=null;watchedDirectory=null;watchedFolderLastSync=null;
+ updateWatchedFolderUI('Disconnected. Reconnect to watch a folder; existing imported files remain in your library.');
+}
+$('#watchFolderBtn').onclick=async()=>{
+ if(typeof window.showDirectoryPicker!=='function')return;
+ try{
+  const handle=await window.showDirectoryPicker({mode:'read'});
+  if(watchedFolderTimer)clearInterval(watchedFolderTimer);
+  watchedDirectory=handle;
+  watchedFolderTimer=setInterval(()=>{if(document.visibilityState==='visible')syncWatchedFolder()},60000);
+  await syncWatchedFolder();
+ }catch(error){if(error.name!=='AbortError'){console.warn('Folder access unavailable',error);updateWatchedFolderUI('Could not connect folder: '+String(error.message||error).slice(0,110))}}
+};
+$('#syncFolderBtn').onclick=()=>syncWatchedFolder();
+$('#disconnectFolderBtn').onclick=()=>disconnectWatchedFolder();
+updateWatchedFolderUI();
 $('#uploadBtn').onclick=()=>{if(!fileUploadBusy&&!window._walletImportBusy&&!backupExportBusy)$('#fileInput').click()};
 $('#fileInput').onchange=e=>addFiles([...e.target.files]);
 $('#importFolderBtn').onclick=()=>{if(!fileUploadBusy&&!window._walletImportBusy&&!backupExportBusy)$('#folderInput').click()};
@@ -185,7 +242,7 @@ async function addFiles(files,{source='manual-import'}={}){
    let fid=id();
    await putFileBlob(fid,f);
    stored.push(fid);
-   state.files.push({id:fid,name:f.name,type:f.type,size:f.size,category:fileCategory(f.name,f.type),serviceId:acct?.serviceId||svc,accountId:acct?.id||'',added:Date.now(),source,storageMode:'local',sourcePath:source==='folder-import'?String(f.webkitRelativePath||'').slice(0,512):'',originalModified:f.lastModified||null,checksum,checksumAlgorithm:checksum?'sha256':null});
+   state.files.push({id:fid,name:f.name,type:f.type,size:f.size,category:fileCategory(f.name,f.type),serviceId:acct?.serviceId||svc,accountId:acct?.id||'',added:Date.now(),source,storageMode:'local',sourcePath:['folder-import','watched-folder'].includes(source)?String(f.webkitRelativePath||'').slice(0,512):'',originalModified:f.lastModified||null,checksum,checksumAlgorithm:checksum?'sha256':null});
   }
   if(!save())throw Error('Could not save uploaded file metadata');
   committed=true;
