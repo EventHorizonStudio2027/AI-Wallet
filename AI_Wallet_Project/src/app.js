@@ -504,7 +504,10 @@ async function previewMediaInline(f){
   if(type==='video')player.playsInline=true;
   $('#mediaPreviewTitle').textContent=f.name;
   $('#mediaPreviewMeta').textContent=(type==='video'?'Video':'Audio')+' · '+formatSize(blob.size);
-  $('#mediaPreviewContent').replaceChildren(player);
+  const actions=document.createElement('div');actions.className='media-preview-actions';
+  const save=document.createElement('button');save.type='button';save.className='secondary';save.textContent='Save original file';save.onclick=()=>downloadFile(f.id);
+  actions.append(save);
+  $('#mediaPreviewContent').replaceChildren(player,actions);
   dialog.showModal();
  }catch(error){if(request===mediaPreviewRequest)toast('Media preview unavailable; try saving the file')}
  return true;
