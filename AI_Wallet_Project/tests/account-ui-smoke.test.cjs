@@ -41,4 +41,10 @@ assert.match(app,/catch\(hashError\)/,'Checksum failure must not block a valid i
 assert.match(app,/files\.filter\(f=>f\.storageMode!=='remote'\)\.length\+' local'/,'Library count must disclose local file totals');
 assert.match(app,/folderInput'\)\.onchange=e=>addFiles/,'Folder selection must use the existing import pipeline');
 assert.match(app,/sourcePath:source==='folder-import'/,'Folder imports must record relative source paths');
+assert.match(app,/window\.showDirectoryPicker\(\{mode:'read'\}\)/,'Watched folder must use permission-based directory picker');
+assert.match(app,/watchedFolderTimer=setInterval/,'Watched folder must schedule periodic checks');
+assert.match(app,/queryPermission\(\{mode:'read'\}\)/,'Watched folder must verify read permission before scanning');
+assert.match(app,/source:'watched-folder'/,'Watched folder must track imported file provenance');
+assert.match(app,/document\.visibilityState==='visible'/,'Background folder polling must respect tab visibility');
+assert.match(app,/disconnectWatchedFolder\(\)/,'Watched folder must allow disconnection');
 console.log('DomAIn account UI smoke checks passed');
