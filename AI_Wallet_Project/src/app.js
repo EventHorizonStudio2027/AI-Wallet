@@ -497,6 +497,8 @@ async function previewMediaInline(f){
   activeMediaPreviewUrl=url;
   const player=document.createElement(type);
   player.controls=true;player.preload='metadata';player.src=url;
+  player.setAttribute('aria-label',f.name);
+  player.addEventListener('error',()=>{if(activeMediaPreviewUrl===url)$('#mediaPreviewMeta').textContent='This format cannot be played in this browser. Save the file to open it in another app.'});
   if(type==='video')player.playsInline=true;
   $('#mediaPreviewTitle').textContent=f.name;
   $('#mediaPreviewMeta').textContent=(type==='video'?'Video':'Audio')+' · '+formatSize(blob.size);
