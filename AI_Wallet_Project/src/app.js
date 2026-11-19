@@ -385,7 +385,7 @@ $('#driveBackupBtn').onclick=async()=>{
   driveStatus('Uploading '+formatSize(blob.size)+' backup to Google Drive over HTTPS…');
   const result=await driveAPI().uploadBackup(driveToken,blob,filename);
   if(result.size!=null&&Number(result.size)!==blob.size)throw Error('Drive reported a different backup size; verify recovery before relying on this copy');
-  driveStatus('Backup uploaded. Verifying the saved recovery copy…');
+  driveStatus('Backup uploaded. Checking Drive recovery and SHA-256 integrity…');
   const verifiedBlob=await driveAPI().download(driveToken,result.id);
   if(verifiedBlob.size!==blob.size)throw Error('Uploaded backup size differs from recovered copy');
   const verified=JSON.parse(await verifiedBlob.text());
@@ -395,7 +395,7 @@ $('#driveBackupBtn').onclick=async()=>{
   const recoveredHash=await crypto.subtle.digest('SHA-256',await verifiedBlob.arrayBuffer());
   const originalBytes=new Uint8Array(originalHash),recoveredBytes=new Uint8Array(recoveredHash);
   if(!originalBytes.every((value,index)=>value===recoveredBytes[index]))throw Error('Recovered backup content differs from the uploaded file');
-  driveStatus('✓ Backup uploaded and recovery-tested: '+result.name+' ('+formatSize(blob.size)+'). Retrieve latest backup to save a separate copy.');
+  driveStatus('✓ Verified backup · SHA-256 match · '+result.name+' · '+formatSize(blob.size)+'. Retrieve latest backup to save a separate copy.');
  }catch(error){console.warn('Google Drive backup failed',error);driveStatus('Backup failed: '+String(error.message||error).slice(0,160))}
  finally{driveBusy=false;driveControls()}
 };
