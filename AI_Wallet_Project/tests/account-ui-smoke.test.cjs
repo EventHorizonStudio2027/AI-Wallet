@@ -39,4 +39,6 @@ assert.match(app,/Stored · this browser/,'Library rows must disclose local stor
 assert.match(app,/if\(state\.files\.length>=10000\)throw Error/,'Unique-file quota must be checked after duplicate detection');
 assert.match(app,/catch\(hashError\)/,'Checksum failure must not block a valid import');
 assert.match(app,/files\.filter\(f=>f\.storageMode!=='remote'\)\.length\+' local'/,'Library count must disclose local file totals');
+assert.match(app,/folderInput'\)\.onchange=e=>addFiles/,'Folder selection must use the existing import pipeline');
+assert.match(app,/sourcePath:source==='folder-import'/,'Folder imports must record relative source paths');
 console.log('DomAIn account UI smoke checks passed');
