@@ -331,7 +331,7 @@ $('#driveBackupBtn').onclick=async()=>{
   window.AIWalletModules.backup.assertBackupSize(blob.size);
   const filename='domain-backup-'+new Date().toISOString().replace(/[.:]/g,'-')+'.json';
   const result=await driveAPI().uploadBackup(driveToken,blob,filename);
-  driveStatus('Private Google Drive backup saved: '+result.name+' ('+formatSize(blob.size)+'). Use Download latest backup to retrieve it for restore.');
+  driveStatus('✓ Backup saved to Google Drive: '+result.name+' ('+formatSize(blob.size)+'). Use Retrieve latest backup to download a recovery copy.');
  }catch(error){console.warn('Google Drive backup failed',error);driveStatus('Backup failed: '+String(error.message||error).slice(0,160))}
  finally{driveBusy=false;driveControls()}
 };
@@ -348,7 +348,7 @@ $('#driveRestoreBtn').onclick=async()=>{
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=window.AIWalletModules.fileSafety.safeFilename(latest.name||'domain-backup.json');
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
-  driveStatus('Latest backup downloaded. Use DomAIn’s existing Import Backup control to restore it after reviewing the file.');
+  driveStatus('✓ Recovery copy downloaded. Your existing DomAIn data has not been changed. Review the file before using Import Backup.');
  }catch(error){console.warn('Drive backup recovery failed',error);driveStatus('Recovery download failed: '+String(error.message||error).slice(0,145))}
  finally{driveBusy=false;driveControls()}
 };
