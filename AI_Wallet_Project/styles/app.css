@@ -339,3 +339,8 @@ body{font-size:14px}
 /* Distinguish successful operations from an authorized connection. */
 #driveSyncStatus[data-state="success"]{border-color:#48b99b;background:#16443b;color:#e3fff4}
 #driveSyncStatus[data-state="pending"]{border-color:#57769b;background:#1a304c;color:#e0eafa}
+
+/* Media Library: compact, discoverable filter reset. */
+#clearFileFiltersBtn{white-space:nowrap;min-height:38px;padding:8px 12px;border-radius:10px;flex-shrink:0}
+#clearFileFiltersBtn:hover{border-color:#75b9ff;background:rgba(73,142,214,.16)}
+@media(max-width:680px){#clearFileFiltersBtn{width:100%;min-height:42px}}
