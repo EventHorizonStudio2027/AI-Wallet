@@ -387,3 +387,9 @@ body{font-size:14px}
 
 .media-preview-tip{margin:14px 0 0;text-align:center;line-height:1.5;opacity:.8}
 .media-preview-dialog:focus-visible{outline:2px solid #8fc9ff;outline-offset:2px}
+
+/* Playback controls remain comfortable on narrow screens. */
+.media-preview-dialog{overscroll-behavior:contain}
+.media-preview-header h3{font-size:clamp(1rem,2.5vw,1.25rem);line-height:1.35}
+.media-preview-content video:focus-visible,.media-preview-content audio:focus-visible{outline:2px solid #8fc9ff;outline-offset:4px}
+@media(max-width:440px){.media-preview-header{flex-wrap:wrap}.media-preview-header button{margin-left:auto}.media-preview-content video{max-height:55vh}}
