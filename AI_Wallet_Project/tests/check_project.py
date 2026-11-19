@@ -111,6 +111,13 @@ check(html.count('id="domainNeon"') == 1, "Duplicate sidebar SVG gradient identi
 check(html.count('id="domainHeroNeon"') == 1, "Dashboard SVG gradient missing or duplicated")
 check("CACHE_PREFIX" in (ROOT / "service-worker.js").read_text(encoding="utf-8"), "Missing offline cache version")
 check("styles/app.css" in html, "Stylesheet missing from HTML")
+# Guard against publishing a branded page with broken media-preview wiring.
+for identifier in ("mediaPreviewDialog", "mediaPreviewTitle", "mediaPreviewMeta", "mediaPreviewContent", "closeMediaPreviewBtn"):
+    check(identifier in doc.ids, f"Missing media preview UI: {identifier}")
+check("previewMediaInline" in app_js and "closeMediaPreview" in app_js, "Media preview handlers missing")
+check(".media-preview-dialog" in css, "Media preview dialog styling missing")
+check('class="brand-name">dom<span' in html, "Sidebar wordmark must begin with lowercase d")
+check("DomAIn" not in html, "Outdated uppercase-D branding in HTML")
 if errors:
     for error in errors:
         print(f"FAIL: {error}")
