@@ -273,8 +273,12 @@ $('#driveDisconnectBtn').onclick=()=>{
 };
 $('#driveSyncBtn').onclick=async()=>{
  if(!driveControls()||driveBusy)return;
- const folderId=$('#driveFolderId').value.trim();
- if(!folderId){driveStatus('Enter a Google Drive folder ID before importing. Leave it blank only when saving backups.');$('#driveFolderId').focus();return}
+ const folderInput=$('#driveFolderId');
+ let folderId=folderInput.value.trim();
+ const folderUrl=folderId.match(/^https:\/\/drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([A-Za-z0-9_-]+)(?:[/?#].*)?$/i);
+ if(folderUrl){folderId=folderUrl[1];folderInput.value=folderId;}
+ if(!folderId){driveStatus('Enter a Google Drive folder ID or paste its full URL before importing.');folderInput.focus();return}
+ if(!/^[A-Za-z0-9_-]{5,200}$/.test(folderId)){driveStatus('That does not look like a valid Google Drive folder ID or URL.');folderInput.focus();return}
  driveBusy=true;driveControls();driveStatus('Checking Google Drive folder…');
  let added=0,updated=0,skipped=0;
  try{
