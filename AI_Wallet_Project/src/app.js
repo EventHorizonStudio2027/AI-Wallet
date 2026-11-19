@@ -218,10 +218,11 @@ updateWatchedFolderUI();
 // Google Drive OAuth: access tokens are session-only and never persisted.
 let driveToken='',driveTokenExpires=0,driveBusy=false,driveClient=null;
 const driveAPI=()=>window.AIWalletModules.driveSync;
-function driveStatus(message){$('#driveSyncStatus').textContent=message;const connected=!!driveToken&&Date.now()<driveTokenExpires;const button=$('#driveConnectBtn');button.textContent=connected?'✓ Google Drive connected':'Connect Google Drive';button.setAttribute('aria-label',connected?'Google Drive connected for this session':'Connect Google Drive')}
+function driveStatus(message){const status=$('#driveSyncStatus');status.textContent=message;const connected=!!driveToken&&Date.now()<driveTokenExpires;status.dataset.state=connected?'connected':/failed|did not|error|blocked|invalid/i.test(message)?'error':'pending';const button=$('#driveConnectBtn');button.textContent=connected?'✓ Google Drive connected':'Connect Google Drive';button.setAttribute('aria-label',connected?'Google Drive connected for this session':'Connect Google Drive')}
 function driveControls(){
  const ready=!!driveToken&&Date.now()<driveTokenExpires;
- $('#driveConnectBtn').disabled=driveBusy;
+ $('#driveConnectBtn').disabled=driveBusy||ready;
+ $('#driveConnectBtn').setAttribute('aria-busy',String(driveBusy));
  $('#driveSyncBtn').disabled=driveBusy||!ready;
  $('#driveBackupBtn').disabled=driveBusy||!ready;
  $('#driveRestoreBtn').disabled=driveBusy||!ready;
