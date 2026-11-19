@@ -218,7 +218,7 @@ updateWatchedFolderUI();
 // Google Drive OAuth: access tokens are session-only and never persisted.
 let driveToken='',driveTokenExpires=0,driveBusy=false,driveClient=null;
 const driveAPI=()=>window.AIWalletModules.driveSync;
-function driveStatus(message){$('#driveSyncStatus').textContent=message}
+function driveStatus(message){$('#driveSyncStatus').textContent=message;const connected=!!driveToken&&Date.now()<driveTokenExpires;const button=$('#driveConnectBtn');button.textContent=connected?'✓ Google Drive connected':'Connect Google Drive';button.setAttribute('aria-label',connected?'Google Drive connected for this session':'Connect Google Drive')}
 function driveControls(){
  const ready=!!driveToken&&Date.now()<driveTokenExpires;
  $('#driveConnectBtn').disabled=driveBusy;
@@ -238,12 +238,12 @@ function loadGoogleIdentity(){
   document.head.appendChild(script);
  });
 }
-$('#driveConnectBtn').onclick=async()=>{
+// Preload the Google Identity script so the first user click can open OAuth immediately.\nloadGoogleIdentity().catch(()=>{});\n$('#driveConnectBtn').onclick=async()=>{
  const clientId=$('#driveClientId').value.trim();
  if(!/^[0-9]+-[a-zA-Z0-9_-]+\.apps\.googleusercontent\.com$/.test(clientId)){driveStatus('Enter a valid Google OAuth web client ID.');return}
  try{
   driveBusy=true;driveControls();driveStatus('Loading Google authorization…');
-  if(!window.google?.accounts?.oauth2){await loadGoogleIdentity();driveBusy=false;driveControls();driveStatus('Google authorization is ready. Click Connect Google again to approve access.');return}
+  if(!window.google?.accounts?.oauth2){await loadGoogleIdentity();driveBusy=false;driveControls();driveStatus('Google sign-in is ready. Click Connect Google Drive once more to authorize.');return}
   driveClient=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:driveAPI().SCOPES,callback:response=>{
    driveBusy=false;
    if(response.error||!response.access_token){driveStatus('Google authorization declined or failed.');driveControls();return}
