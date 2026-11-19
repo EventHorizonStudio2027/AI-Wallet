@@ -264,24 +264,44 @@ $('#driveSyncBtn').onclick=async()=>{
  if(!driveControls()||driveBusy)return;
  const folderId=$('#driveFolderId').value.trim();
  driveBusy=true;driveControls();driveStatus('Checking Google Drive folder…');
- const added=[];
+ let added=0,updated=0,skipped=0;
  try{
-  const files=await driveAPI().listAllFolderFiles(driveToken,folderId);
-  let skipped=0;
-  for(const remote of files){
+  const remoteFiles=await driveAPI().listAllFolderFiles(driveToken,folderId);
+  const existing=state.files.filter(f=>f.source==='google-drive'&&f.remoteFileId).map(f=>({
+   sourceKey:'google-drive:'+f.remoteFileId,
+   modifiedTime:f.driveModifiedTime||new Date(f.originalModified||0).toISOString(),
+   checksum:f.driveChecksum||''
+  }));
+  const plan=driveAPI().planIncrementalSync(remoteFiles,existing);
+  skipped=plan.unchanged.length;
+  for(const remote of [...plan.added,...plan.changed]){
    if(remote.mimeType?.startsWith('application/vnd.google-apps.')){skipped++;continue}
    const remoteModified=Date.parse(remote.modifiedTime||'')||0;
-   if(state.files.some(f=>f.source==='google-drive'&&f.remoteFileId===remote.id&&f.originalModified===remoteModified)){skipped++;continue}
-   if(state.files.length>=10000)throw Error('Library limit of 10,000 files reached');
-   if(Number(remote.size||0)>window.AIWalletModules.backup.MAX_FILE_BYTES){skipped++;continue}
+   const prior=state.files.find(f=>f.source==='google-drive'&&f.remoteFileId===remote.id);
+   if(prior&&prior.originalModified===remoteModified){skipped++;continue}
+   if(!prior&&state.files.length>=10000)throw Error('Library limit of 10,000 files reached');
+   const size=Number(remote.size||0);
+   if(!Number.isSafeInteger(size)||size<0||size>window.AIWalletModules.backup.MAX_FILE_BYTES){skipped++;continue}
    const blob=await driveAPI().download(driveToken,remote.id);
-   const fid=id();await putFileBlob(fid,blob);added.push(fid);
-   state.files.push({id:fid,name:remote.name||'Drive file',type:remote.mimeType||blob.type||'',size:blob.size,category:fileCategory(remote.name||'',remote.mimeType||''),serviceId:'',accountId:'',added:Date.now(),source:'google-drive',storageMode:'local',remoteFileId:remote.id,originalModified:remoteModified,sourcePath:'Google Drive/'+folderId,originalUrl:remote.webViewLink||'',checksum:'',checksumAlgorithm:null});
-   if(!save())throw Error('Could not save Drive import metadata');
+   window.AIWalletModules.backup.assertBlobSize(blob);
+   const fid=prior?.id||id();
+   // Keep the previous blob until metadata is safely saved.
+   const previousBlob=prior?await getFileBlob(fid):null;
+   const previousRecord=prior?{...prior}:null;
+   await putFileBlob(fid,blob);
+   const record={...(prior||{}),id:fid,name:remote.name||'Drive file',type:remote.mimeType||blob.type||'',size:blob.size,category:fileCategory(remote.name||'',remote.mimeType||''),serviceId:prior?.serviceId||'',accountId:prior?.accountId||'',added:prior?.added||Date.now(),source:'google-drive',storageMode:'local',remoteFileId:remote.id,originalModified:remoteModified,driveModifiedTime:remote.modifiedTime||'',driveChecksum:remote.md5Checksum||'',sourcePath:'Google Drive/'+folderId,originalUrl:remote.webViewLink||'',checksum:'',checksumAlgorithm:null};
+   if(prior)Object.assign(prior,record);else state.files.push(record);
+   if(!save()){
+    if(prior)Object.assign(prior,previousRecord);else state.files=state.files.filter(f=>f.id!==fid);
+    try{if(previousBlob)await putFileBlob(fid,previousBlob);else await deleteFileBlob(fid)}catch(cleanupError){console.warn('Drive rollback failed',cleanupError)}
+    throw Error('Could not save Drive import metadata');
+   }
+   if(prior)updated++;else added++;
+   driveStatus('Importing Drive files: '+(added+updated)+' saved · '+skipped+' unchanged.');
   }
   render();
-  driveStatus('Drive import complete: '+added.length+' new files, '+skipped+' skipped. Files are stored locally; use Back up to Drive for cloud backup.');
- }catch(error){console.warn('Google Drive import error',error);render();driveStatus('Drive import stopped: '+String(error.message||error).slice(0,150)+' · '+added.length+' files saved before error.')}
+  driveStatus('Drive import complete: '+added+' added, '+updated+' updated, '+skipped+' skipped. Files are stored locally.');
+ }catch(error){console.warn('Google Drive import error',error);render();driveStatus('Drive import stopped: '+String(error.message||error).slice(0,150)+' · '+(added+updated)+' files saved before error.')}
  finally{driveBusy=false;driveControls()}
 };
 $('#driveBackupBtn').onclick=async()=>{
