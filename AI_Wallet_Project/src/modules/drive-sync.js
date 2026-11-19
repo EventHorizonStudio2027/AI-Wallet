@@ -76,14 +76,14 @@ async function listBackups(token){
   const response=await request(token,API+'?'+params);
   const result=await response.json();
   if(!result||!Array.isArray(result.files))throw Error('Malformed Google Drive backup listing');
-  files.push(...result.files);
+  files.push(...result.files.filter(file=>file&&typeof file.id==='string'&&/^[A-Za-z0-9_-]{5,200}$/.test(file.id)&&typeof file.name==='string'&&/^domain-backup-[0-9T-Z-]+\.json$/.test(file.name)));
   if(result.nextPageToken!=null&&(typeof result.nextPageToken!=='string'||result.nextPageToken.length>2048))throw Error('Invalid Google Drive backup page token');
   next=result.nextPageToken||'';
  }while(next);
  return {files};
 }
 async function uploadBackup(token,blob,name){
- if(!(blob instanceof Blob)||blob.size>100*1024*1024)throw Error('Backup must be a Blob no larger than 100 MB');
+ if(!(blob instanceof Blob)||blob.size===0||blob.size>100*1024*1024)throw Error('Backup must be a nonempty Blob no larger than 100 MB');
  if(!/^domain-backup-[0-9T-Z-]+\.json$/.test(name))throw Error('Invalid backup filename');
  const metadata={name,parents:['appDataFolder'],mimeType:'application/json'};
  const boundary='domain'+Math.random().toString(36).slice(2);
