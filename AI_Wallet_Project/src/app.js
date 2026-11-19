@@ -227,6 +227,7 @@ function driveControls(){
  $('#driveBackupBtn').disabled=driveBusy||!ready;
  $('#driveRestoreBtn').disabled=driveBusy||!ready;
  $('#driveDisconnectBtn').disabled=driveBusy||!driveToken;
+ if(!ready&&driveToken&&Date.now()>=driveTokenExpires){driveToken='';driveTokenExpires=0;driveStatus('Google Drive authorization expired. Connect again to import files or save a backup.');}
  return ready;
 }
 let googleIdentityLoading=null;
@@ -353,6 +354,7 @@ $('#driveRestoreBtn').onclick=async()=>{
  finally{driveBusy=false;driveControls()}
 };
 driveControls();
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')driveControls()});
 $('#uploadBtn').onclick=()=>{if(!fileUploadBusy&&!window._walletImportBusy&&!backupExportBusy)$('#fileInput').click()};
 $('#fileInput').onchange=e=>addFiles([...e.target.files]);
 $('#importFolderBtn').onclick=()=>{if(!fileUploadBusy&&!window._walletImportBusy&&!backupExportBusy)$('#folderInput').click()};
