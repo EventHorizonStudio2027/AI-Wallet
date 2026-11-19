@@ -281,3 +281,10 @@ body{font-size:14px}
 .attention-item+.attention-item{border-top:1px solid #ffffff0d}
 .attention-item .attention-type{margin-bottom:3px}
 @media(max-width:520px){.attention-filter-summary{margin:3px 0 7px}.attention-item{padding-top:9px;padding-bottom:9px}}
+
+/* DomAIn v76: transparent library storage status, quiet and compact */
+.library-storage-legend{display:flex;align-items:flex-start;gap:12px;margin:0 0 12px;padding:11px 13px;border:1px solid #314c72;border-radius:11px;background:#11233d;color:#b7c8e2;font-size:11px;line-height:1.5}
+.library-storage-legend>strong{flex:0 0 auto;color:#e1efff;font-size:11px}
+.library-storage-legend span{min-width:0}
+.library-storage-legend b{color:#d5efff}
+@media(max-width:560px){.library-storage-legend{display:block;padding:10px 12px}.library-storage-legend>strong{display:block;margin-bottom:3px}}
