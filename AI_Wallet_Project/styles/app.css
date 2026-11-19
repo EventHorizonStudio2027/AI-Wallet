@@ -248,3 +248,9 @@ body{font-size:14px}
 #homeAttentionStats strong{font-variant-numeric:tabular-nums}
 #homeAttentionStats small{line-height:1.35}
 @media(max-width:560px){#homeAttentionStats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#homeAttentionStats>div{padding:9px 10px}}
+
+/* DomAIn v72: understated full-alert reveal with accessible touch target */
+.attention-expand{display:block;width:100%;min-height:42px;margin-top:11px;border:1px solid #344d78;border-radius:10px;font-size:12px;font-weight:600;letter-spacing:.01em}
+.attention-expand:hover{border-color:#5c8cc0;background:#1b3153}
+.attention-expand:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+@media(max-width:520px){.attention-expand{min-height:44px;margin-top:9px}}
