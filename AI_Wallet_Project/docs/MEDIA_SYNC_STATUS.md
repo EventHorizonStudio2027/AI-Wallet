@@ -1,10 +1,11 @@
-# Unified AI media library — implementation status (v79)
+# Unified AI media library — implementation status (v80)
 
 Tracking: https://github.com/FatesPassage/AI-Wallet/issues/1
 
 ## Implemented in the GitHub Pages app
 
 - Manual/bulk file import using the browser file picker or drag-and-drop.
+- Opt-in watched folder (Chromium File System Access API): user explicitly grants read permission; DomAIn checks for changed/new files every 60 seconds while the tab is visible and when the tab becomes visible again. The directory handle stays in memory for the current session only; disconnect stops polling. This is **local folder synchronization**, not a connection to AI provider accounts or cloud storage. Browser support and end-to-end runtime behavior still require verification.
 - Opt-in folder import from user-selected local AI exports (where directory input is supported). Relative source paths are saved and searchable; reselecting a folder imports new content and skips checksummed duplicates. This is **not automatic cloud synchronization**.
 - Local IndexedDB file payloads and locally persisted library metadata.
 - Provider/account and folder organization, type filtering, file previews and downloads.
@@ -14,7 +15,7 @@ Tracking: https://github.com/FatesPassage/AI-Wallet/issues/1
 
 ## Not implemented / not verified
 
-- No official AI-service OAuth connection, AI creation-history API, or automatic media sync.
+- No official AI-service OAuth connection, AI creation-history API, or remote/cloud automatic media sync. The new watched folder feature requires a user-selected local directory and an open app tab.
 - No remote cloud-folder indexing, sync cursor, connector retries, cloud backups, or remote delete propagation.
 - No secure token backend. **Never add OAuth secrets or provider passwords to the public Pages frontend.**
 - Flow and Flow Music creation-history API support is **unverified**. Their icons in the service directory do not mean media sync is supported.
