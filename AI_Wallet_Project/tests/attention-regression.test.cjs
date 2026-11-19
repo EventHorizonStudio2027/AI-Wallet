@@ -71,4 +71,10 @@ const noRenewalAlert=window.AIWalletModules.attention.overview([{id:'undated',la
 assert.equal(noRenewalAlert.missingRenewals,1,'Dashboard must count missing paid renewal dates');
 assert.ok(noRenewalAlert.rows.some(r=>r.kind==='renewal_review'&&r.accountId==='undated'),'Dashboard must provide an actionable renewal-date review');
 assert.ok(!noRenewalAlert.rows.some(r=>r.kind==='payment'),'Missing renewal date must not generate a guessed payment');
+const conflictingTrial={id:'conflict',label:'Conflicting trial',trialEnabled:true,trialStatus:'active',trialStart:'2026-11-01',trialEnd:'2026-11-20',cancelBy:'2026-11-22',billingCycle:'never'};
+const conflictingRows=window.AIWalletModules.attention.overview([conflictingTrial],'2026-11-18').rows;
+assert.equal(conflictingRows.filter(r=>r.kind==='review').length,1,'Invalid trial should have a single review action');
+assert.equal(conflictingRows.filter(r=>r.kind==='trial').length,0,'Invalid trial should not show a conflicting cancellation alert');
+const urgentPayment=window.AIWalletModules.attention.overview([{id:'due',label:'Due tomorrow',billingCycle:'monthly',renewalDate:'2026-11-19',cost:9,alertDays:7}],'2026-11-18');
+assert.ok(urgentPayment.rows.some(r=>r.kind==='payment'&&r.message.includes('tomorrow')&&r.priority===1),'Tomorrow payment should be clearly labeled and prioritized');
 console.log('DomAIn attention regressions passed');
