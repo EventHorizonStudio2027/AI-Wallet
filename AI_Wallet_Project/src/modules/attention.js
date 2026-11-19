@@ -22,7 +22,7 @@ function overview(accounts,today){
   const rawAlert=accountById.get(p.accountId)?.alertDays;
   const lead=rawAlert!==''&&rawAlert!=null&&Number.isInteger(Number(rawAlert))&&Number(rawAlert)>=0&&Number(rawAlert)<=90?Number(rawAlert):7;
   if(days===null||days<0||days>lead)continue;
-  rows.push({kind:'payment',accountId:p.accountId,label:p.label,date:p.date,days,amount:p.amount,message:'Estimated subscription renewal',priority:3});
+  rows.push({kind:'payment',accountId:p.accountId,label:p.label,date:p.date,days,amount:p.amount,message:days===0?'Estimated subscription renewal today':days===1?'Estimated subscription renewal tomorrow':'Estimated subscription renewal',priority:days<=1?1:3});
  }
  rows.sort((a,b)=>a.priority-b.priority||(a.days??999)-(b.days??999)||a.label.localeCompare(b.label));
  return {trials:trials.active,urgentTrials:trials.urgent,missingTrials:trials.missing,missingRenewals:payments.missingDates,projected30:Math.round(payments.events.filter(p=>global.AIWalletModules.billing.daysUntil(p.date,today)<30).reduce((sum,p)=>sum+Math.round(p.amount*100),0))/100,paymentCount30:payments.events.filter(p=>global.AIWalletModules.billing.daysUntil(p.date,today)<30).length,rows,hidden:Math.max(0,rows.length-6)};
