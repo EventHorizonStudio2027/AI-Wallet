@@ -241,3 +241,10 @@ body{font-size:14px}
 #accountForm label:has(#aAlertDays){padding-bottom:2px}
 #accountForm label:has(#aAlertDays) .field-hint{max-width:34ch}
 @media(max-width:520px){#accountForm label:has(#aAlertDays) .field-hint{max-width:none}}
+
+/* DomAIn v71: balanced four-metric attention overview on compact screens */
+#homeAttentionStats{gap:9px}
+#homeAttentionStats>div{min-width:0}
+#homeAttentionStats strong{font-variant-numeric:tabular-nums}
+#homeAttentionStats small{line-height:1.35}
+@media(max-width:560px){#homeAttentionStats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#homeAttentionStats>div{padding:9px 10px}}
