@@ -238,7 +238,9 @@ function loadGoogleIdentity(){
   document.head.appendChild(script);
  });
 }
-// Preload the Google Identity script so the first user click can open OAuth immediately.\nloadGoogleIdentity().catch(()=>{});\n$('#driveConnectBtn').onclick=async()=>{
+// Preload Google Identity so the first click can launch authorization.
+loadGoogleIdentity().catch(()=>{});
+$('#driveConnectBtn').onclick=async()=>{
  const clientId=$('#driveClientId').value.trim();
  if(!/^[0-9]+-[a-zA-Z0-9_-]+\.apps\.googleusercontent\.com$/.test(clientId)){driveStatus('Enter a valid Google OAuth web client ID.');return}
  try{
