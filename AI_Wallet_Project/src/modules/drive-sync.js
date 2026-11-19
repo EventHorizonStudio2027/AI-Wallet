@@ -89,7 +89,9 @@ async function uploadBackup(token,blob,name){
  const boundary='domain'+Math.random().toString(36).slice(2);
  const body=new Blob(['--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n',JSON.stringify(metadata),'\r\n--'+boundary+'\r\nContent-Type: application/json\r\n\r\n',blob,'\r\n--'+boundary+'--'],{type:'multipart/related; boundary='+boundary});
  const response=await request(token,UPLOAD+'?uploadType=multipart&fields=id,name,size',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+boundary},body});
- return response.json();
+ const result=await response.json();
+ if(!result||typeof result.id!=='string'||!result.id||result.name!==name)throw Error('Google Drive did not confirm the uploaded backup');
+ return result;
 }
 global.AIWalletModules=global.AIWalletModules||{};
 global.AIWalletModules.driveSync=Object.freeze({SCOPES,listFolder,listAllFolderFiles,fingerprint,planIncrementalSync,download,listBackups,uploadBackup});
