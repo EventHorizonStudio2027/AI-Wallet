@@ -1,0 +1,22 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const context={window:{},Headers,URLSearchParams,Blob,fetch:async()=>{throw Error('Unexpected network')}};
+vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../src/modules/drive-sync.js'),'utf8'),context);
+const api=context.window.AIWalletModules.driveSync;
+const a={id:'abcde12345',modifiedTime:'2026-01-02',md5Checksum:'x'};
+const b={id:'other12345',modifiedTime:'2026-01-03',md5Checksum:'z'};
+assert.equal(api.fingerprint(a),'google-drive:abcde12345');
+assert.throws(()=>api.fingerprint({id:'../bad'}),/Invalid Drive file ID/);
+let plan=api.planIncrementalSync([a,a,b],[]);
+assert.equal(plan.added.length,2);
+plan=api.planIncrementalSync([a,b],[{sourceKey:api.fingerprint(a),modifiedTime:a.modifiedTime,checksum:a.md5Checksum}]);
+assert.equal(plan.unchanged.length,1);
+assert.equal(plan.added.length,1);
+plan=api.planIncrementalSync([a],[{sourceKey:api.fingerprint(a),modifiedTime:'old',checksum:'x'}]);
+assert.equal(plan.changed.length,1);
+assert.throws(()=>api.planIncrementalSync(null),/Invalid sync inventory/);
+(async()=>{
+ await assert.rejects(api.listAllFolderFiles('token',a.id,5001),/Invalid sync file limit/);
+ context.fetch=async()=>({ok:true,json:async()=>({files:[],nextPageToken:'repeat'})});
+ await assert.rejects(api.listAllFolderFiles('token',a.id),/pagination loop/);
+ console.log('Drive sync planning safeguards passed');
+})().catch(e=>{console.error(e);process.exitCode=1});
