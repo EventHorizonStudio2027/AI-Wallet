@@ -274,6 +274,7 @@ $('#driveDisconnectBtn').onclick=()=>{
 $('#driveSyncBtn').onclick=async()=>{
  if(!driveControls()||driveBusy)return;
  const folderId=$('#driveFolderId').value.trim();
+ if(!folderId){driveStatus('Enter a Google Drive folder ID before importing. Leave it blank only when saving backups.');$('#driveFolderId').focus();return}
  driveBusy=true;driveControls();driveStatus('Checking Google Drive folder…');
  let added=0,updated=0,skipped=0;
  try{
@@ -285,7 +286,9 @@ $('#driveSyncBtn').onclick=async()=>{
   }));
   const plan=driveAPI().planIncrementalSync(remoteFiles,existing);
   skipped=plan.unchanged.length;
-  for(const remote of [...plan.added,...plan.changed]){
+  const pending=[...plan.added,...plan.changed];
+  driveStatus('Found '+remoteFiles.length+' Drive files. '+pending.length+' need importing; '+skipped+' unchanged.');
+  for(const remote of pending){
    if(remote.mimeType?.startsWith('application/vnd.google-apps.')){skipped++;continue}
    const remoteModified=Date.parse(remote.modifiedTime||'')||0;
    const prior=state.files.find(f=>f.source==='google-drive'&&f.remoteFileId===remote.id);
@@ -308,7 +311,7 @@ $('#driveSyncBtn').onclick=async()=>{
     throw Error('Could not save Drive import metadata');
    }
    if(prior)updated++;else added++;
-   driveStatus('Importing Drive files: '+(added+updated)+' saved · '+skipped+' unchanged.');
+   driveStatus('Importing Drive files: '+(added+updated)+' of '+pending.length+' processed · '+skipped+' skipped.');
   }
   render();
   driveStatus('Drive import complete: '+added+' added, '+updated+' updated, '+skipped+' skipped. Files are stored locally.');
@@ -320,12 +323,15 @@ $('#driveBackupBtn').onclick=async()=>{
  driveBusy=true;driveControls();driveStatus('Preparing private Drive backup…');
  try{
   const backup=window.AIWalletModules.backup.createEnvelope(state);
-  let missing=0;
+  let missing=0,processed=0;
+  driveStatus('Preparing backup: 0 of '+state.files.length+' files.');
   for(const f of state.files){
    let blob=await getFileBlob(f.id);
    if(!blob&&f.data)blob=dataUrlToBlob(f.data);
    if(!blob){missing++;backup.files.push({...f,data:null})}
    else backup.files.push({...f,data:await blobToDataUrl(blob)});
+   processed++;
+   if(processed%10===0||processed===state.files.length)driveStatus('Preparing backup: '+processed+' of '+state.files.length+' files.');
   }
   if(missing)throw Error(missing+' file(s) have missing content. Backup canceled to avoid incomplete protection.');
   const blob=new Blob([JSON.stringify(backup)],{type:'application/json'});
