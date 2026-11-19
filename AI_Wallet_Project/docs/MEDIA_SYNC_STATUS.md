@@ -1,10 +1,11 @@
-# Unified AI media library — implementation status (v76)
+# Unified AI media library — implementation status (v79)
 
 Tracking: https://github.com/FatesPassage/AI-Wallet/issues/1
 
 ## Implemented in the GitHub Pages app
 
 - Manual/bulk file import using the browser file picker or drag-and-drop.
+- Opt-in folder import from user-selected local AI exports (where directory input is supported). Relative source paths are saved and searchable; reselecting a folder imports new content and skips checksummed duplicates. This is **not automatic cloud synchronization**.
 - Local IndexedDB file payloads and locally persisted library metadata.
 - Provider/account and folder organization, type filtering, file previews and downloads.
 - New manual-import provenance fields: `source: "manual-import"`, `storageMode: "local"`, `originalModified`, and optional `checksum` / `checksumAlgorithm`.
