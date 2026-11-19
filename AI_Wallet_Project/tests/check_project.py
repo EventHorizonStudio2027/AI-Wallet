@@ -1,4 +1,4 @@
-"""DomAIn release integrity checks. Run from any working directory."""
+"""domAIn release integrity checks. Run from any working directory."""
 from collections import Counter
 from html.parser import HTMLParser
 from pathlib import Path
@@ -59,7 +59,7 @@ if not html_file.is_file():
 html = html_file.read_text(encoding="utf-8")
 doc = DocumentAudit()
 doc.feed(html)
-check("DomAIn" in html, "DomAIn branding missing from entrypoint")
+check("domAIn" in html, "domAIn branding missing from entrypoint")
 check(bool(doc.scripts), "No JavaScript application entrypoints")
 check(bool(doc.styles), "No linked CSS")
 check(bool(doc.manifests), "No web app manifest")
@@ -77,7 +77,7 @@ check(manifest_path.is_file(), "Missing PWA manifest")
 if manifest_path.is_file():
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        check("DomAIn" in manifest.get("name", ""), "Outdated installed app name")
+        check("domAIn" in manifest.get("name", ""), "Outdated installed app name")
         for icon in manifest.get("icons", []):
             path = local_path(icon.get("src", ""))
             check(path is not None and path.is_file(), f"Missing manifest icon: {icon.get('src')}")
@@ -104,7 +104,7 @@ if sw_file.is_file():
 app_js = (ROOT / "src/app.js").read_text(encoding="utf-8")
 css = (ROOT / "styles/app.css").read_text(encoding="utf-8")
 check("Welcome to AI Wallet" not in app_js, "Old brand title still rendered dynamically")
-check("Welcome to DomAIn" in app_js, "Dynamic home title is not branded")
+check("Welcome to domAIn" in app_js, "Dynamic home title is not branded")
 check("service-logo-image" in app_js and ".service-logo-image" in css, "Service logo markup and CSS out of sync")
 check("mobile-nav-label" in html and ".mobile-nav-label" in css, "Mobile navigation markup and CSS out of sync")
 check(html.count('id="domainNeon"') == 1, "Duplicate sidebar SVG gradient identifier")
@@ -114,5 +114,5 @@ check("styles/app.css" in html, "Stylesheet missing from HTML")
 if errors:
     for error in errors:
         print(f"FAIL: {error}")
-    raise SystemExit(f"DomAIn release audit failed with {len(errors)} error(s)")
-print(f"DomAIn release audit passed: {len(doc.ids)} unique element IDs, {len(doc.scripts)} scripts, {len(doc.styles)} stylesheets, {len(doc.assets)} image assets, manifest and offline shell.")
+    raise SystemExit(f"domAIn release audit failed with {len(errors)} error(s)")
+print(f"domAIn release audit passed: {len(doc.ids)} unique element IDs, {len(doc.scripts)} scripts, {len(doc.styles)} stylesheets, {len(doc.assets)} image assets, manifest and offline shell.")
