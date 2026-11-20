@@ -259,6 +259,7 @@ updateWatchedFolderUI();
 // Google Drive OAuth: access tokens are session-only and never persisted.
 let driveToken='',driveTokenExpires=0,driveBusy=false,driveClient=null;
 const driveAPI=()=>window.AIWalletModules.driveSync;
+function driveProgress(current,total){const bar=$('#driveOperationProgress');if(!bar)return;bar.hidden=!Number.isFinite(total)||total<=0;bar.value=bar.hidden?0:Math.max(0,Math.min(100,Math.round(current/total*100)));bar.setAttribute('aria-valuetext',bar.hidden?'':current+' of '+total+' items processed')}
 function driveStatus(message){const status=$('#driveSyncStatus');status.textContent=message;const connected=!!driveToken&&Date.now()<driveTokenExpires;status.dataset.state=/failed|did not|error|blocked|invalid|expired|stopped|missing|exceeds|canceled|could not|not found|empty/i.test(message)?'error':/^(?:✓|Drive import complete)/.test(message)?'success':connected?'connected':'pending';const button=$('#driveConnectBtn');button.textContent=connected?'✓ Google Drive connected':'Connect Google Drive';button.setAttribute('aria-label',connected?'Google Drive connected for this session':'Connect Google Drive')}
 function driveControls(){
  const ready=!!driveToken&&Date.now()<driveTokenExpires;
@@ -341,7 +342,7 @@ $('#driveSyncBtn').onclick=async()=>{
  if(!folderId){driveStatus('Enter a Google Drive folder ID or paste its full URL before importing.');folderInput.focus();return}
  if(!/^[A-Za-z0-9_-]{5,200}$/.test(folderId)){driveStatus('That does not look like a valid Google Drive folder ID or URL.');folderInput.focus();return}
  driveBusy=true;driveControls();driveStatus('Checking Google Drive folder…');
- let added=0,updated=0,skipped=0,tooLarge=0;
+ let added=0,updated=0,skipped=0,tooLarge=0;driveProgress(0,0);
  try{
   const remoteFiles=await driveAPI().listAllFolderFiles(driveToken,folderId);
   const existing=state.files.filter(f=>f.source==='google-drive'&&f.remoteFileId).map(f=>({
@@ -357,6 +358,7 @@ $('#driveSyncBtn').onclick=async()=>{
   const oversizedPending=pending.filter(file=>file.size!=null&&(!Number.isSafeInteger(Number(file.size))||Number(file.size)<0||Number(file.size)>window.AIWalletModules.backup.MAX_FILE_BYTES)).length;
   if(!pending.length){driveStatus('✓ No new importable files · '+plan.unchanged.length+' current · '+unsupported+' Google-native files not downloadable.');render();return}
   driveStatus('Folder ready · '+(pending.length-oversizedPending)+' downloadable changes · '+oversizedPending+' oversized · '+plan.unchanged.length+' current · '+unsupported+' Google-native unsupported.');
+  driveProgress(0,pending.length);
   for(const remote of pending){
    const remoteModified=Date.parse(remote.modifiedTime||'')||0;
    const prior=state.files.find(f=>f.source==='google-drive'&&f.remoteFileId===remote.id);
@@ -382,10 +384,12 @@ $('#driveSyncBtn').onclick=async()=>{
    }
    if(prior)updated++;else added++;
    driveStatus('Importing · '+(added+updated+tooLarge)+' / '+pending.length+' checked · '+added+' new · '+updated+' updated · '+tooLarge+' too large');
+   driveProgress(added+updated+tooLarge,pending.length);
   }
   render();
+  driveProgress(pending.length,pending.length);
   driveStatus('✓ Sync complete · '+added+' new · '+updated+' updated · '+plan.unchanged.length+' current · '+unsupported+' Google-native unsupported · '+tooLarge+' oversized/invalid. Files saved on this device.');
- }catch(error){console.warn('Google Drive import error',error);render();driveStatus('Drive import stopped: '+String(error.message||error).slice(0,150)+' · '+(added+updated)+' files saved before error.')}
+ }catch(error){console.warn('Google Drive import error',error);driveProgress(0,0);render();driveStatus('Drive import stopped: '+String(error.message||error).slice(0,150)+' · '+(added+updated)+' files saved before error.')}
  finally{driveBusy=false;driveControls()}
 };
 $('#driveBackupBtn').onclick=async()=>{
