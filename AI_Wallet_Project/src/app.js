@@ -512,7 +512,7 @@ async function addFiles(files,{source='manual-import'}={}){
   if(folderButton)folderButton.disabled=false;
   $('#fileInput').value='';
   $('#folderInput').value='';
-  if(uploadStatus){uploadStatus.textContent='Import finished';setTimeout(()=>{uploadStatus.hidden=true},3000)}
+  if(uploadStatus){uploadStatus.textContent=committed?'Import finished':'Import did not complete';setTimeout(()=>{uploadStatus.hidden=true},3000)}
  }
 }
 $('#dropzone').ondragover=e=>{e.preventDefault();$('#dropzone').style.borderColor='#9b8cff'};$('#dropzone').ondrop=e=>{e.preventDefault();$('#dropzone').style.borderColor='';addFiles([...e.dataTransfer.files])};$('#dropzone').ondragleave=()=>{$('#dropzone').style.borderColor=''};
