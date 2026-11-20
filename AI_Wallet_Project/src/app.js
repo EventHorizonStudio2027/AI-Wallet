@@ -301,7 +301,7 @@ $('#driveConnectBtn').onclick=async()=>{
    driveBusy=false;
    if(response.error||!response.access_token){driveStatus('Google authorization did not complete: '+String(response.error_description||response.error||'No access token returned').slice(0,160));driveControls();return}
    driveToken=response.access_token;driveTokenExpires=Date.now()+Math.max(0,Number(response.expires_in||3600)-90)*1000;
-   driveStatus('✓ Connected to Google Drive for this session. You can now import a folder or save a backup.');
+   driveStatus('✓ Google Drive connected. Next: Check Drive access, then save a backup or import a folder.');
    driveControls();
   },error_callback:error=>{
    driveBusy=false;
