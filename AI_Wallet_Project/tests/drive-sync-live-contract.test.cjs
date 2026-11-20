@@ -20,6 +20,9 @@ const item=(id,checksum='a')=>({id,name:'file',mimeType:'image/png',modifiedTime
  assert.equal(plan.added.length,1);
  replies=[()=>json({files:[item('file001')],nextPageToken:'same'}),()=>json({files:[],nextPageToken:'same'})];
  await assert.rejects(api.listAllFolderFiles('token','folder123'),/pagination did not advance/);
+ replies=[()=>json({files:[item('file001')],nextPageToken:'page2'}),()=>json({files:[item('file001'),item('file002')]})];
+ const unique=await api.listAllFolderFiles('token','folder123');
+ assert.equal(unique.length,2,'duplicate file IDs across pages must be collapsed');
  replies=[()=>json({files:[{id:'bad id'}]})];
  await assert.rejects(api.listAllFolderFiles('token','folder123'),/Malformed Google Drive file entry/);
  replies=[()=>({ok:true,headers:new Headers({'Content-Length':'200'}),blob:async()=>new Blob(['x'])})];
