@@ -145,6 +145,8 @@ check("Drive access check failed:" in app_js, "Drive access failure diagnostic m
 check('id="fileSource"' in html, "Media origin filter missing")
 check('id="manualFileOrigin"' in html, "Manual AI-provider attribution selector missing")
 check('id="fileImportProgress"' in html, "Accessible file import progress missing")
+check('id="fileImportProgressBar"' in html, "Visual import progress bar missing")
+check("uploadProgress.value=Math.round((processed/files.length)*100)" in app_js, "Import percentage updates missing")
 check("knownFingerprints=new Set" in app_js, "Bulk import fingerprint index missing")
 check("normalizeManualOrigin(source)" in app_js, "Manual provider origin validation missing")
 check("files.length>500" in app_js, "Bulk import batch cap missing")
