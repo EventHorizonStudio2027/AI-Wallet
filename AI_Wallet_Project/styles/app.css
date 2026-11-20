@@ -533,3 +533,7 @@ body{font-size:14px}
 /* Final visual pass: restrained cyan hover feedback for service actions. */
 @media(hover:hover){#page-apps .file-actions button:hover{border-color:rgba(105,226,236,.62);box-shadow:0 2px 14px rgba(49,173,204,.12)}}
 @media(prefers-reduced-motion:reduce){#page-apps .file-actions button{transition:none!important}}
+
+/* Subscription quality pass: align field labels and numerical controls. */
+#page-usage input[type="number"]{font-variant-numeric:tabular-nums}
+#page-usage .stat strong{font-variant-numeric:tabular-nums;letter-spacing:-.025em}
