@@ -398,6 +398,7 @@ $('#driveBackupBtn').onclick=async()=>{
  try{
   const backup=window.AIWalletModules.backup.createEnvelope(state);
   let missing=0,processed=0;
+  driveProgress(0,state.files.length);
   driveStatus('Preparing backup: 0 of '+state.files.length+' files.');
   for(const f of state.files){
    let blob=await getFileBlob(f.id);
@@ -405,6 +406,7 @@ $('#driveBackupBtn').onclick=async()=>{
    if(!blob){missing++;backup.files.push({...f,data:null})}
    else backup.files.push({...f,data:await blobToDataUrl(blob)});
    processed++;
+   driveProgress(processed,state.files.length);
    if(processed%10===0||processed===state.files.length)driveStatus('Preparing backup: '+processed+' of '+state.files.length+' files.');
   }
   if(missing)throw Error(missing+' file(s) have missing content. Backup canceled to avoid incomplete protection.');
@@ -427,7 +429,8 @@ $('#driveBackupBtn').onclick=async()=>{
   const originalBytes=new Uint8Array(originalHash),recoveredBytes=new Uint8Array(recoveredHash);
   if(!originalBytes.every((value,index)=>value===recoveredBytes[index]))throw Error('Recovered backup content differs from the uploaded file');
   driveStatus('✓ Verified backup · SHA-256 match · '+result.name+' · '+formatSize(blob.size)+'. Retrieve latest backup to save a separate copy.');
- }catch(error){console.warn('Google Drive backup failed',error);driveStatus('Backup failed: '+String(error.message||error).slice(0,160))}
+  driveProgress(state.files.length,state.files.length);
+ }catch(error){console.warn('Google Drive backup failed',error);driveProgress(0,0);driveStatus('Backup failed: '+String(error.message||error).slice(0,160))}
  finally{driveBusy=false;driveControls()}
 };
 $('#driveRestoreBtn').onclick=async()=>{
