@@ -134,6 +134,8 @@ check("Imported Drive file size differs from metadata" in app_js, "Drive folder 
 check("Malformed Google Drive file entry" in drive_js, "Drive folder entry validation missing")
 check("Google Drive folder pagination did not advance" in drive_js, "Drive folder pagination guard missing")
 check("Folder ready · " in app_js, "Drive folder scan summary missing")
+check("seenFiles.has(file.id)" in drive_js, "Drive folder duplicate ID prevention missing")
+check("Google-native unsupported" in app_js, "Drive native file limitations must be visible")
 check("prior&&prior.originalModified===remoteModified" not in app_js, "Drive sync must not skip checksum-only changes")
 check("render();return}" in app_js, "Drive no-change sync must refresh library")
 check("Importing · " in app_js, "Drive progress summary missing")
