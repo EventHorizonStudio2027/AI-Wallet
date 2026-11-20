@@ -1,0 +1,11 @@
+'use strict';
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+assert.match(html, /<a class="skip-link" href="#mainContent">Skip to main content<\/a>/, 'keyboard skip link must exist');
+assert.match(html, /<main class="main" id="mainContent" tabindex="-1">/, 'skip link must target focusable main');
+assert.match(html, /<nav class="nav" id="sideNav" aria-label="Primary navigation">/, 'navigation must have accessible name');
+assert.match(html, /id="backupBtn"[^>]*aria-label="Export data backup"/, 'icon-only backup action must be labeled');
+assert.match(html, /\.skip-link:focus\{transform:translateY\(0\)\}/, 'skip link must become visible on focus');
+console.log('Accessibility shell checks passed');
