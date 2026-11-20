@@ -33,6 +33,10 @@ const item=(id,checksum='a')=>({id,name:'file',mimeType:'image/png',modifiedTime
  await assert.rejects(api.download('token','file001',100),/exceeds the allowed size/);
  replies=[()=>({ok:true,headers:new Headers(),blob:async()=>new Blob(['oversized'])})];
  await assert.rejects(api.download('token','file001',3),/exceeds the allowed size/);
+ replies=[()=>({ok:false,status:401,headers:new Headers()})];
+ await assert.rejects(api.listFolder('token','folder123'),/session expired or was revoked/);
+ replies=[()=>({ok:false,status:403,headers:new Headers()})];
+ await assert.rejects(api.listFolder('token','folder123'),/access denied/);
  assert.equal(replies.length,0);
  console.log('Drive connector contract tests passed');
 })().catch(error=>{console.error(error);process.exitCode=1});
