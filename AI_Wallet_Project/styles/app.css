@@ -427,3 +427,8 @@ body{font-size:14px}
 /* Final visual pass: subtle texture and typography hierarchy for Drive status. */
 .drive-connector-heading strong{letter-spacing:-.015em;text-wrap:balance}
 #driveSyncStatus{background-image:linear-gradient(125deg,#ffffff06,transparent 55%);font-variant-numeric:tabular-nums}
+
+/* Drive workflow clarity: make helper copy readable at desktop and mobile sizes. */
+#driveFolderHelp{max-width:78ch;font-size:11px;line-height:1.65;color:#c2d6e9}
+.drive-connector .library-live-actions{row-gap:8px}
+@media(max-width:600px){#driveFolderHelp{font-size:12px;line-height:1.6}}
