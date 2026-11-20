@@ -142,6 +142,8 @@ check("oversizedPending=pending.filter" in app_js, "Drive sync must preview over
 check('id="driveCheckBtn"' in html, "Drive connection test button missing")
 check("Check Drive access</button>" in html, "Drive access check label missing")
 check("Drive access check failed:" in app_js, "Drive access failure diagnostic missing")
+check("window.addEventListener('load',()=>{loadGoogleIdentity()" in app_js, "Google Identity SDK preload missing")
+check("To sync: connect Google Drive" in html, "Drive setup guidance missing")
 check("driveAPI().listBackups(driveToken)" in app_js, "Drive authenticated connection test missing")
 check("driveAPI().listFolder(driveToken,folderId)" in app_js, "Drive connection test must verify folder read access")
 check("$('#driveCheckBtn').disabled=driveBusy||!ready" in app_js, "Drive connection test must require authorization")
