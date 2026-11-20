@@ -463,7 +463,7 @@ async function addFiles(files,{source='manual-import'}={}){
  if(fileUploadBusy||window._walletImportBusy||backupExportBusy){toast('Wait for the current file operation to finish');return}
  if(!files.length)return;
  if(files.length>500){toast('Choose at most 500 files per import batch');return}
- if(state.files.length>=10000){toast('Your library has reached its 10,000-file limit');return}
+ if(state.files.length+files.length>10000){toast('This import could exceed the 10,000-file library limit. Split the batch or remove files first.');return}
  const maxSize=window.AIWalletModules.backup.MAX_FILE_BYTES;
  if(files.some(f=>!f||!Number.isSafeInteger(f.size)||f.size<0||f.size>maxSize)){toast('One or more files exceed the supported file size');return}
  const batchBytes=files.reduce((total,file)=>total+file.size,0);
