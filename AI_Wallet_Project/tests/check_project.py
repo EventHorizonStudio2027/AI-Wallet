@@ -126,6 +126,9 @@ check("backup listing exceeds safe limit" in drive_js, "Drive backup listing lim
 check("pagination did not advance" in drive_js, "Drive backup pagination loop protection missing")
 check("Date.parse(b.createdTime)-Date.parse(a.createdTime)" in app_js, "Drive recovery date ordering missing")
 check("Recovered file size does not match Google Drive metadata" in app_js, "Drive recovery metadata integrity check missing")
+check("download(driveToken,latest.id,100*1024*1024)" in app_js, "Drive recovery download limit missing")
+check("download(driveToken,result.id,blob.size)" in app_js, "Drive upload verification limit missing")
+check("response.headers.get('Content-Length')" in drive_js, "Drive download preflight size guard missing")
 check('class="brand-name">dom<span' in html, "Sidebar wordmark must begin with lowercase d")
 check("DomAIn" not in html, "Outdated uppercase-D branding in HTML")
 if errors:
