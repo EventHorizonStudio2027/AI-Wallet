@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const source=fs.readFileSync(path.join(__dirname,'../src/modules/drive-sync.js'),'utf8');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const app=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
+assert.match(source,/Malformed Google Drive file name/);
+assert.match(source,/Malformed Google Drive file type/);
+assert.match(html,/Google Docs, Sheets and Slides must be exported/);
+assert.match(app,/Google Docs\/Sheets\/Slides require export before import/);
+console.log('Drive folder metadata and import guidance checks passed');
