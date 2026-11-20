@@ -445,3 +445,7 @@ body{font-size:14px}
 
 /* Final visual refinement: restrained dimensional highlight on verified Drive status. */
 #driveSyncStatus[data-state="success"]{background-image:linear-gradient(110deg,rgba(46,205,184,.065),transparent 68%);border-radius:7px}
+
+/* Recovery controls: clear focus treatment without expanding the toolbar. */
+#driveRestoreBtn:focus-visible{outline:2px solid #59dcf5;outline-offset:3px;box-shadow:0 0 0 5px rgba(64,188,244,.13)}
+#driveRestoreBtn:disabled{opacity:.52;cursor:not-allowed}
