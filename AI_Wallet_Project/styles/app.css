@@ -461,3 +461,8 @@ body{font-size:14px}
 
 /* Final design refinement: gentle contrast cue for the backup download action. */
 @media(hover:hover){#driveRestoreBtn:not(:disabled):hover{border-color:#72e5f7;background:linear-gradient(135deg,rgba(39,167,206,.24),rgba(49,88,169,.15))}}
+
+/* Make Drive backup actions easier to scan as a paired workflow. */
+#driveBackupBtn,#driveRestoreBtn{min-height:42px;padding-inline:14px}
+#driveBackupBtn{font-weight:650}
+@media(max-width:680px){#driveBackupBtn,#driveRestoreBtn{flex:1 1 180px;text-align:center}}
