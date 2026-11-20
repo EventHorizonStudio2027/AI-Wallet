@@ -519,3 +519,8 @@ body{font-size:14px}
 /* Account integrity pass: legible guidance in the AI directory. */
 #page-apps .card-head .tiny{max-width:75ch;line-height:1.7;overflow-wrap:anywhere}
 @media(max-width:600px){#page-apps .card-head .tiny{font-size:12px}}
+
+/* Final visual refinement: polished service directory action focus. */
+#page-apps .file-actions button:focus-visible{outline:2px solid #79e5ef;outline-offset:3px;box-shadow:0 0 0 5px rgba(60,189,218,.11)}
+#page-apps .file-actions button{transition:border-color .16s ease,box-shadow .16s ease}
+@media(prefers-reduced-motion:reduce){#page-apps .file-actions button{transition:none}}
