@@ -449,3 +449,8 @@ body{font-size:14px}
 /* Recovery controls: clear focus treatment without expanding the toolbar. */
 #driveRestoreBtn:focus-visible{outline:2px solid #59dcf5;outline-offset:3px;box-shadow:0 0 0 5px rgba(64,188,244,.13)}
 #driveRestoreBtn:disabled{opacity:.52;cursor:not-allowed}
+
+/* Final visual pass: gentle recovery action highlight, with reduced-motion support. */
+#driveRestoreBtn:not(:disabled){transition:box-shadow .18s ease,transform .18s ease,border-color .18s ease}
+@media(hover:hover){#driveRestoreBtn:not(:disabled):hover{box-shadow:0 4px 18px rgba(40,174,222,.15);transform:translateY(-1px)}}
+@media(prefers-reduced-motion:reduce){#driveRestoreBtn{transition:none!important}#driveRestoreBtn:hover{transform:none!important}}
