@@ -357,7 +357,7 @@ $('#driveSyncBtn').onclick=async()=>{
   skipped=plan.unchanged.length+unsupported;
   const pending=[...plan.added,...plan.changed];
   const oversizedPending=pending.filter(file=>file.size!=null&&(!Number.isSafeInteger(Number(file.size))||Number(file.size)<0||Number(file.size)>window.AIWalletModules.backup.MAX_FILE_BYTES)).length;
-  if(!pending.length){driveStatus('✓ No new importable files · '+plan.unchanged.length+' current · '+unsupported+' Google-native files not downloadable.');render();return}
+  if(!pending.length){driveStatus('✓ Folder checked · '+plan.unchanged.length+' files already current · '+unsupported+' Google Docs/Sheets/Slides require export before import.');render();return}
   driveStatus('Folder ready · '+(pending.length-oversizedPending)+' downloadable changes · '+oversizedPending+' oversized · '+plan.unchanged.length+' current · '+unsupported+' Google-native unsupported.');
   driveProgress(0,pending.length);
   for(const remote of pending){
@@ -389,7 +389,7 @@ $('#driveSyncBtn').onclick=async()=>{
   }
   render();
   driveProgress(pending.length,pending.length);
-  driveStatus('✓ Sync complete · '+added+' new · '+updated+' updated · '+plan.unchanged.length+' current · '+unsupported+' Google-native unsupported · '+tooLarge+' oversized/invalid. Files saved on this device.');
+  driveStatus('✓ Sync complete · '+added+' new · '+updated+' updated · '+plan.unchanged.length+' current · '+unsupported+' Google-native skipped (export first) · '+tooLarge+' oversized/invalid. Files saved on this device.');
  }catch(error){console.warn('Google Drive import error',error);driveProgress(0,0);render();driveStatus('Drive import stopped: '+String(error.message||error).slice(0,150)+' · '+(added+updated)+' files saved before error.')}
  finally{driveBusy=false;driveControls()}
 };
