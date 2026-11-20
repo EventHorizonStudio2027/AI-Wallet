@@ -512,3 +512,6 @@ body{font-size:14px}
 /* Reliability phase: make the local-storage disclosure legible on narrow screens. */
 #page-usage .card-head .tiny{max-width:72ch;line-height:1.7;overflow-wrap:anywhere}
 @media(max-width:600px){#page-usage .card-head .tiny{font-size:12px}}
+
+/* Final design refinement: quiet data-safety highlight for manual subscriptions. */
+#page-usage .card-head .tiny{border-left-color:rgba(114,231,236,.65);background:linear-gradient(90deg,rgba(46,176,202,.065),transparent 82%);border-radius:0 7px 7px 0;padding-top:4px;padding-bottom:4px}
