@@ -14,7 +14,8 @@ async function request(token,url,options={}){
   try{response=await fetch(url,{...options,headers,cache:'no-store'})}
   catch(error){if(attempt===2||options.method&&options.method!=='GET')throw error;await new Promise(resolve=>setTimeout(resolve,250*(attempt+1)));continue}
   if(response.ok||![429,502,503,504].includes(response.status)||options.method&&options.method!=='GET'||attempt===2)break;
-  const retryAfter=Number(response.headers?.get?.('Retry-After'));
+  const retryHeader=response.headers?.get?.('Retry-After');
+  const retryAfter=retryHeader!==null&&retryHeader!==undefined&&/^\\d+(?:\\.\\d+)?$/.test(retryHeader.trim())?Number(retryHeader):NaN;
   const wait=Number.isFinite(retryAfter)&&retryAfter>=0?Math.min(2000,retryAfter*1000):250*(attempt+1);
   await new Promise(resolve=>setTimeout(resolve,wait));
  }
