@@ -319,7 +319,7 @@ $('#driveSyncBtn').onclick=async()=>{
  if(!folderId){driveStatus('Enter a Google Drive folder ID or paste its full URL before importing.');folderInput.focus();return}
  if(!/^[A-Za-z0-9_-]{5,200}$/.test(folderId)){driveStatus('That does not look like a valid Google Drive folder ID or URL.');folderInput.focus();return}
  driveBusy=true;driveControls();driveStatus('Checking Google Drive folder…');
- let added=0,updated=0,skipped=0;
+ let added=0,updated=0,skipped=0,tooLarge=0;
  try{
   const remoteFiles=await driveAPI().listAllFolderFiles(driveToken,folderId);
   const existing=state.files.filter(f=>f.source==='google-drive'&&f.remoteFileId).map(f=>({
@@ -341,7 +341,7 @@ $('#driveSyncBtn').onclick=async()=>{
    // discard checksum-only changes just because the timestamp is unchanged.
    if(!prior&&state.files.length>=10000)throw Error('Library limit of 10,000 files reached');
    const size=Number(remote.size||0);
-   if(!Number.isSafeInteger(size)||size<0||size>window.AIWalletModules.backup.MAX_FILE_BYTES){skipped++;continue}
+   if(!Number.isSafeInteger(size)||size<0||size>window.AIWalletModules.backup.MAX_FILE_BYTES){skipped++;tooLarge++;continue}
    const blob=await driveAPI().download(driveToken,remote.id,window.AIWalletModules.backup.MAX_FILE_BYTES);
    if(remote.size!=null&&Number(remote.size)!==blob.size)throw Error('Imported Drive file size differs from metadata: '+String(remote.name||remote.id).slice(0,80));
    window.AIWalletModules.backup.assertBlobSize(blob);
@@ -361,7 +361,7 @@ $('#driveSyncBtn').onclick=async()=>{
    driveStatus('Importing · '+(added+updated+skipped-plan.unchanged.length)+' / '+pending.length+' checked · '+added+' new · '+updated+' updated · '+skipped+' skipped');
   }
   render();
-  driveStatus('✓ Import complete · '+added+' new · '+updated+' updated · '+plan.unchanged.length+' current · '+unsupported+' Google-native unsupported. Files saved on this device.');
+  driveStatus('✓ Sync complete · '+added+' new · '+updated+' updated · '+plan.unchanged.length+' current · '+unsupported+' Google-native unsupported · '+tooLarge+' oversized/invalid. Files saved on this device.');
  }catch(error){console.warn('Google Drive import error',error);render();driveStatus('Drive import stopped: '+String(error.message||error).slice(0,150)+' · '+(added+updated)+' files saved before error.')}
  finally{driveBusy=false;driveControls()}
 };
