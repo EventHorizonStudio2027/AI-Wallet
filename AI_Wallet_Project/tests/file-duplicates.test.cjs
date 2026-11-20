@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+const source=fs.readFileSync(require('node:path').join(__dirname,'../src/modules/files.js'),'utf8');
+const context={window:{}};
+vm.runInNewContext(source,context,{filename:'files.js'});
+const api=context.window.AIWalletModules.files;
+const files=[{id:'a',name:'one.png',size:42,checksum:'ABCD',checksumAlgorithm:'sha256'},{id:'b',name:'two.png',size:42,checksum:'abcd',checksumAlgorithm:'sha256'},{id:'c',name:'three.png',size:43,checksum:'abcd',checksumAlgorithm:'sha256'},{id:'d',name:'four.png',size:42,checksum:''},{id:'e',name:'one.png',size:42,checksum:'different'}];
+assert.deepEqual([...api.duplicateIds(files)].sort(),['a','b']);
+assert.equal(api.duplicateIds([{id:'x',name:'same.png'},{id:'y',name:'same.png'}]).size,0);
+console.log('Checksum duplicate detection tests passed');
