@@ -329,8 +329,8 @@ $('#driveCheckBtn').onclick=async()=>{
    if(!/^[A-Za-z0-9_-]{5,200}$/.test(folderId))throw Error('Enter a valid Drive folder ID or URL to test folder access');
    const folder=await driveAPI().listFolder(driveToken,folderId);
    if(!folder||!Array.isArray(folder.files))throw Error('Drive folder listing returned an invalid response');
-   driveStatus('✓ Drive verified · '+result.files.length+' private backups · folder accessible ('+folder.files.length+' items on first page).');
-  }else driveStatus('✓ Drive verified · '+result.files.length+' private backups · enter a folder ID to test folder access.');
+   driveStatus('✓ Private backup storage accessible · '+result.files.length+' backup(s) found · selected folder accessible ('+folder.files.length+' items on first page). Ready for sync and backup.');
+  }else driveStatus('✓ Private backup storage accessible · '+result.files.length+' backup(s) found. Paste a folder link to test imports, or save a private backup now.');
  }catch(error){console.warn('Drive connection test failed',error);driveStatus('Drive access check failed: '+String(error.message||error).slice(0,170));}
  finally{driveBusy=false;driveControls()}
 };
