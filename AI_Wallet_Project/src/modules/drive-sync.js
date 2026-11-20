@@ -37,7 +37,11 @@ async function listAllFolderFiles(token,folderId,max=5000){
   visited.add(next);
   const result=await listFolder(token,folderId,next);
   if(!result||!Array.isArray(result.files))throw Error('Malformed Google Drive file listing');
-  for(const file of result.files||[]){if(file.mimeType!=='application/vnd.google-apps.folder')files.push(file);if(files.length>max)throw Error('Folder exceeds the 5,000 file sync limit')}
+  for(const file of result.files||[]){
+   if(!file||typeof file!=='object'||typeof file.id!=='string'||!/^[A-Za-z0-9_-]{5,200}$/.test(file.id))throw Error('Malformed Google Drive file entry');
+   if(file.mimeType!=='application/vnd.google-apps.folder')files.push(file);
+   if(files.length>max)throw Error('Folder exceeds the 5,000 file sync limit');
+  }
   if(result.nextPageToken!=null&&(typeof result.nextPageToken!=='string'||result.nextPageToken.length>2048))throw Error('Invalid Google Drive page token');
   next=result.nextPageToken||'';
  }while(next);
