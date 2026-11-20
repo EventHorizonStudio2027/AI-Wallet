@@ -327,10 +327,12 @@ $('#driveSyncBtn').onclick=async()=>{
    modifiedTime:f.driveModifiedTime||new Date(f.originalModified||0).toISOString(),
    checksum:f.driveChecksum||''
   }));
-  const plan=driveAPI().planIncrementalSync(remoteFiles,existing);
-  skipped=plan.unchanged.length;
+  const importable=remoteFiles.filter(file=>!String(file.mimeType||'').startsWith('application/vnd.google-apps.'));
+  const unsupported=remoteFiles.length-importable.length;
+  const plan=driveAPI().planIncrementalSync(importable,existing);
+  skipped=plan.unchanged.length+unsupported;
   const pending=[...plan.added,...plan.changed];
-  if(!pending.length){driveStatus('✓ Drive folder is up to date · '+skipped+' files already current.');render();return}
+  if(!pending.length){driveStatus('✓ No new importable files · '+plan.unchanged.length+' current · '+unsupported+' Google-native files not downloadable.');render();return}
   driveStatus('Folder ready · '+pending.length+' changes · '+skipped+' up to date · '+remoteFiles.length+' files scanned.');
   for(const remote of pending){
    if(remote.mimeType?.startsWith('application/vnd.google-apps.')){skipped++;continue}
