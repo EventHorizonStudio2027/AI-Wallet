@@ -480,7 +480,7 @@ async function addFiles(files,{source='manual-import'}={}){
   const knownFingerprints=new Set(state.files.map(fingerprint).filter(Boolean));
   let processed=0;
   for(let f of files){
-   if(uploadStatus){uploadStatus.textContent='Importing '+(++processed)+' of '+files.length+' files…';if(uploadProgress)uploadProgress.value=Math.round((processed/files.length)*100);if(processed===1||processed%10===0)await new Promise(resolve=>requestAnimationFrame(resolve))}
+   if(uploadStatus){uploadStatus.textContent='Importing '+(++processed)+' of '+files.length+' files'+(duplicates?' · '+duplicates+' duplicates skipped':'')+'…';if(uploadProgress)uploadProgress.value=Math.round((processed/files.length)*100);if(processed===1||processed%10===0)await new Promise(resolve=>requestAnimationFrame(resolve))}
    let checksum='';
    if(f.size<=64*1024*1024&&globalThis.crypto?.subtle){
     try{
@@ -502,6 +502,7 @@ async function addFiles(files,{source='manual-import'}={}){
   committed=true;
   render();
   toast(stored.length+' file'+(stored.length===1?'':'s')+' added'+(duplicates?' · '+duplicates+' duplicate'+(duplicates===1?'':'s')+' skipped':'')+'.');
+  if(uploadStatus)uploadStatus.textContent='Complete · '+stored.length+' added'+(duplicates?' · '+duplicates+' duplicates skipped':'');
  }catch(err){
   console.error('File upload failed',err);
   if(!committed){
