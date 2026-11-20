@@ -454,3 +454,7 @@ body{font-size:14px}
 #driveRestoreBtn:not(:disabled){transition:box-shadow .18s ease,transform .18s ease,border-color .18s ease}
 @media(hover:hover){#driveRestoreBtn:not(:disabled):hover{box-shadow:0 4px 18px rgba(40,174,222,.15);transform:translateY(-1px)}}
 @media(prefers-reduced-motion:reduce){#driveRestoreBtn{transition:none!important}#driveRestoreBtn:hover{transform:none!important}}
+
+/* Make the backup download action easy to find without a crowded toolbar. */
+#driveRestoreBtn{font-weight:700;letter-spacing:.005em;white-space:normal;min-height:40px;border-color:rgba(89,220,245,.38)}
+#driveRestoreBtn:not(:disabled){background:linear-gradient(135deg,rgba(35,139,191,.17),rgba(49,88,169,.1))}
