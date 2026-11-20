@@ -432,3 +432,7 @@ body{font-size:14px}
 #driveFolderHelp{max-width:78ch;font-size:11px;line-height:1.65;color:#c2d6e9}
 .drive-connector .library-live-actions{row-gap:8px}
 @media(max-width:600px){#driveFolderHelp{font-size:12px;line-height:1.6}}
+
+/* Final visual pass: understated highlight on Drive connector heading. */
+.drive-connector-heading strong{display:inline-block;letter-spacing:-.02em;text-shadow:0 1px 10px rgba(60,193,235,.12)}
+.drive-connector-heading .library-live-tag{vertical-align:middle}
