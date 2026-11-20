@@ -429,7 +429,7 @@ $('#driveBackupBtn').onclick=async()=>{
   const recoveredHash=await crypto.subtle.digest('SHA-256',await verifiedBlob.arrayBuffer());
   const originalBytes=new Uint8Array(originalHash),recoveredBytes=new Uint8Array(recoveredHash);
   if(!originalBytes.every((value,index)=>value===recoveredBytes[index]))throw Error('Recovered backup content differs from the uploaded file');
-  driveStatus('✓ Verified backup · SHA-256 match · '+result.name+' · '+formatSize(blob.size)+'. Retrieve latest backup to save a separate copy.');
+  driveStatus('✓ Verified backup · SHA-256 match · '+result.name+' · '+formatSize(blob.size)+'. Select Download verified backup to save a separate copy.');
   driveProgress(state.files.length,state.files.length);
  }catch(error){console.warn('Google Drive backup failed',error);driveProgress(0,0);driveStatus('Backup failed: '+String(error.message||error).slice(0,160))}
  finally{driveBusy=false;driveControls()}
