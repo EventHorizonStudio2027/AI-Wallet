@@ -412,6 +412,7 @@ $('#driveRestoreBtn').onclick=async()=>{
   const blob=await driveAPI().download(driveToken,latest.id);
   if(blob.size>100*1024*1024)throw Error('Backup exceeds the supported 100 MB limit');
   if(blob.size===0)throw Error('Downloaded backup is empty');
+  if(latest.size!=null&&Number(latest.size)!==blob.size)throw Error('Recovered file size does not match Google Drive metadata');
   if(!String(latest.name).endsWith('.json'))throw Error('Unexpected backup file type');
   driveStatus('Checking backup integrity before download…');
   let parsed;
