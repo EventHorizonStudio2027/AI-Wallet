@@ -156,6 +156,8 @@ check("Browser storage is full. Free up device storage" in app_js, "Storage quot
 check("state.files.length+files.length>10000" in app_js, "Import must preflight remaining library capacity")
 check("requestAnimationFrame(resolve)" in app_js, "Import progress must yield browser paint")
 check("Importing '+(++processed)" in app_js, "Bulk import progress updates missing")
+check("duplicates skipped" in app_js, "Import progress should report duplicate skips")
+check("Complete · '+stored.length+' added" in app_js, "Import completion summary missing")
 check("source:$('#manualFileOrigin').value" in app_js, "Manual provider origin must be recorded")
 check("attributedService?.id" in app_js, "Provider exports must map to matching service")
 check("existing.checksumAlgorithm==='sha256'" in app_js, "Manual dedupe must verify checksum algorithm")
