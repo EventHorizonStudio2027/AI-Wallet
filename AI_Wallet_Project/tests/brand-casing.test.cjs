@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.join(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const manifest=JSON.parse(fs.readFileSync(path.join(root,'manifest.webmanifest'),'utf8'));
+const css=fs.readFileSync(path.join(root,'styles/app.css'),'utf8');
+assert.match(html,/<title>domAIn — Your AI\. Your domain\.<\/title>/);
+assert.match(html,/class="brand-sub">Your AI\. Your domain\.<\/div>/);
+assert.match(manifest.name,/^domAIn — Your AI\. Your domain\.$/);
+assert.equal(manifest.short_name,'domAIn');
+assert.doesNotMatch(html,/\b(?:DomAIn|Domaine|Domain)\b/);
+assert.doesNotMatch(css,/DomAIn/);
+console.log('domAIn lowercase-d branding checks passed');
