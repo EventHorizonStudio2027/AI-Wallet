@@ -9,4 +9,6 @@ assert.match(handler,/domain-backup-\[0-9T-Z-\]/,'only expected backup names sho
 assert.match(handler,/Number\.isSafeInteger\(Number\(latest\.size\)\)/,'metadata size must be safe integer');
 assert.match(handler,/String\(a\.id\|\|''\)\.localeCompare/,'timestamp ties must be deterministic');
 assert.match(handler,/Your existing domAIn data has not been changed/,'recovery should remain non-destructive');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+assert.match(html,/id="driveRestoreBtn"[^>]*>Download verified backup<\/button>/,'recovery action must be clearly labeled');
 console.log('Drive recovery guard checks passed');
