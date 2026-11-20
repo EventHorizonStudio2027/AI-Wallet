@@ -18,7 +18,7 @@ async function request(token,url,options={}){
   const wait=Number.isFinite(retryAfter)&&retryAfter>=0?Math.min(2000,retryAfter*1000):250*(attempt+1);
   await new Promise(resolve=>setTimeout(resolve,wait));
  }
- if(!response.ok){if(response.status===401)throw Error('Google Drive session expired or was revoked. Reconnect your Google account.');if(response.status===403)throw Error('Google Drive access denied. Check the selected account, folder sharing, and granted permissions.');let message='Google Drive request failed ('+response.status+')';try{const body=await response.json();message=body.error?.message||message}catch{}throw Error(message)}
+ if(!response.ok){if(response.status===401)throw Error('Google Drive session expired or was revoked. Reconnect your Google account.');if(response.status===403)throw Error('Google Drive access denied. Check the selected account, folder sharing, and granted permissions.');if(response.status===404)throw Error('Google Drive file or folder not found. Check the folder link and that your account has access.');let message='Google Drive request failed ('+response.status+')';try{const body=await response.json();message=body.error?.message||message}catch{}throw Error(message)}
  return response;
 }
 function encodeQuery(value){return encodeURIComponent(value)}
