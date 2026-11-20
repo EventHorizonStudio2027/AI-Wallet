@@ -458,3 +458,6 @@ body{font-size:14px}
 /* Make the backup download action easy to find without a crowded toolbar. */
 #driveRestoreBtn{font-weight:700;letter-spacing:.005em;white-space:normal;min-height:40px;border-color:rgba(89,220,245,.38)}
 #driveRestoreBtn:not(:disabled){background:linear-gradient(135deg,rgba(35,139,191,.17),rgba(49,88,169,.1))}
+
+/* Final design refinement: gentle contrast cue for the backup download action. */
+@media(hover:hover){#driveRestoreBtn:not(:disabled):hover{border-color:#72e5f7;background:linear-gradient(135deg,rgba(39,167,206,.24),rgba(49,88,169,.15))}}
