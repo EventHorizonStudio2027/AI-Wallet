@@ -105,7 +105,10 @@ async function listBackups(token){
   if(result.nextPageToken&&result.nextPageToken===next)throw Error('Google Drive backup pagination did not advance');
   next=result.nextPageToken||'';
  }while(next);
- return {files};
+ // Keep recovery choices stable and avoid duplicate entries across Drive pages.
+ const unique=[...new Map(files.map(file=>[file.id,file])).values()];
+ unique.sort((a,b)=>String(b.createdTime||'').localeCompare(String(a.createdTime||''))||String(a.id).localeCompare(String(b.id)));
+ return {files:unique};
 }
 async function uploadBackup(token,blob,name){
  if(!(blob instanceof Blob)||blob.size===0||blob.size>100*1024*1024)throw Error('Backup must be a nonempty Blob no larger than 100 MB');
