@@ -524,3 +524,8 @@ body{font-size:14px}
 #page-apps .file-actions button:focus-visible{outline:2px solid #79e5ef;outline-offset:3px;box-shadow:0 0 0 5px rgba(60,189,218,.11)}
 #page-apps .file-actions button{transition:border-color .16s ease,box-shadow .16s ease}
 @media(prefers-reduced-motion:reduce){#page-apps .file-actions button{transition:none}}
+
+/* Service launch clarity: readable disclosure and compact actions. */
+#page-apps .file-actions{gap:7px;align-items:center}
+#page-apps .file-actions button{white-space:nowrap}
+@media(max-width:600px){#page-apps .file-actions{flex-wrap:wrap;justify-content:flex-start}}
