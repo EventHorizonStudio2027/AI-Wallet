@@ -440,7 +440,7 @@ $('#driveRestoreBtn').onclick=async()=>{
  try{
   const result=await driveAPI().listBackups(driveToken);
   const backups=(result.files||[]).filter(file=>file&&Number.isFinite(Date.parse(file.createdTime||''))).sort((a,b)=>Date.parse(b.createdTime)-Date.parse(a.createdTime)||String(a.id||'').localeCompare(String(b.id||'')));
-  if(!backups.length){driveStatus('No domAIn backups found in Google Drive app data.');return}
+  if(!backups.length){driveStatus('No domAIn backups found yet. Use Save backup to Drive first, then try Download verified backup again.');return}
   const latest=backups[0];
   if(latest.size!=null&&(!Number.isSafeInteger(Number(latest.size))||Number(latest.size)<0||Number(latest.size)>100*1024*1024))throw Error('Latest Drive backup has an invalid size or exceeds the 100 MB recovery limit');
   driveStatus('Recovery check · '+new Date(latest.createdTime).toLocaleDateString()+' · '+(latest.size?formatSize(Number(latest.size)):'size unknown')+' · 100 MB safety limit. Downloading securely…');
@@ -456,7 +456,7 @@ $('#driveRestoreBtn').onclick=async()=>{
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=window.AIWalletModules.fileSafety.safeFilename(latest.name||'domain-backup.json');
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
-  driveStatus('✓ Recovery copy validated and downloaded. Your existing domAIn data has not been changed. Review the file before using Import Backup.');
+  driveStatus('✓ Verified backup downloaded: '+a.download+'. Your existing domAIn data was not changed. Keep this JSON file somewhere safe.');
  }catch(error){console.warn('Drive backup recovery failed',error);driveStatus('Recovery download failed: '+String(error.message||error).slice(0,145))}
  finally{driveBusy=false;driveControls()}
 };
