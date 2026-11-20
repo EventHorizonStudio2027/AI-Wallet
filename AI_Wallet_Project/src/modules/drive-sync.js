@@ -72,11 +72,12 @@ async function listBackups(token){
   if(visited.has(next)||++pages>MAX_BACKUP_PAGES)throw Error('Google Drive backup pagination loop or page limit reached');
   visited.add(next);
   const params=new URLSearchParams({spaces:'appDataFolder',q:"name contains 'domain-backup-' and trashed = false",fields:'nextPageToken,files(id,name,size,createdTime)',pageSize:'100'});
-  if(next)params.set('pageToken',next);
+  if(next){if(next.length>2048)throw Error('Invalid Google Drive backup page token');params.set('pageToken',next)}
   const response=await request(token,API+'?'+params);
   const result=await response.json();
   if(!result||!Array.isArray(result.files))throw Error('Malformed Google Drive backup listing');
-  files.push(...result.files.filter(file=>file&&typeof file.id==='string'&&/^[A-Za-z0-9_-]{5,200}$/.test(file.id)&&typeof file.name==='string'&&/^domain-backup-[0-9T-Z-]+\.json$/.test(file.name)));
+  files.push(...result.files.filter(file=>file&&typeof file.id==='string'&&/^[A-Za-z0-9_-]{5,200}$/.test(file.id)&&typeof file.name==='string'&&/^domain-backup-[0-9T-Z-]+\.json$/.test(file.name)&&(!file.size||/^\d+$/.test(String(file.size)))));
+  if(files.length>10000)throw Error('Google Drive backup listing exceeds safe limit');
   if(result.nextPageToken!=null&&(typeof result.nextPageToken!=='string'||result.nextPageToken.length>2048))throw Error('Invalid Google Drive backup page token');
   next=result.nextPageToken||'';
  }while(next);
