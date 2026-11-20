@@ -325,7 +325,7 @@ $('#driveCheckBtn').onclick=async()=>{
    if(!folder||!Array.isArray(folder.files))throw Error('Drive folder listing returned an invalid response');
    driveStatus('✓ Drive verified · '+result.files.length+' private backups · folder accessible ('+folder.files.length+' items on first page).');
   }else driveStatus('✓ Drive verified · '+result.files.length+' private backups · enter a folder ID to test folder access.');
- }catch(error){console.warn('Drive connection test failed',error);driveStatus('Connection test failed: '+String(error.message||error).slice(0,150)+'. Reconnect and check permissions.');}
+ }catch(error){console.warn('Drive connection test failed',error);driveStatus('Drive access check failed: '+String(error.message||error).slice(0,170));}
  finally{driveBusy=false;driveControls()}
 };
 $('#driveSyncBtn').onclick=async()=>{
