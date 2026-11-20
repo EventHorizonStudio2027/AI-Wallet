@@ -485,3 +485,8 @@ body{font-size:14px}
 #driveOperationProgress{accent-color:#4ed4e7;border-radius:99px;overflow:hidden}
 #driveSyncStatus{display:block;max-width:78ch;overflow-wrap:anywhere;line-height:1.65}
 @media(max-width:600px){#driveSyncStatus{font-size:12px;line-height:1.6}}
+
+/* Final visual pass: softly illuminated Drive sync progress track. */
+#driveOperationProgress:not([hidden]){box-shadow:0 0 0 1px rgba(80,210,233,.14),0 3px 14px rgba(33,158,197,.12)}
+#driveOperationProgress::-webkit-progress-value{background:linear-gradient(90deg,#31b7d8,#75e9ef);border-radius:99px}
+#driveOperationProgress::-moz-progress-bar{background:linear-gradient(90deg,#31b7d8,#75e9ef);border-radius:99px}
