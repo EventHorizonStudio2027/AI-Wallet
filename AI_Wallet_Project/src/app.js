@@ -262,6 +262,7 @@ function driveControls(){
  const ready=!!driveToken&&Date.now()<driveTokenExpires;
  $('#driveConnectBtn').disabled=driveBusy||ready;
  $('#driveConnectBtn').setAttribute('aria-busy',String(driveBusy));
+ $('#driveCheckBtn').disabled=driveBusy||!ready;
  $('#driveSyncBtn').disabled=driveBusy||!ready;
  $('#driveBackupBtn').disabled=driveBusy||!ready;
  $('#driveRestoreBtn').disabled=driveBusy||!ready;
@@ -309,6 +310,15 @@ $('#driveDisconnectBtn').onclick=()=>{
  if(driveToken&&window.google?.accounts?.oauth2)google.accounts.oauth2.revoke(driveToken,()=>{});
  driveToken='';driveTokenExpires=0;driveClient=null;driveControls();
  driveStatus('Disconnected. Previously imported files remain on this device.');
+};
+$('#driveCheckBtn').onclick=async()=>{
+ if(!driveControls()||driveBusy)return;
+ driveBusy=true;driveControls();driveStatus('Testing Google Drive permissions…');
+ try{
+  const result=await driveAPI().listBackups(driveToken);
+  driveStatus('✓ Google Drive connection verified · private backup access working · '+result.files.length+' backup'+(result.files.length===1?'':'s')+' found.');
+ }catch(error){console.warn('Drive connection test failed',error);driveStatus('Connection test failed: '+String(error.message||error).slice(0,150)+'. Reconnect and check permissions.');}
+ finally{driveBusy=false;driveControls()}
 };
 $('#driveSyncBtn').onclick=async()=>{
  if(!driveControls()||driveBusy)return;
