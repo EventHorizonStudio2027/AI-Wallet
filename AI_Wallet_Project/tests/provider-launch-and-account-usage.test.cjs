@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const src=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
+const start=src.indexOf('function launchService(s)');
+const end=src.indexOf('function logoBox(',start);
+assert.ok(start>=0&&end>start);
+const launch=src.slice(start,end);
+assert.match(launch,/serviceLaunchUrl\(s\)/);
+assert.match(launch,/link\.target='_blank'/);
+assert.match(launch,/link\.rel='noopener noreferrer'/);
+assert.doesNotMatch(launch,/window\.location\.assign/);
+const account=src.slice(src.indexOf("$('#accountForm').onsubmit"),src.indexOf('function openChatMemory('));
+assert.match(account,/capacityInput>0&&usedInput>capacityInput/);
+assert.match(account,/Choose an AI service before saving/);
+console.log('Provider launch and account usage source checks passed');
