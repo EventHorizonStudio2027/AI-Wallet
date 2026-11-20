@@ -417,3 +417,9 @@ body{font-size:14px}
 #driveSyncStatus[data-state="success"]{border-color:#397f74;background:#102e32}
 #driveSyncStatus[data-state="error"]{border-color:#b65a68;background:#361d2c}
 @media(prefers-reduced-motion:reduce){#driveSyncStatus{transition:none}}
+
+/* Drive progress: quiet, brand-consistent cyan track and clearer busy feedback. */
+#driveOperationProgress{appearance:none;-webkit-appearance:none;overflow:hidden;border:0;border-radius:999px;background:#152943;accent-color:#32cfff}
+#driveOperationProgress::-webkit-progress-bar{background:#152943;border-radius:999px}
+#driveOperationProgress::-webkit-progress-value{background:linear-gradient(90deg,#278dff,#35e0f1);border-radius:999px}
+#driveOperationProgress::-moz-progress-bar{background:linear-gradient(90deg,#278dff,#35e0f1);border-radius:999px}
