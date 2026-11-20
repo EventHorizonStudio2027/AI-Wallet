@@ -469,6 +469,8 @@ async function addFiles(files,{source='manual-import'}={}){
  const folderButton=$('#importFolderBtn');if(folderButton)folderButton.disabled=true;
  try{
   let duplicates=0;
+  const fingerprint=window.AIWalletModules.files.fingerprint;
+  const knownFingerprints=new Set(state.files.map(fingerprint).filter(Boolean));
   for(let f of files){
    let checksum='';
    if(f.size<=64*1024*1024&&globalThis.crypto?.subtle){
@@ -477,7 +479,9 @@ async function addFiles(files,{source='manual-import'}={}){
      checksum=[...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('');
     }catch(hashError){console.warn('File checksum unavailable; importing without deduplication',hashError)}
    }
-   if(checksum&&state.files.some(existing=>existing.checksum===checksum&&existing.size===f.size&&existing.checksumAlgorithm==='sha256')){duplicates++;continue}
+   const fileFingerprint=fingerprint({checksum,checksumAlgorithm:'sha256',size:f.size});
+   if(fileFingerprint&&knownFingerprints.has(fileFingerprint)){duplicates++;continue}
+   if(fileFingerprint)knownFingerprints.add(fileFingerprint);
    if(state.files.length>=10000)throw Error('The file library limit is 10,000 unique files');
    let fid=id();
    await putFileBlob(fid,f);
