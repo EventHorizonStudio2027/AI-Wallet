@@ -494,3 +494,9 @@ body{font-size:14px}
 /* Focused product phase: hide legacy modules without deleting user data. */
 #sideNav [hidden]{display:none!important}
 .domain-hero-kicker{letter-spacing:.12em;text-transform:uppercase}
+
+/* Final phase-one design pass: quieter sidebar rhythm and polished focus. */
+#sideNav{row-gap:5px}
+#sideNav button:not([hidden]){transition:background-color .16s ease,border-color .16s ease,transform .16s ease}
+#sideNav button:not([hidden]):focus-visible{outline:2px solid #67e3ee;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){#sideNav button{transition:none!important}}
