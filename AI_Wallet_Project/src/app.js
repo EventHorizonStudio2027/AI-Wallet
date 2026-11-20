@@ -357,7 +357,7 @@ $('#driveSyncBtn').onclick=async()=>{
     throw Error('Could not save Drive import metadata');
    }
    if(prior)updated++;else added++;
-   driveStatus('Importing Drive files: '+(added+updated)+' of '+pending.length+' processed · '+skipped+' skipped.');
+   driveStatus('Importing · '+(added+updated+skipped-plan.unchanged.length)+' / '+pending.length+' checked · '+added+' new · '+updated+' updated · '+skipped+' skipped');
   }
   render();
   driveStatus('Drive import complete: '+added+' added, '+updated+' updated, '+skipped+' skipped. Files are stored locally.');
