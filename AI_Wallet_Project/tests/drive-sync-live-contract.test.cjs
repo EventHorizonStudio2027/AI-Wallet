@@ -37,6 +37,8 @@ const item=(id,checksum='a')=>({id,name:'file',mimeType:'image/png',modifiedTime
  await assert.rejects(api.listFolder('token','folder123'),/session expired or was revoked/);
  replies=[()=>({ok:false,status:403,headers:new Headers()})];
  await assert.rejects(api.listFolder('token','folder123'),/access denied/);
+ replies=[()=>({ok:false,status:404,headers:new Headers()})];
+ await assert.rejects(api.listFolder('token','folder123'),/file or folder not found/);
  assert.equal(replies.length,0);
  console.log('Drive connector contract tests passed');
 })().catch(error=>{console.error(error);process.exitCode=1});
