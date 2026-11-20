@@ -459,8 +459,11 @@ $('#fileInput').onchange=e=>addFiles([...e.target.files],{source:$('#manualFileO
 $('#importFolderBtn').onclick=()=>{if(!fileUploadBusy&&!window._walletImportBusy&&!backupExportBusy)$('#folderInput').click()};
 $('#folderInput').onchange=e=>addFiles([...e.target.files],{source:'folder-import'});
 async function addFiles(files,{source='manual-import'}={}){
+ source=window.AIWalletModules.files.normalizeManualOrigin(source);
  if(fileUploadBusy||window._walletImportBusy||backupExportBusy){toast('Wait for the current file operation to finish');return}
  if(!files.length)return;
+ if(files.length>500){toast('Choose at most 500 files per import batch');return}
+ if(state.files.length>=10000){toast('Your library has reached its 10,000-file limit');return}
  const maxSize=window.AIWalletModules.backup.MAX_FILE_BYTES;
  if(files.some(f=>!f||!Number.isFinite(f.size)||f.size<0||f.size>maxSize)){toast('One or more files exceed the supported file size');return}
  fileUploadBusy=true;
@@ -489,7 +492,7 @@ async function addFiles(files,{source='manual-import'}={}){
    let fid=id();
    await putFileBlob(fid,f);
    stored.push(fid);
-   const providerName={chatgpt:'ChatGPT',claude:'Claude',gemini:'Gemini',grok:'Grok',perplexity:'Perplexity'}[source];const attributedService=providerName?state.services.find(service=>service.name.toLowerCase()===providerName.toLowerCase()):null;
+   const providerName=window.AIWalletModules.files.manualOrigins[source];const attributedService=providerName?state.services.find(service=>service.name.toLowerCase()===providerName.toLowerCase()):null;
    state.files.push({id:fid,name:f.name,type:f.type,size:f.size,category:fileCategory(f.name,f.type),serviceId:attributedService?.id||acct?.serviceId||svc,accountId:attributedService?'':acct?.id||'',added:Date.now(),source,storageMode:'local',sourcePath:['folder-import','watched-folder'].includes(source)?String(f.webkitRelativePath||'').slice(0,512):'',originalModified:f.lastModified||null,checksum,checksumAlgorithm:checksum?'sha256':null});
   }
   if(!save())throw Error('Could not save uploaded file metadata');
