@@ -442,3 +442,6 @@ body{font-size:14px}
 #driveSyncStatus[data-state="success"]{border-left:3px solid #37d8bc;padding-left:10px}
 @media(max-width:600px){#driveSyncStatus{font-size:12px;overflow-wrap:anywhere}}
 @media(prefers-reduced-motion:reduce){#driveSyncStatus{transition:none}}
+
+/* Final visual refinement: restrained dimensional highlight on verified Drive status. */
+#driveSyncStatus[data-state="success"]{background-image:linear-gradient(110deg,rgba(46,205,184,.065),transparent 68%);border-radius:7px}
