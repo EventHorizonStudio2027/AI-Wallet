@@ -61,10 +61,15 @@ function planIncrementalSync(remoteFiles,existingFiles=[]){
  }
  return {added,changed,unchanged};
 }
-async function download(token,fileId){
+async function download(token,fileId,maxBytes=Infinity){
  if(!/^[A-Za-z0-9_-]{5,200}$/.test(fileId))throw Error('Invalid Google Drive file ID');
+ if(maxBytes!==Infinity&&(!Number.isSafeInteger(maxBytes)||maxBytes<1))throw Error('Invalid download size limit');
  const response=await request(token,API+'/'+encodeQuery(fileId)+'?alt=media');
- return response.blob();
+ const length=response.headers.get('Content-Length');
+ if(length!==null&&Number(length)>maxBytes)throw Error('Google Drive download exceeds the allowed size');
+ const blob=await response.blob();
+ if(blob.size>maxBytes)throw Error('Google Drive download exceeds the allowed size');
+ return blob;
 }
 async function listBackups(token){
  const files=[];let next='';const visited=new Set();let pages=0;
