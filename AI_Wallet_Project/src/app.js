@@ -314,7 +314,7 @@ $('#driveConnectBtn').onclick=async()=>{
 };
 $('#driveDisconnectBtn').onclick=()=>{
  if(driveToken&&window.google?.accounts?.oauth2)google.accounts.oauth2.revoke(driveToken,()=>{});
- driveToken='';driveTokenExpires=0;driveClient=null;driveControls();
+ driveToken='';driveTokenExpires=0;driveClient=null;driveProgress(0,0);driveControls();
  driveStatus('Disconnected. Previously imported files remain on this device.');
 };
 $('#driveCheckBtn').onclick=async()=>{
