@@ -339,7 +339,8 @@ $('#driveSyncBtn').onclick=async()=>{
    if(!prior&&state.files.length>=10000)throw Error('Library limit of 10,000 files reached');
    const size=Number(remote.size||0);
    if(!Number.isSafeInteger(size)||size<0||size>window.AIWalletModules.backup.MAX_FILE_BYTES){skipped++;continue}
-   const blob=await driveAPI().download(driveToken,remote.id);
+   const blob=await driveAPI().download(driveToken,remote.id,window.AIWalletModules.backup.MAX_FILE_BYTES);
+   if(remote.size!=null&&Number(remote.size)!==blob.size)throw Error('Imported Drive file size differs from metadata: '+String(remote.name||remote.id).slice(0,80));
    window.AIWalletModules.backup.assertBlobSize(blob);
    const fid=prior?.id||id();
    // Keep the previous blob until metadata is safely saved.
