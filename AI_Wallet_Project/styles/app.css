@@ -480,3 +480,8 @@ body{font-size:14px}
 #driveFolderId{transition:border-color .18s ease,box-shadow .18s ease}
 #driveFolderId:focus-visible{border-color:#73e8f4;box-shadow:0 0 0 4px rgba(53,181,220,.12),0 0 18px rgba(37,157,208,.09)}
 @media(prefers-reduced-motion:reduce){#driveFolderId{transition:none}}
+
+/* Drive sync: keep progress feedback legible while preserving compact layout. */
+#driveOperationProgress{accent-color:#4ed4e7;border-radius:99px;overflow:hidden}
+#driveSyncStatus{display:block;max-width:78ch;overflow-wrap:anywhere;line-height:1.65}
+@media(max-width:600px){#driveSyncStatus{font-size:12px;line-height:1.6}}
