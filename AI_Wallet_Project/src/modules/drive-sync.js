@@ -79,6 +79,7 @@ async function listBackups(token){
   files.push(...result.files.filter(file=>file&&typeof file.id==='string'&&/^[A-Za-z0-9_-]{5,200}$/.test(file.id)&&typeof file.name==='string'&&/^domain-backup-[0-9T-Z-]+\.json$/.test(file.name)&&(!file.size||/^\d+$/.test(String(file.size)))));
   if(files.length>10000)throw Error('Google Drive backup listing exceeds safe limit');
   if(result.nextPageToken!=null&&(typeof result.nextPageToken!=='string'||result.nextPageToken.length>2048))throw Error('Invalid Google Drive backup page token');
+  if(result.nextPageToken&&result.nextPageToken===next)throw Error('Google Drive backup pagination did not advance');
   next=result.nextPageToken||'';
  }while(next);
  return {files};
