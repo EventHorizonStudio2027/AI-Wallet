@@ -358,7 +358,7 @@ $('#driveSyncBtn').onclick=async()=>{
     throw Error('Could not save Drive import metadata');
    }
    if(prior)updated++;else added++;
-   driveStatus('Importing · '+(added+updated+skipped-plan.unchanged.length)+' / '+pending.length+' checked · '+added+' new · '+updated+' updated · '+skipped+' skipped');
+   driveStatus('Importing · '+(added+updated+tooLarge)+' / '+pending.length+' checked · '+added+' new · '+updated+' updated · '+tooLarge+' too large');
   }
   render();
   driveStatus('✓ Sync complete · '+added+' new · '+updated+' updated · '+plan.unchanged.length+' current · '+unsupported+' Google-native unsupported · '+tooLarge+' oversized/invalid. Files saved on this device.');
