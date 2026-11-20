@@ -13,5 +13,5 @@ const csv=api.exportInventoryCsv([{name:'=HYPERLINK("bad")',category:'Images',so
 assert.match(csv,/^name,category,source,sourcePath,size,storageMode,added,checksum/);
 assert.ok(csv.includes("'=HYPERLINK"),'spreadsheet formulas must be neutralized');
 assert.ok(csv.includes('line name'),'newlines must not inject extra rows');
-assert.equal(csv.split('\\r\\n').length,3);
+assert.equal(csv.split('\r\n').length,3);
 console.log('Checksum duplicate detection tests passed');
