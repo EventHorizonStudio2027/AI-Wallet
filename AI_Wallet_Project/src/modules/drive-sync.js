@@ -31,7 +31,7 @@ async function listFolder(token,folderId,pageToken=''){
 }
 async function listAllFolderFiles(token,folderId,max=5000){
  if(!Number.isSafeInteger(max)||max<1||max>5000)throw Error('Invalid sync file limit');
- const files=[];let next='';const visited=new Set();let pages=0;
+ const files=[];let next='';const visited=new Set(),seenFiles=new Set();let pages=0;
  do{
   if(visited.has(next)||++pages>MAX_PAGES)throw Error('Google Drive pagination loop or page limit reached');
   visited.add(next);
@@ -39,7 +39,7 @@ async function listAllFolderFiles(token,folderId,max=5000){
   if(!result||!Array.isArray(result.files))throw Error('Malformed Google Drive file listing');
   for(const file of result.files||[]){
    if(!file||typeof file!=='object'||typeof file.id!=='string'||!/^[A-Za-z0-9_-]{5,200}$/.test(file.id))throw Error('Malformed Google Drive file entry');
-   if(file.mimeType!=='application/vnd.google-apps.folder')files.push(file);
+   if(file.mimeType!=='application/vnd.google-apps.folder'&&!seenFiles.has(file.id)){files.push(file);seenFiles.add(file.id)}
    if(files.length>max)throw Error('Folder exceeds the 5,000 file sync limit');
   }
   if(result.nextPageToken!=null&&(typeof result.nextPageToken!=='string'||result.nextPageToken.length>2048))throw Error('Invalid Google Drive page token');
