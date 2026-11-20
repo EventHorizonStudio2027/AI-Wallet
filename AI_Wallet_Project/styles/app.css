@@ -436,3 +436,9 @@ body{font-size:14px}
 /* Final visual pass: understated highlight on Drive connector heading. */
 .drive-connector-heading strong{display:inline-block;letter-spacing:-.02em;text-shadow:0 1px 10px rgba(60,193,235,.12)}
 .drive-connector-heading .library-live-tag{vertical-align:middle}
+
+/* Drive status: calm, legible state transitions and improved mobile rhythm. */
+#driveSyncStatus{line-height:1.55;letter-spacing:.005em;transition:color .18s ease,border-color .18s ease}
+#driveSyncStatus[data-state="success"]{border-left:3px solid #37d8bc;padding-left:10px}
+@media(max-width:600px){#driveSyncStatus{font-size:12px;overflow-wrap:anywhere}}
+@media(prefers-reduced-motion:reduce){#driveSyncStatus{transition:none}}
