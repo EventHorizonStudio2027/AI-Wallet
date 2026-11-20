@@ -356,6 +356,7 @@ $('#driveSyncBtn').onclick=async()=>{
   const plan=driveAPI().planIncrementalSync(importable,existing);
   skipped=plan.unchanged.length+unsupported;
   const pending=[...plan.added,...plan.changed];
+  if(pending.length>10000)throw Error('Drive folder has too many pending files for a single import. Choose a smaller folder.');
   const oversizedPending=pending.filter(file=>file.size!=null&&(!Number.isSafeInteger(Number(file.size))||Number(file.size)<0||Number(file.size)>window.AIWalletModules.backup.MAX_FILE_BYTES)).length;
   if(!pending.length){driveStatus('✓ Folder checked · '+plan.unchanged.length+' files already current · '+unsupported+' Google Docs/Sheets/Slides require export before import.');render();return}
   driveStatus('Folder ready · '+(pending.length-oversizedPending)+' downloadable changes · '+oversizedPending+' oversized · '+plan.unchanged.length+' current · '+unsupported+' Google-native unsupported.');
