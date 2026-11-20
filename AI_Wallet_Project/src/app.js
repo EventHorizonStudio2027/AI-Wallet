@@ -467,11 +467,14 @@ async function addFiles(files,{source='manual-import'}={}){
  const uploadButton=$('#uploadBtn');if(uploadButton)uploadButton.disabled=true;
  let svc=selectedService,acct=state.accounts.find(a=>a.id===selectedAccount&&a.serviceId===selectedService),previous=cloneState(state),stored=[],committed=false;
  const folderButton=$('#importFolderBtn');if(folderButton)folderButton.disabled=true;
+ const uploadStatus=$('#fileImportProgress');if(uploadStatus){uploadStatus.hidden=false;uploadStatus.textContent='Preparing '+files.length+' file(s)…'}
  try{
   let duplicates=0;
   const fingerprint=window.AIWalletModules.files.fingerprint;
   const knownFingerprints=new Set(state.files.map(fingerprint).filter(Boolean));
+  let processed=0;
   for(let f of files){
+   if(uploadStatus)uploadStatus.textContent='Importing '+(++processed)+' of '+files.length+' files…';
    let checksum='';
    if(f.size<=64*1024*1024&&globalThis.crypto?.subtle){
     try{
@@ -509,6 +512,7 @@ async function addFiles(files,{source='manual-import'}={}){
   if(folderButton)folderButton.disabled=false;
   $('#fileInput').value='';
   $('#folderInput').value='';
+  if(uploadStatus){uploadStatus.textContent='Import finished';setTimeout(()=>{uploadStatus.hidden=true},3000)}
  }
 }
 $('#dropzone').ondragover=e=>{e.preventDefault();$('#dropzone').style.borderColor='#9b8cff'};$('#dropzone').ondrop=e=>{e.preventDefault();$('#dropzone').style.borderColor='';addFiles([...e.dataTransfer.files])};$('#dropzone').ondragleave=()=>{$('#dropzone').style.borderColor=''};
