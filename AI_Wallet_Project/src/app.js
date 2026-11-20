@@ -336,7 +336,8 @@ $('#driveSyncBtn').onclick=async()=>{
    if(remote.mimeType?.startsWith('application/vnd.google-apps.')){skipped++;continue}
    const remoteModified=Date.parse(remote.modifiedTime||'')||0;
    const prior=state.files.find(f=>f.source==='google-drive'&&f.remoteFileId===remote.id);
-   if(prior&&prior.originalModified===remoteModified){skipped++;continue}
+   // The sync planner already checks modification time and checksum; do not
+   // discard checksum-only changes just because the timestamp is unchanged.
    if(!prior&&state.files.length>=10000)throw Error('Library limit of 10,000 files reached');
    const size=Number(remote.size||0);
    if(!Number.isSafeInteger(size)||size<0||size>window.AIWalletModules.backup.MAX_FILE_BYTES){skipped++;continue}
