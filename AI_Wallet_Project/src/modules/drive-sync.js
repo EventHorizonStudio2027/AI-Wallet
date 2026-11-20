@@ -40,6 +40,8 @@ async function listAllFolderFiles(token,folderId,max=5000){
   if(!result||!Array.isArray(result.files))throw Error('Malformed Google Drive file listing');
   for(const file of result.files||[]){
    if(!file||typeof file!=='object'||typeof file.id!=='string'||!/^[A-Za-z0-9_-]{5,200}$/.test(file.id))throw Error('Malformed Google Drive file entry');
+   if(typeof file.name!=='string'||!file.name.trim()||file.name.length>255)throw Error('Malformed Google Drive file name');
+   if(typeof file.mimeType!=='string'||!file.mimeType.trim()||file.mimeType.length>200)throw Error('Malformed Google Drive file type');
    if(file.mimeType!=='application/vnd.google-apps.folder'&&!seenFiles.has(file.id)){files.push(file);seenFiles.add(file.id)}
    if(files.length>max)throw Error('Folder exceeds the 5,000 file sync limit');
   }
