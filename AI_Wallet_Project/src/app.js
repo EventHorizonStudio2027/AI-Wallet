@@ -271,6 +271,8 @@ function driveControls(){
  return ready;
 }
 let googleIdentityLoading=null;
+// Load the identity library ahead of the user's click so OAuth can open on the first gesture.
+if(typeof document!=='undefined')window.addEventListener('load',()=>{loadGoogleIdentity().catch(()=>{})},{once:true});
 function loadGoogleIdentity(){
  if(window.google?.accounts?.oauth2)return Promise.resolve();
  if(googleIdentityLoading)return googleIdentityLoading;
@@ -290,7 +292,7 @@ $('#driveConnectBtn').onclick=async()=>{
  if(!/^[0-9]+-[a-zA-Z0-9_-]+\.apps\.googleusercontent\.com$/.test(clientId)){driveStatus('Enter a valid Google OAuth web client ID.');return}
  try{
   driveBusy=true;driveControls();driveStatus('Loading Google authorization…');
-  if(!window.google?.accounts?.oauth2){await loadGoogleIdentity();driveBusy=false;driveControls();driveStatus('Google sign-in is ready. Click Connect Google Drive once more to authorize.');return}
+  if(!window.google?.accounts?.oauth2){await loadGoogleIdentity();driveBusy=false;driveControls();driveStatus('Google sign-in loaded. Click Connect Google Drive to authorize; the authorization popup must start from a direct click.');return}
   driveClient=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:driveAPI().SCOPES,callback:response=>{
    driveBusy=false;
    if(response.error||!response.access_token){driveStatus('Google authorization did not complete: '+String(response.error_description||response.error||'No access token returned').slice(0,160));driveControls();return}
