@@ -14,6 +14,10 @@ assert.equal(api.duplicateIds([{id:'unknown-size-a',checksum:'abc',checksumAlgor
 assert.equal(api.fingerprint({checksum:'ABCD',checksumAlgorithm:'SHA256',size:42}),'sha256:abcd:42');
 assert.equal(api.fingerprint({checksum:'abcd',size:42}),'');
 assert.equal(api.fingerprint({checksum:'abcd',checksumAlgorithm:'sha256',size:-1}),'');
+assert.equal(api.normalizeManualOrigin('chatgpt'),'chatgpt');
+assert.equal(api.normalizeManualOrigin('folder-import'),'folder-import');
+assert.equal(api.normalizeManualOrigin('unknown-provider'),'manual-import');
+assert.equal(api.manualOrigins.gemini,'Gemini');
 const csv=api.exportInventoryCsv([{name:'=HYPERLINK("bad")',category:'Images',source:'google-drive',size:7},{name:'line\nname',category:'Documents',size:2}]);
 assert.match(csv,/^name,category,source,sourcePath,serviceId,accountId,folderId,remoteFileId,size,storageMode,added,checksumAlgorithm,checksum/);
 assert.ok(csv.includes("'=HYPERLINK"),'spreadsheet formulas must be neutralized');
