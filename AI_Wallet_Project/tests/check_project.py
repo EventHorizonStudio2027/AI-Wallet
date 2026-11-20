@@ -141,6 +141,7 @@ check("(added+updated+tooLarge)" in app_js, "Drive sync progress must not count 
 check("oversizedPending=pending.filter" in app_js, "Drive sync must preview oversized files")
 check('id="driveCheckBtn"' in html, "Drive connection test button missing")
 check("driveAPI().listBackups(driveToken)" in app_js, "Drive authenticated connection test missing")
+check("driveAPI().listFolder(driveToken,folderId)" in app_js, "Drive connection test must verify folder read access")
 check("$('#driveCheckBtn').disabled=driveBusy||!ready" in app_js, "Drive connection test must require authorization")
 check('id="driveSyncBtn" disabled>Sync Drive folder' in html, "Drive sync button label must describe repeatable sync")
 check("prior&&prior.originalModified===remoteModified" not in app_js, "Drive sync must not skip checksum-only changes")
