@@ -67,9 +67,9 @@ function planIncrementalSync(remoteFiles,existingFiles=[]){
  }
  return {added,changed,unchanged};
 }
-async function download(token,fileId,maxBytes=Infinity){
+async function download(token,fileId,maxBytes=1024*1024*1024){
  if(!/^[A-Za-z0-9_-]{5,200}$/.test(fileId))throw Error('Invalid Google Drive file ID');
- if(maxBytes!==Infinity&&(!Number.isSafeInteger(maxBytes)||maxBytes<1))throw Error('Invalid download size limit');
+ if(!Number.isSafeInteger(maxBytes)||maxBytes<1||maxBytes>1024*1024*1024)throw Error('Invalid download size limit');
  const response=await request(token,API+'/'+encodeQuery(fileId)+'?alt=media');
  const length=response.headers.get('Content-Length');
  if(length!==null&&/^\d+$/.test(length.trim())&&Number(length)>maxBytes){try{await response.body?.cancel?.()}catch{}throw Error('Google Drive download exceeds the allowed size')}
