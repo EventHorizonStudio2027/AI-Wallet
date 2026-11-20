@@ -9,6 +9,8 @@ const api=context.window.AIWalletModules.files;
 const files=[{id:'a',name:'one.png',size:42,checksum:'ABCD',checksumAlgorithm:'sha256'},{id:'b',name:'two.png',size:42,checksum:'abcd',checksumAlgorithm:'sha256'},{id:'c',name:'three.png',size:43,checksum:'abcd',checksumAlgorithm:'sha256'},{id:'d',name:'four.png',size:42,checksum:''},{id:'e',name:'one.png',size:42,checksum:'different'}];
 assert.deepEqual([...api.duplicateIds(files)].sort(),['a','b']);
 assert.equal(api.duplicateIds([{id:'x',name:'same.png'},{id:'y',name:'same.png'}]).size,0);
+assert.equal(api.duplicateIds([{id:'unknown-a',checksum:'abc',size:10},{id:'unknown-b',checksum:'abc',size:10}]).size,0,'unknown checksum algorithm must not create false duplicates');
+assert.equal(api.duplicateIds([{id:'unknown-size-a',checksum:'abc',checksumAlgorithm:'sha256'},{id:'unknown-size-b',checksum:'abc',checksumAlgorithm:'sha256'}]).size,0,'unknown file size must not create false duplicates');
 const csv=api.exportInventoryCsv([{name:'=HYPERLINK("bad")',category:'Images',source:'google-drive',size:7},{name:'line\nname',category:'Documents',size:2}]);
 assert.match(csv,/^name,category,source,sourcePath,size,storageMode,added,checksum/);
 assert.ok(csv.includes("'=HYPERLINK"),'spreadsheet formulas must be neutralized');
