@@ -18,6 +18,10 @@ const item=(id,checksum='a')=>({id,name:'file',mimeType:'image/png',modifiedTime
  const plan=api.planIncrementalSync([item('file001','b'),item('file002')],previous);
  assert.equal(plan.changed.length,1,'checksum-only change must import');
  assert.equal(plan.added.length,1);
+ const duplicatePlan=api.planIncrementalSync([item('file002'),item('file002')],[]);
+ assert.equal(duplicatePlan.added.length,1,'duplicate remote IDs must be imported once');
+ const unchangedPlan=api.planIncrementalSync([item('file001','a')],previous);
+ assert.equal(unchangedPlan.unchanged.length,1,'unchanged file must not be downloaded');
  replies=[()=>json({files:[item('file001')],nextPageToken:'same'}),()=>json({files:[],nextPageToken:'same'})];
  await assert.rejects(api.listAllFolderFiles('token','folder123'),/pagination did not advance/);
  replies=[()=>json({files:[item('file001')],nextPageToken:'page2'}),()=>json({files:[item('file001'),item('file002')]})];
