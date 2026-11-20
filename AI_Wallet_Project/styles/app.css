@@ -537,3 +537,7 @@ body{font-size:14px}
 /* Subscription quality pass: align field labels and numerical controls. */
 #page-usage input[type="number"]{font-variant-numeric:tabular-nums}
 #page-usage .stat strong{font-variant-numeric:tabular-nums;letter-spacing:-.025em}
+
+/* Final visual refinement: crisp, accessible focus on subscription fields. */
+#page-usage input:focus-visible,#page-usage select:focus-visible{outline:2px solid #77e6f0;outline-offset:2px;box-shadow:0 0 0 5px rgba(75,193,222,.10)}
+@media(prefers-reduced-motion:reduce){#page-usage input,#page-usage select{transition:none!important}}
