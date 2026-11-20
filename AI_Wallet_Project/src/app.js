@@ -448,7 +448,7 @@ $('#driveRestoreBtn').onclick=async()=>{
   if(blob.size>100*1024*1024)throw Error('Backup exceeds the supported 100 MB limit');
   if(blob.size===0)throw Error('Downloaded backup is empty');
   if(latest.size!=null&&Number(latest.size)!==blob.size)throw Error('Recovered file size does not match Google Drive metadata');
-  if(!String(latest.name).endsWith('.json'))throw Error('Unexpected backup file type');
+  if(!/^domain-backup-[0-9T-Z-]+\.json$/.test(String(latest.name||'')))throw Error('Unexpected backup file name');
   driveStatus('Checking backup integrity before download…');
   let parsed;
   try{parsed=JSON.parse(await blob.text())}catch{throw Error('Downloaded backup is not valid JSON')}
