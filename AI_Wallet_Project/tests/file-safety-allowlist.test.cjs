@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+const context={window:{}};
+vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../src/modules/file-safety.js'),'utf8'),context);
+const {canInlinePreview,safeFilename}=context.window.AIWalletModules.fileSafety;
+for(const [name,type] of [['photo.png','image/png'],['clip.mp4','video/mp4'],['sound.mp3','audio/mpeg'],['notes.txt','text/plain'],['report.pdf','application/pdf']])assert.equal(canInlinePreview({name,type}),true,name);
+for(const [name,type] of [['script.svg','image/svg+xml'],['page.html','text/html'],['script.js','text/plain'],['payload.svg','image/png'],['payload.svgz','image/png'],['unknown.bin','image/x-custom'],['unknown.mov','video/x-custom'],['code.wasm','application/wasm']])assert.equal(canInlinePreview({name,type}),false,name);
+assert.equal(safeFilename('../secret\\file.txt'),'.._secret_file.txt');
+console.log('File preview safety checks passed');
