@@ -43,6 +43,7 @@ async function listAllFolderFiles(token,folderId,max=5000){
    if(files.length>max)throw Error('Folder exceeds the 5,000 file sync limit');
   }
   if(result.nextPageToken!=null&&(typeof result.nextPageToken!=='string'||result.nextPageToken.length>2048))throw Error('Invalid Google Drive page token');
+  if(result.nextPageToken&&result.nextPageToken===next)throw Error('Google Drive folder pagination did not advance');
   next=result.nextPageToken||'';
  }while(next);
  return files;
