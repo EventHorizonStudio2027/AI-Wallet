@@ -455,7 +455,7 @@ $('#driveRestoreBtn').onclick=async()=>{
 driveControls();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')driveControls()});
 $('#uploadBtn').onclick=()=>{if(!fileUploadBusy&&!window._walletImportBusy&&!backupExportBusy)$('#fileInput').click()};
-$('#fileInput').onchange=e=>addFiles([...e.target.files]);
+$('#fileInput').onchange=e=>addFiles([...e.target.files],{source:$('#manualFileOrigin').value});
 $('#importFolderBtn').onclick=()=>{if(!fileUploadBusy&&!window._walletImportBusy&&!backupExportBusy)$('#folderInput').click()};
 $('#folderInput').onchange=e=>addFiles([...e.target.files],{source:'folder-import'});
 async function addFiles(files,{source='manual-import'}={}){
@@ -477,12 +477,13 @@ async function addFiles(files,{source='manual-import'}={}){
      checksum=[...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('');
     }catch(hashError){console.warn('File checksum unavailable; importing without deduplication',hashError)}
    }
-   if(checksum&&state.files.some(existing=>existing.checksum===checksum&&existing.size===f.size)){duplicates++;continue}
+   if(checksum&&state.files.some(existing=>existing.checksum===checksum&&existing.size===f.size&&existing.checksumAlgorithm==='sha256')){duplicates++;continue}
    if(state.files.length>=10000)throw Error('The file library limit is 10,000 unique files');
    let fid=id();
    await putFileBlob(fid,f);
    stored.push(fid);
-   state.files.push({id:fid,name:f.name,type:f.type,size:f.size,category:fileCategory(f.name,f.type),serviceId:acct?.serviceId||svc,accountId:acct?.id||'',added:Date.now(),source,storageMode:'local',sourcePath:['folder-import','watched-folder'].includes(source)?String(f.webkitRelativePath||'').slice(0,512):'',originalModified:f.lastModified||null,checksum,checksumAlgorithm:checksum?'sha256':null});
+   const providerName={chatgpt:'ChatGPT',claude:'Claude',gemini:'Gemini',grok:'Grok',perplexity:'Perplexity'}[source];const attributedService=providerName?state.services.find(service=>service.name.toLowerCase()===providerName.toLowerCase()):null;
+   state.files.push({id:fid,name:f.name,type:f.type,size:f.size,category:fileCategory(f.name,f.type),serviceId:attributedService?.id||acct?.serviceId||svc,accountId:attributedService?'':acct?.id||'',added:Date.now(),source,storageMode:'local',sourcePath:['folder-import','watched-folder'].includes(source)?String(f.webkitRelativePath||'').slice(0,512):'',originalModified:f.lastModified||null,checksum,checksumAlgorithm:checksum?'sha256':null});
   }
   if(!save())throw Error('Could not save uploaded file metadata');
   committed=true;
