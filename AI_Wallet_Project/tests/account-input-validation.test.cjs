@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const source=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
+const start=source.indexOf("$('#accountForm').onsubmit=");
+const end=source.indexOf('function openChatMemory(',start);
+assert.ok(start>=0&&end>start,'account form handler exists');
+const handler=source.slice(start,end);
+assert.match(handler,/Number\.isFinite\(costInput\)/,'finite costs required');
+assert.match(handler,/costInput<0/,'negative costs rejected');
+assert.match(handler,/usedInput>1000000000000/,'usage input bounded');
+assert.match(handler,/capacityInput>1000000000000/,'capacity input bounded');
+assert.match(handler,/Choose a valid AI service before saving/,'invalid services rejected');
+assert.match(handler,/Enter a profile name before saving/,'profile label required');
+assert.ok(handler.indexOf('let previous=cloneState(state)')<handler.indexOf('state.services.push('),'snapshot precedes catalog mutation');
+console.log('Account input validation source checks passed');
