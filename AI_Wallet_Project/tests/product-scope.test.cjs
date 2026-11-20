@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const css=fs.readFileSync(path.join(__dirname,'../styles/app.css'),'utf8');
+const scope=fs.readFileSync(path.join(__dirname,'../PRODUCT_SCOPE.md'),'utf8');
+assert.match(html,/data-page="creator" hidden aria-hidden="true" tabindex="-1"/,'legacy creator nav hidden');
+assert.match(css,/#sideNav \[hidden\]\{display:none!important\}/,'hidden nav respected');
+assert.match(html,/>Subscriptions &amp; Usage<\/button>/,'subscription navigation clear');
+assert.match(html,/manually tracked subscriptions/,'public promise distinguishes manual tracking');
+assert.match(scope,/Creator Income is hidden from primary navigation, not deleted/,'legacy data preserved');
+console.log('Product scope checks passed');
