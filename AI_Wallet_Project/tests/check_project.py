@@ -151,6 +151,8 @@ check("knownFingerprints=new Set" in app_js, "Bulk import fingerprint index miss
 check("normalizeManualOrigin(source)" in app_js, "Manual provider origin validation missing")
 check("files.length>500" in app_js, "Bulk import batch cap missing")
 check("batchBytes>maxBatchBytes" in app_js, "Aggregate import byte limit missing")
+check("err?.name==='QuotaExceededError'" in app_js, "Browser storage quota failures need a specific recovery message")
+check("Browser storage is full. Free up device storage" in app_js, "Storage quota recovery guidance missing")
 check("state.files.length+files.length>10000" in app_js, "Import must preflight remaining library capacity")
 check("requestAnimationFrame(resolve)" in app_js, "Import progress must yield browser paint")
 check("Importing '+(++processed)" in app_js, "Bulk import progress updates missing")
