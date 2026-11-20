@@ -72,7 +72,7 @@ async function download(token,fileId,maxBytes=Infinity){
  if(maxBytes!==Infinity&&(!Number.isSafeInteger(maxBytes)||maxBytes<1))throw Error('Invalid download size limit');
  const response=await request(token,API+'/'+encodeQuery(fileId)+'?alt=media');
  const length=response.headers.get('Content-Length');
- if(length!==null&&Number(length)>maxBytes)throw Error('Google Drive download exceeds the allowed size');
+ if(length!==null&&/^\d+$/.test(length.trim())&&Number(length)>maxBytes){try{await response.body?.cancel?.()}catch{}throw Error('Google Drive download exceeds the allowed size')}
  // Enforce the limit while reading, not only after allocating the full Blob.
  if(Number.isFinite(maxBytes)&&response.body&&typeof response.body.getReader==='function'){
   const reader=response.body.getReader();const chunks=[];let bytes=0;
