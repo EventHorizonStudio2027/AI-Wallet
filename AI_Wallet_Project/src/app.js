@@ -331,7 +331,7 @@ $('#driveSyncBtn').onclick=async()=>{
   skipped=plan.unchanged.length;
   const pending=[...plan.added,...plan.changed];
   if(!pending.length){driveStatus('✓ Drive folder is up to date · '+skipped+' files already current.');render();return}
-  driveStatus('Folder scan complete · '+pending.length+' to import · '+skipped+' already current · '+remoteFiles.length+' total.');
+  driveStatus('Folder ready · '+pending.length+' changes · '+skipped+' up to date · '+remoteFiles.length+' files scanned.');
   for(const remote of pending){
    if(remote.mimeType?.startsWith('application/vnd.google-apps.')){skipped++;continue}
    const remoteModified=Date.parse(remote.modifiedTime||'')||0;
