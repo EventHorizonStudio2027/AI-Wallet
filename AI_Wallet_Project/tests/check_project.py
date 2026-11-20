@@ -150,6 +150,8 @@ check("uploadProgress.value=Math.round((processed/files.length)*100)" in app_js,
 check("knownFingerprints=new Set" in app_js, "Bulk import fingerprint index missing")
 check("normalizeManualOrigin(source)" in app_js, "Manual provider origin validation missing")
 check("files.length>500" in app_js, "Bulk import batch cap missing")
+check("batchBytes>maxBatchBytes" in app_js, "Aggregate import byte limit missing")
+check("state.files.length+files.length>10000" in app_js, "Import must preflight remaining library capacity")
 check("requestAnimationFrame(resolve)" in app_js, "Import progress must yield browser paint")
 check("Importing '+(++processed)" in app_js, "Bulk import progress updates missing")
 check("source:$('#manualFileOrigin').value" in app_js, "Manual provider origin must be recorded")
