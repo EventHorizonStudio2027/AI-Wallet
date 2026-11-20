@@ -508,7 +508,8 @@ async function addFiles(files,{source='manual-import'}={}){
    state=previous;
    for(let key of stored)try{await deleteFileBlob(key)}catch(cleanupError){console.warn('Could not clean up failed file upload',cleanupError)}
    render();
-   toast('File upload failed. Existing library records were preserved.');
+   const quotaExceeded=err?.name==='QuotaExceededError'||err?.name==='NS_ERROR_DOM_QUOTA_REACHED'||/quota|storage.*full/i.test(String(err?.message||''));
+   toast(quotaExceeded?'Browser storage is full. Free up device storage or import a smaller batch. Existing library records were preserved.':'File upload failed. Existing library records were preserved.');
   }else{
    toast('Files saved, but the library display could not refresh. Reload the page.');
   }
