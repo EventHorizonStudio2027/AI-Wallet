@@ -12,7 +12,7 @@ assert.equal(api.duplicateIds([{id:'x',name:'same.png'},{id:'y',name:'same.png'}
 assert.equal(api.duplicateIds([{id:'unknown-a',checksum:'abc',size:10},{id:'unknown-b',checksum:'abc',size:10}]).size,0,'unknown checksum algorithm must not create false duplicates');
 assert.equal(api.duplicateIds([{id:'unknown-size-a',checksum:'abc',checksumAlgorithm:'sha256'},{id:'unknown-size-b',checksum:'abc',checksumAlgorithm:'sha256'}]).size,0,'unknown file size must not create false duplicates');
 const csv=api.exportInventoryCsv([{name:'=HYPERLINK("bad")',category:'Images',source:'google-drive',size:7},{name:'line\nname',category:'Documents',size:2}]);
-assert.match(csv,/^name,category,source,sourcePath,size,storageMode,added,checksum/);
+assert.match(csv,/^name,category,source,sourcePath,serviceId,accountId,folderId,remoteFileId,size,storageMode,added,checksumAlgorithm,checksum/);
 assert.ok(csv.includes("'=HYPERLINK"),'spreadsheet formulas must be neutralized');
 assert.ok(csv.includes('line name'),'newlines must not inject extra rows');
 assert.equal(csv.split('\r\n').length,3);
