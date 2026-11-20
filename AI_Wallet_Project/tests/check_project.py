@@ -123,6 +123,9 @@ check("crypto.subtle.digest('SHA-256'" in app_js, "Drive backup checksum verific
 check("Latest Drive backup exceeds the 100 MB recovery limit" in app_js, "Drive restore preflight missing")
 drive_js = (ROOT / "src/modules/drive-sync.js").read_text(encoding="utf-8")
 check("backup listing exceeds safe limit" in drive_js, "Drive backup listing limit missing")
+check("pagination did not advance" in drive_js, "Drive backup pagination loop protection missing")
+check("Date.parse(b.createdTime)-Date.parse(a.createdTime)" in app_js, "Drive recovery date ordering missing")
+check("Recovered file size does not match Google Drive metadata" in app_js, "Drive recovery metadata integrity check missing")
 check('class="brand-name">dom<span' in html, "Sidebar wordmark must begin with lowercase d")
 check("DomAIn" not in html, "Outdated uppercase-D branding in HTML")
 if errors:
