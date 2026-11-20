@@ -515,3 +515,7 @@ body{font-size:14px}
 
 /* Final design refinement: quiet data-safety highlight for manual subscriptions. */
 #page-usage .card-head .tiny{border-left-color:rgba(114,231,236,.65);background:linear-gradient(90deg,rgba(46,176,202,.065),transparent 82%);border-radius:0 7px 7px 0;padding-top:4px;padding-bottom:4px}
+
+/* Account integrity pass: legible guidance in the AI directory. */
+#page-apps .card-head .tiny{max-width:75ch;line-height:1.7;overflow-wrap:anywhere}
+@media(max-width:600px){#page-apps .card-head .tiny{font-size:12px}}
