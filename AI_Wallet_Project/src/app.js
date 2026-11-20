@@ -465,7 +465,10 @@ async function addFiles(files,{source='manual-import'}={}){
  if(files.length>500){toast('Choose at most 500 files per import batch');return}
  if(state.files.length>=10000){toast('Your library has reached its 10,000-file limit');return}
  const maxSize=window.AIWalletModules.backup.MAX_FILE_BYTES;
- if(files.some(f=>!f||!Number.isFinite(f.size)||f.size<0||f.size>maxSize)){toast('One or more files exceed the supported file size');return}
+ if(files.some(f=>!f||!Number.isSafeInteger(f.size)||f.size<0||f.size>maxSize)){toast('One or more files exceed the supported file size');return}
+ const batchBytes=files.reduce((total,file)=>total+file.size,0);
+ const maxBatchBytes=2*1024*1024*1024;
+ if(!Number.isSafeInteger(batchBytes)||batchBytes>maxBatchBytes){toast('This batch is larger than 2 GB. Split it into smaller imports.');return}
  fileUploadBusy=true;
  const uploadButton=$('#uploadBtn');if(uploadButton)uploadButton.disabled=true;
  let svc=selectedService,acct=state.accounts.find(a=>a.id===selectedAccount&&a.serviceId===selectedService),previous=cloneState(state),stored=[],committed=false;
