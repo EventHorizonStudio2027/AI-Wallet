@@ -505,7 +505,7 @@ async function addFiles(files,{source='manual-import'}={}){
  }
 }
 $('#dropzone').ondragover=e=>{e.preventDefault();$('#dropzone').style.borderColor='#9b8cff'};$('#dropzone').ondrop=e=>{e.preventDefault();$('#dropzone').style.borderColor='';addFiles([...e.dataTransfer.files])};$('#dropzone').ondragleave=()=>{$('#dropzone').style.borderColor=''};
-['fileSearch','fileProvider','fileType','fileStorage','fileSort'].forEach(id=>$('#'+id).addEventListener(id==='fileSearch'?'input':'change',()=>{if(id==='fileType')activeFolder=$('#fileType').value;renderFiles()}));
+['fileSearch','fileProvider','fileType','fileStorage','fileSource','fileSort'].forEach(id=>$('#'+id).addEventListener(id==='fileSearch'?'input':'change',()=>{if(id==='fileType')activeFolder=$('#fileType').value;renderFiles()}));
 async function downloadFile(id){let f=state.files.find(x=>x.id===id);if(!f)return;try{let blob=await getFileBlob(id);if(!blob&&f.data)blob=dataUrlToBlob(f.data);if(!blob)throw Error('File data not found');let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=window.AIWalletModules.fileSafety.safeFilename(f.name);a.style.display='none';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}catch(e){toast('Could not retrieve this file from browser storage')}}let activeMediaPreviewUrl=null;
 let mediaPreviewRequest=0;
 function closeMediaPreview(invalidateRequest=true){
