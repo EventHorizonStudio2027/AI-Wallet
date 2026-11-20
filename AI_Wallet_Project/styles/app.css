@@ -500,3 +500,7 @@ body{font-size:14px}
 #sideNav button:not([hidden]){transition:background-color .16s ease,border-color .16s ease,transform .16s ease}
 #sideNav button:not([hidden]):focus-visible{outline:2px solid #67e3ee;outline-offset:2px}
 @media(prefers-reduced-motion:reduce){#sideNav button{transition:none!important}}
+
+/* Functional-focus phase: make integration limitations readable, not buried. */
+#page-apps .card-head .tiny,#page-usage .card-head .tiny{max-width:68ch;line-height:1.65}
+#page-apps .card-head,#page-usage .card-head{gap:12px;align-items:flex-start}
