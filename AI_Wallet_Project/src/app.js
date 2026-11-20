@@ -333,9 +333,8 @@ $('#driveSyncBtn').onclick=async()=>{
   skipped=plan.unchanged.length+unsupported;
   const pending=[...plan.added,...plan.changed];
   if(!pending.length){driveStatus('✓ No new importable files · '+plan.unchanged.length+' current · '+unsupported+' Google-native files not downloadable.');render();return}
-  driveStatus('Folder ready · '+pending.length+' changes · '+skipped+' up to date · '+remoteFiles.length+' files scanned.');
+  driveStatus('Folder ready · '+pending.length+' changes · '+plan.unchanged.length+' current · '+unsupported+' Google-native unsupported · '+remoteFiles.length+' scanned.');
   for(const remote of pending){
-   if(remote.mimeType?.startsWith('application/vnd.google-apps.')){skipped++;continue}
    const remoteModified=Date.parse(remote.modifiedTime||'')||0;
    const prior=state.files.find(f=>f.source==='google-drive'&&f.remoteFileId===remote.id);
    // The sync planner already checks modification time and checksum; do not
