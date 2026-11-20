@@ -120,6 +120,9 @@ check("Save original file" in app_js and ".media-preview-actions" in css, "Media
 check("Backup uploaded. Checking Drive recovery and SHA-256 integrity" in app_js, "Drive backup recovery verification missing")
 check("verifiedBlob.size!==blob.size" in app_js, "Drive backup recovered size comparison missing")
 check("crypto.subtle.digest('SHA-256'" in app_js, "Drive backup checksum verification missing")
+check("Latest Drive backup exceeds the 100 MB recovery limit" in app_js, "Drive restore preflight missing")
+drive_js = (ROOT / "src/modules/drive-sync.js").read_text(encoding="utf-8")
+check("backup listing exceeds safe limit" in drive_js, "Drive backup listing limit missing")
 check('class="brand-name">dom<span' in html, "Sidebar wordmark must begin with lowercase d")
 check("DomAIn" not in html, "Outdated uppercase-D branding in HTML")
 if errors:
