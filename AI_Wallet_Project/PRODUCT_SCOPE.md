@@ -24,3 +24,20 @@ For each core job: automated unit tests, browser smoke test, mobile interaction 
 3. Audit all visible buttons and workflows; fix or remove dead-end interactions.
 4. Validate account/service launch and subscription calculations with real user flows.
 5. Verify backup import/restore using disposable data; never overwrite live data as a test.
+
+## Current priority: operational excellence and service breadth
+The four core jobs are fixed. Prioritize end-to-end functionality, reliability, security, smooth UX, and honest integration status over adding unrelated product modules.
+
+### Service catalog taxonomy
+Include mainstream and specialized AI providers as *directory entries* without implying API access: conversational assistants; search/research; coding and developer agents; image/design; video/animation; voice, audio and music; transcription/meetings; writing/translation; productivity; automation and agent builders; model hosting/inference; education; accessibility; scientific research; 3D and game creation; legal and enterprise workflows. Catalog breadth is not the same as integration breadth.
+
+For each entry track: official URL, category, supported tasks, account-launch behavior, pricing mode (unknown unless verified), integration status (directory-only / manually tracked / connected), data access scope, and last verification date. Never store provider passwords or pretend a launch link can switch login sessions. Validate URLs and external links. Avoid embedding third-party apps in iframes without provider support.
+
+### Phase execution order
+1. Make account create/edit/delete, service selection, and safe provider launch work across devices.
+2. Verify subscription totals, currencies, billing cadence and manual reset dates against fixtures.
+3. Verify local file lifecycle, limits, deduplication, and import/preview/download.
+4. Verify Google Drive folder sync and non-destructive backup/recovery; ensure expired tokens and partial failures are handled.
+5. Run automated tests, browser smoke tests and mobile tests before declaring any flow production-ready.
+
+**Live verification:** user confirmed Google Drive backup creation and verified-backup JSON download on 2026-11-20. Full restore and folder incremental sync are still unverified.
