@@ -361,7 +361,7 @@ $('#driveSyncBtn').onclick=async()=>{
    driveStatus('Importing · '+(added+updated+skipped-plan.unchanged.length)+' / '+pending.length+' checked · '+added+' new · '+updated+' updated · '+skipped+' skipped');
   }
   render();
-  driveStatus('Drive import complete: '+added+' added, '+updated+' updated, '+skipped+' skipped. Files are stored locally.');
+  driveStatus('✓ Import complete · '+added+' new · '+updated+' updated · '+plan.unchanged.length+' current · '+unsupported+' Google-native unsupported. Files saved on this device.');
  }catch(error){console.warn('Google Drive import error',error);render();driveStatus('Drive import stopped: '+String(error.message||error).slice(0,150)+' · '+(added+updated)+' files saved before error.')}
  finally{driveBusy=false;driveControls()}
 };
