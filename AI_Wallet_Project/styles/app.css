@@ -406,3 +406,8 @@ body{font-size:14px}
 :where(button,a,input,select,textarea,[tabindex]):focus-visible{outline:2px solid #7be9ff;outline-offset:3px;box-shadow:0 0 0 5px #0a1b3c}
 :where(button,a):disabled{cursor:not-allowed;opacity:.55}
 @media(prefers-reduced-motion:reduce){html:focus-within{scroll-behavior:auto}*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Recovery is a secondary, clearly recognizable action in the Drive toolbar. */
+#driveRestoreBtn:not(:disabled){border-color:#477ca6;background:linear-gradient(135deg,#173a55,#172b49);color:#d8f5ff}
+#driveRestoreBtn:not(:disabled):hover{border-color:#7bdcf4;background:linear-gradient(135deg,#204b6a,#1b365a)}
+.drive-connector .library-live-actions button{white-space:normal;line-height:1.25}
