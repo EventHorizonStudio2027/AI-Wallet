@@ -147,6 +147,8 @@ check('id="fileDuplicatesOnly"' in html, "Duplicate-only library toggle missing"
 check('id="exportLibraryCsvBtn"' in html, "Library CSV export button missing")
 check("exportInventoryCsv(visibleLibraryFiles)" in app_js, "Filtered library CSV export missing")
 check("duplicateIds(state.files)" in app_js, "Duplicate-only library view missing")
+check("possible duplicates" in app_js, "Visible duplicate count missing")
+check("const duplicateSet=window.AIWalletModules.files.duplicateIds(state.files)" in app_js, "Duplicate count must reuse one fingerprint set")
 check("addEventListener('change',renderFiles)" in app_js, "Duplicate-only filter must update immediately")
 check("sourceFilter==='other'?f.source!=='google-drive'" in app_js, "Media origin filter logic missing")
 check("'fileStorage','fileSource','fileSort'" in app_js, "Media origin filter change listener missing")
