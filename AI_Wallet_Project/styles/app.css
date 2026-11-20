@@ -490,3 +490,7 @@ body{font-size:14px}
 #driveOperationProgress:not([hidden]){box-shadow:0 0 0 1px rgba(80,210,233,.14),0 3px 14px rgba(33,158,197,.12)}
 #driveOperationProgress::-webkit-progress-value{background:linear-gradient(90deg,#31b7d8,#75e9ef);border-radius:99px}
 #driveOperationProgress::-moz-progress-bar{background:linear-gradient(90deg,#31b7d8,#75e9ef);border-radius:99px}
+
+/* Focused product phase: hide legacy modules without deleting user data. */
+#sideNav [hidden]{display:none!important}
+.domain-hero-kicker{letter-spacing:.12em;text-transform:uppercase}
