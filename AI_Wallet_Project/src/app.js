@@ -386,7 +386,7 @@ $('#driveBackupBtn').onclick=async()=>{
   const result=await driveAPI().uploadBackup(driveToken,blob,filename);
   if(result.size!=null&&Number(result.size)!==blob.size)throw Error('Drive reported a different backup size; verify recovery before relying on this copy');
   driveStatus('Backup uploaded. Checking Drive recovery and SHA-256 integrity…');
-  const verifiedBlob=await driveAPI().download(driveToken,result.id);
+  const verifiedBlob=await driveAPI().download(driveToken,result.id,blob.size);
   if(verifiedBlob.size!==blob.size)throw Error('Uploaded backup size differs from recovered copy');
   const verified=JSON.parse(await verifiedBlob.text());
   window.AIWalletModules.backup.validateBackup(verified);
@@ -409,7 +409,7 @@ $('#driveRestoreBtn').onclick=async()=>{
   const latest=backups[0];
   if(latest.size!=null&&Number(latest.size)>100*1024*1024)throw Error('Latest Drive backup exceeds the 100 MB recovery limit');
   driveStatus('Latest backup found · '+new Date(latest.createdTime).toLocaleDateString()+' · '+(latest.size?formatSize(Number(latest.size)):'size unknown')+'. Downloading securely…');
-  const blob=await driveAPI().download(driveToken,latest.id);
+  const blob=await driveAPI().download(driveToken,latest.id,100*1024*1024);
   if(blob.size>100*1024*1024)throw Error('Backup exceeds the supported 100 MB limit');
   if(blob.size===0)throw Error('Downloaded backup is empty');
   if(latest.size!=null&&Number(latest.size)!==blob.size)throw Error('Recovered file size does not match Google Drive metadata');
