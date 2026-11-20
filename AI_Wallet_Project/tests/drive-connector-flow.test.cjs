@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const app=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+assert.match(app,/Private backup storage accessible/,'access check must explain private backup access');
+assert.match(app,/driveProgress\(0,0\);driveControls\(\);\s*driveStatus\('Disconnected/,'disconnect should reset progress');
+assert.match(html,/To protect your library, select Save backup to Drive/,'UI should guide backup verification');
+assert.match(html,/id="driveRestoreBtn"[^>]*aria-label="Download Drive recovery copy without replacing local data"/,'recovery must be non-destructive and accessible');
+console.log('Drive connector guidance and state regression checks passed');
