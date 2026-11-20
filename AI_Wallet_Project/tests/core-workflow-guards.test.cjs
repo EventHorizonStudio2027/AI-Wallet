@@ -1,0 +1,16 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const src=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
+const accountStart=src.indexOf("$('#accountForm').onsubmit=");
+const accountEnd=src.indexOf('function openChatMemory(',accountStart);
+assert.ok(accountStart>=0&&accountEnd>accountStart);
+const account=src.slice(accountStart,accountEnd);
+assert.ok(account.indexOf('let previous=cloneState(state)')<account.indexOf('state.services.push('),'rollback snapshot must precede new service mutation');
+assert.match(account,/if\(!commitState\(previous\)\)return/);
+const sync=src.slice(src.indexOf("$('#driveSyncBtn').onclick"),src.indexOf("$('#driveBackupBtn').onclick"));
+assert.match(sync,/tooLarge\+\+;driveProgress\(added\+updated\+tooLarge,pending.length\)/);
+assert.match(src,/usage:\['Subscriptions & Usage'/);
+assert.match(src,/apps:\['AI Service Directory'/);
+console.log('Core workflow guard checks passed');
