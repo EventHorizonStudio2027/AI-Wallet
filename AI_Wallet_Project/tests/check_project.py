@@ -131,6 +131,9 @@ check("download(driveToken,result.id,blob.size)" in app_js, "Drive upload verifi
 check("response.headers.get('Content-Length')" in drive_js, "Drive download preflight size guard missing")
 check("download(driveToken,remote.id,window.AIWalletModules.backup.MAX_FILE_BYTES)" in app_js, "Drive folder import limit missing")
 check("Imported Drive file size differs from metadata" in app_js, "Drive folder import integrity guard missing")
+check("prior&&prior.originalModified===remoteModified" not in app_js, "Drive sync must not skip checksum-only changes")
+check("render();return}" in app_js, "Drive no-change sync must refresh library")
+check("Importing · " in app_js, "Drive progress summary missing")
 check('class="brand-name">dom<span' in html, "Sidebar wordmark must begin with lowercase d")
 check("DomAIn" not in html, "Outdated uppercase-D branding in HTML")
 if errors:
