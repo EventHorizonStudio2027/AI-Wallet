@@ -129,6 +129,8 @@ check("Recovered file size does not match Google Drive metadata" in app_js, "Dri
 check("download(driveToken,latest.id,100*1024*1024)" in app_js, "Drive recovery download limit missing")
 check("download(driveToken,result.id,blob.size)" in app_js, "Drive upload verification limit missing")
 check("response.headers.get('Content-Length')" in drive_js, "Drive download preflight size guard missing")
+check("download(driveToken,remote.id,window.AIWalletModules.backup.MAX_FILE_BYTES)" in app_js, "Drive folder import limit missing")
+check("Imported Drive file size differs from metadata" in app_js, "Drive folder import integrity guard missing")
 check('class="brand-name">dom<span' in html, "Sidebar wordmark must begin with lowercase d")
 check("DomAIn" not in html, "Outdated uppercase-D branding in HTML")
 if errors:
