@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const source=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
+const handler=source.slice(source.indexOf("$('#driveRestoreBtn').onclick"),source.indexOf('driveControls();\ndocument.addEventListener',source.indexOf("$('#driveRestoreBtn').onclick"));
+assert.ok(handler.length>1000,'recovery handler must exist');
+assert.match(handler,/domain-backup-\[0-9T-Z-\]/,'only expected backup names should be restored');
+assert.match(handler,/Number\.isSafeInteger\(Number\(latest\.size\)\)/,'metadata size must be safe integer');
+assert.match(handler,/String\(a\.id\|\|''\)\.localeCompare/,'timestamp ties must be deterministic');
+assert.match(handler,/Your existing domAIn data has not been changed/,'recovery should remain non-destructive');
+console.log('Drive recovery guard checks passed');
