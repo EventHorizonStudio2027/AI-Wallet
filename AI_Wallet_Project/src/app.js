@@ -316,7 +316,15 @@ $('#driveCheckBtn').onclick=async()=>{
  driveBusy=true;driveControls();driveStatus('Testing Google Drive permissions…');
  try{
   const result=await driveAPI().listBackups(driveToken);
-  driveStatus('✓ Google Drive connection verified · private backup access working · '+result.files.length+' backup'+(result.files.length===1?'':'s')+' found.');
+  const folderText=$('#driveFolderId').value.trim();
+  const folderMatch=folderText.match(/^https:\/\/drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([A-Za-z0-9_-]+)(?:[/?#].*)?$/i);
+  const folderId=folderMatch?folderMatch[1]:folderText;
+  if(folderId){
+   if(!/^[A-Za-z0-9_-]{5,200}$/.test(folderId))throw Error('Enter a valid Drive folder ID or URL to test folder access');
+   const folder=await driveAPI().listFolder(driveToken,folderId);
+   if(!folder||!Array.isArray(folder.files))throw Error('Drive folder listing returned an invalid response');
+   driveStatus('✓ Drive verified · '+result.files.length+' private backups · folder accessible ('+folder.files.length+' items on first page).');
+  }else driveStatus('✓ Drive verified · '+result.files.length+' private backups · enter a folder ID to test folder access.');
  }catch(error){console.warn('Drive connection test failed',error);driveStatus('Connection test failed: '+String(error.message||error).slice(0,150)+'. Reconnect and check permissions.');}
  finally{driveBusy=false;driveControls()}
 };
