@@ -442,7 +442,7 @@ $('#driveRestoreBtn').onclick=async()=>{
   const backups=(result.files||[]).filter(file=>file&&Number.isFinite(Date.parse(file.createdTime||''))).sort((a,b)=>Date.parse(b.createdTime)-Date.parse(a.createdTime)||String(a.id||'').localeCompare(String(b.id||'')));
   if(!backups.length){driveStatus('No domAIn backups found in Google Drive app data.');return}
   const latest=backups[0];
-  if(latest.size!=null&&Number(latest.size)>100*1024*1024)throw Error('Latest Drive backup exceeds the 100 MB recovery limit');
+  if(latest.size!=null&&(!Number.isSafeInteger(Number(latest.size))||Number(latest.size)<0||Number(latest.size)>100*1024*1024))throw Error('Latest Drive backup has an invalid size or exceeds the 100 MB recovery limit');
   driveStatus('Recovery check · '+new Date(latest.createdTime).toLocaleDateString()+' · '+(latest.size?formatSize(Number(latest.size)):'size unknown')+' · 100 MB safety limit. Downloading securely…');
   const blob=await driveAPI().download(driveToken,latest.id,100*1024*1024);
   if(blob.size>100*1024*1024)throw Error('Backup exceeds the supported 100 MB limit');
