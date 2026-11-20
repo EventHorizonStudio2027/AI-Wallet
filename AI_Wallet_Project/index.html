@@ -9,15 +9,17 @@
 <title>domAIn — Your AI. Your Domain.</title>
 <link rel="stylesheet" href="styles/app.css?v=36">
 <link rel="manifest" href="manifest.webmanifest?v=35">
+<style>.skip-link{position:fixed;top:12px;left:12px;z-index:10000;transform:translateY(-160%);padding:12px 18px;border-radius:10px;background:#e8fbff;color:#071226;font-weight:700;box-shadow:0 6px 30px #0008}.skip-link:focus{transform:translateY(0)}#mainContent:focus{outline:none}</style>
 </head>
 <body>
+<a class="skip-link" href="#mainContent">Skip to main content</a>
 <div class="app">
 <aside>
  <div class="brand">
   <svg class="brand-mark" viewBox="0 0 100 100" fill="none" role="img" aria-label="domAIn layered hexagon emblem"><defs><linearGradient id="domainNeon" x1="10" y1="10" x2="90" y2="90"><stop stop-color="#00efff"/><stop offset=".48" stop-color="#378cff"/><stop offset="1" stop-color="#f033fa"/></linearGradient><linearGradient id="domainMetal" x1="15" y1="10" x2="85" y2="90"><stop stop-color="#f9ffff"/><stop offset=".48" stop-color="#60caff"/><stop offset="1" stop-color="#d64bff"/></linearGradient></defs><path d="M50 4 88 26v47L50 96 12 73V26Z" stroke="url(#domainNeon)" stroke-width="4" stroke-linejoin="round"/><path d="M50 11 81 30v39L50 88 19 69V30Z" stroke="#71c7ff" stroke-opacity=".45" stroke-width="1.5"/><path d="M6 72C-1 62 19 46 45 41c25-5 49-2 51 10 2 9-14 17-27 20" stroke="url(#domainNeon)" stroke-width="3.5" stroke-linecap="round"/><path d="m50 34 27 13-27 13-27-13 27-13Z" fill="url(#domainMetal)"/><path d="m23 57 27 13 27-13M23 68l27 13 27-13" stroke="url(#domainMetal)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 13c2 12 5 15 17 17-12 2-15 5-17 17-2-12-5-15-17-17 12-2 15-5 17-17Z" fill="white"/></svg>
   <div><div class="brand-name">dom<span class="brand-ai">A<span class="brand-serif-i">I</span></span>n</div><div class="brand-sub">Your AI. Your Domain.</div></div>
  </div>
- <nav class="nav" id="sideNav">
+ <nav class="nav" id="sideNav" aria-label="Primary navigation">
   <button class="active" data-page="home"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7v10h-6v-7H9v7H3z"/></svg></span>Overview</button>
   <button data-page="accounts"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m7-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8m10 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Accounts</button>
   <button data-page="files"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>Media Library · Drive</button>
@@ -27,8 +29,8 @@
  </nav>
  <div class="side-bottom plan"><b>✦ Your domAIn</b><small>One place for your AI accounts, usage and files.</small><div style="margin-top:12px"><span class="pill">Local library enabled</span></div></div>
 </aside>
-<main class="main">
- <header class="top"><div><div class="eyebrow">Your personal AI hub</div><h1 id="pageTitle">Welcome to domAIn</h1><p id="pageSubtitle">All your AI accounts, usage and creations in one place.</p></div><div class="top-actions"><button class="iconbtn" id="backupBtn" title="Export backup">⇩</button><button class="primary" id="addAccountTop">＋ Add account</button></div></header>
+<main class="main" id="mainContent" tabindex="-1">
+ <header class="top"><div><div class="eyebrow">Your personal AI hub</div><h1 id="pageTitle">Welcome to domAIn</h1><p id="pageSubtitle">All your AI accounts, usage and creations in one place.</p></div><div class="top-actions"><button class="iconbtn" id="backupBtn" title="Export backup" aria-label="Export data backup">⇩</button><button class="primary" id="addAccountTop">＋ Add account</button></div></header>
 
 <section class="section active" id="page-home">
  <div class="domain-hero" aria-label="domAIn connected AI dashboard"><div class="domain-hero-glow"></div><div class="domain-hero-copy"><div class="domain-hero-kicker">✦ YOUR CONNECTED AI UNIVERSE</div><div class="domain-hero-title">Everything AI.<br><em>One domAIn.</em></div><p>One beautiful home for your tools, accounts, creations and insights.</p></div><div class="domain-hero-orbit" aria-hidden="true"><svg class="hero-mark" viewBox="0 0 100 100" fill="none" role="img" aria-label="domAIn layered hexagon emblem"><defs><linearGradient id="domainHeroNeon" x1="10" y1="10" x2="90" y2="90"><stop stop-color="#00efff"/><stop offset=".48" stop-color="#378cff"/><stop offset="1" stop-color="#f033fa"/></linearGradient><linearGradient id="domainHeroMetal" x1="15" y1="10" x2="85" y2="90"><stop stop-color="#f9ffff"/><stop offset=".48" stop-color="#60caff"/><stop offset="1" stop-color="#d64bff"/></linearGradient></defs><path d="M50 4 88 26v47L50 96 12 73V26Z" stroke="url(#domainHeroNeon)" stroke-width="4" stroke-linejoin="round"/><path d="M50 11 81 30v39L50 88 19 69V30Z" stroke="#71c7ff" stroke-opacity=".45" stroke-width="1.5"/><path d="M6 72C-1 62 19 46 45 41c25-5 49-2 51 10 2 9-14 17-27 20" stroke="url(#domainHeroNeon)" stroke-width="3.5" stroke-linecap="round"/><path d="m50 34 27 13-27 13-27-13 27-13Z" fill="url(#domainHeroMetal)"/><path d="m23 57 27 13 27-13M23 68l27 13 27-13" stroke="url(#domainHeroMetal)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 13c2 12 5 15 17 17-12 2-15 5-17 17-2-12-5-15-17-17 12-2 15-5 17-17Z" fill="white"/></svg></div></div><div class="domain-section-heading"><span>YOUR AI ECOSYSTEM</span><span class="domain-section-hint">Connected services &amp; profiles</span></div><div class="service-strip" id="serviceStrip"></div>
