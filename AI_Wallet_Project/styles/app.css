@@ -504,3 +504,7 @@ body{font-size:14px}
 /* Functional-focus phase: make integration limitations readable, not buried. */
 #page-apps .card-head .tiny,#page-usage .card-head .tiny{max-width:68ch;line-height:1.65}
 #page-apps .card-head,#page-usage .card-head{gap:12px;align-items:flex-start}
+
+/* Final design pass: a subtle separator keeps disclosure text visually grounded. */
+#page-apps .card-head .tiny,#page-usage .card-head .tiny{padding-left:11px;border-left:2px solid rgba(88,211,235,.36)}
+@media(max-width:600px){#page-apps .card-head .tiny,#page-usage .card-head .tiny{padding-left:9px}}
