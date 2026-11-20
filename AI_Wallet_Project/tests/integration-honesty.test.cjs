@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const scope=fs.readFileSync(path.join(__dirname,'../PRODUCT_SCOPE.md'),'utf8');
+assert.match(html,/does not connect or synchronize your account/);
+assert.match(html,/No provider billing or usage data is synchronized automatically/);
+assert.match(scope,/Catalog breadth is not the same as integration breadth/);
+assert.match(scope,/directory-only \/ manually tracked \/ connected/);
+assert.match(scope,/user confirmed Google Drive backup creation/);
+console.log('Integration status messaging checks passed');
