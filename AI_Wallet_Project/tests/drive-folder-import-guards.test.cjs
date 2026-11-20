@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const source=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
+const start=source.indexOf("$('#driveSyncBtn').onclick");
+const end=source.indexOf("$('#driveBackupBtn').onclick",start);
+assert.ok(start>=0&&end>start,'Drive sync handler exists');
+const handler=source.slice(start,end);
+assert.match(handler,/pending\.length>10000/,'large pending imports must be rejected');
+assert.match(handler,/if\(!pending\.length\)\{driveProgress\(0,0\)/,'no-change imports must reset progress');
+assert.match(handler,/Google-native skipped \(export first\)/,'native file skip message must be actionable');
+console.log('Drive folder import guard checks passed');
