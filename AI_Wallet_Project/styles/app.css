@@ -411,3 +411,9 @@ body{font-size:14px}
 #driveRestoreBtn:not(:disabled){border-color:#477ca6;background:linear-gradient(135deg,#173a55,#172b49);color:#d8f5ff}
 #driveRestoreBtn:not(:disabled):hover{border-color:#7bdcf4;background:linear-gradient(135deg,#204b6a,#1b365a)}
 .drive-connector .library-live-actions button{white-space:normal;line-height:1.25}
+
+/* Compact, legible connection feedback without changing the connector footprint. */
+#driveSyncStatus{overflow-wrap:anywhere;line-height:1.55;transition:border-color .18s ease,background-color .18s ease}
+#driveSyncStatus[data-state="success"]{border-color:#397f74;background:#102e32}
+#driveSyncStatus[data-state="error"]{border-color:#b65a68;background:#361d2c}
+@media(prefers-reduced-motion:reduce){#driveSyncStatus{transition:none}}
