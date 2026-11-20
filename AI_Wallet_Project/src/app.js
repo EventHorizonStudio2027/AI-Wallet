@@ -332,7 +332,7 @@ $('#driveSyncBtn').onclick=async()=>{
   const plan=driveAPI().planIncrementalSync(importable,existing);
   skipped=plan.unchanged.length+unsupported;
   const pending=[...plan.added,...plan.changed];
-  const oversizedPending=pending.filter(file=>file.size!=null&&Number(file.size)>window.AIWalletModules.backup.MAX_FILE_BYTES).length;
+  const oversizedPending=pending.filter(file=>file.size!=null&&(!Number.isSafeInteger(Number(file.size))||Number(file.size)<0||Number(file.size)>window.AIWalletModules.backup.MAX_FILE_BYTES)).length;
   if(!pending.length){driveStatus('✓ No new importable files · '+plan.unchanged.length+' current · '+unsupported+' Google-native files not downloadable.');render();return}
   driveStatus('Folder ready · '+(pending.length-oversizedPending)+' downloadable changes · '+oversizedPending+' oversized · '+plan.unchanged.length+' current · '+unsupported+' Google-native unsupported.');
   for(const remote of pending){
