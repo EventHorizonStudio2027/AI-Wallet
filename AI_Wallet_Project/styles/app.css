@@ -545,3 +545,7 @@ body{font-size:14px}
 /* Data-safety refinement: prevent long backup guidance from crowding actions. */
 #page-usage .card-head .tiny{max-width:74ch;text-wrap:pretty;line-height:1.75}
 @media(max-width:650px){#page-usage .card-head{align-items:stretch}}
+
+/* Final polish: quiet visual hierarchy for critical storage guidance. */
+#page-usage .card-head .tiny{border-left:2px solid rgba(116,225,234,.72);background:linear-gradient(90deg,rgba(59,180,211,.075),rgba(59,180,211,0) 88%);padding:7px 12px;border-radius:0 9px 9px 0}
+@media(prefers-reduced-motion:reduce){#page-usage .card-head .tiny{scroll-behavior:auto}}
