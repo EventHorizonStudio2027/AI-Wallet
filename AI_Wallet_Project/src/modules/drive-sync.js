@@ -19,10 +19,16 @@ async function request(token,url,options={}){
   const wait=Number.isFinite(retryAfter)&&retryAfter>=0?Math.min(2000,retryAfter*1000):250*(attempt+1);
   await new Promise(resolve=>setTimeout(resolve,wait));
  }
- if(!response.ok){if(response.status===401)throw Error('Google Drive session expired or was revoked. Reconnect your Google account.');if(response.status===403)throw Error('Google Drive access denied. Check the selected account, folder sharing, and granted permissions.');if(response.status===404)throw Error('Google Drive file or folder not found. Check the folder link and that your account has access.');let message='Google Drive request failed ('+response.status+')';try{const body=await response.json();message=body.error?.message||message}catch{}throw Error(message)}
+ if(!response.ok){if(response.status===401){const error=new Error('Google Drive session expired or was revoked. Reconnect your Google account.');error.status=401;throw error}if(response.status===403)throw Error('Google Drive access denied. Check the selected account, folder sharing, and granted permissions.');if(response.status===404)throw Error('Google Drive file or folder not found. Check the folder link and that your account has access.');let message='Google Drive request failed ('+response.status+')';try{const body=await response.json();message=body.error?.message||message}catch{}throw Error(message)}
  return response;
 }
 function encodeQuery(value){return encodeURIComponent(value)}
+async function checkFolder(token,folderId){
+ if(!/^[A-Za-z0-9_-]{5,200}$/.test(folderId))throw Error('Invalid Google Drive folder ID');
+ const response=await request(token,API+'/'+encodeQuery(folderId)+'?fields=id,mimeType,trashed');
+ const folder=await response.json();
+ if(folder?.id!==folderId||folder.mimeType!=='application/vnd.google-apps.folder'||folder.trashed===true)throw Error('Select an accessible Google Drive folder that is outside the trash');
+}
 async function listFolder(token,folderId,pageToken=''){
  if(!/^[A-Za-z0-9_-]{5,200}$/.test(folderId))throw Error('Invalid Google Drive folder ID');
  const params=new URLSearchParams({q:"'"+folderId+"' in parents and trashed = false",fields:'nextPageToken,files(id,name,mimeType,size,modifiedTime,md5Checksum,webViewLink)',pageSize:'1000'});
@@ -125,5 +131,5 @@ async function uploadBackup(token,blob,name){
  return result;
 }
 global.AIWalletModules=global.AIWalletModules||{};
-global.AIWalletModules.driveSync=Object.freeze({SCOPES,listFolder,listAllFolderFiles,fingerprint,planIncrementalSync,download,listBackups,uploadBackup});
+global.AIWalletModules.driveSync=Object.freeze({SCOPES,checkFolder,listFolder,listAllFolderFiles,fingerprint,planIncrementalSync,download,listBackups,uploadBackup});
 })(window);

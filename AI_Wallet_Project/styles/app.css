@@ -587,3 +587,19 @@ body{font-size:14px}
 .drive-connector #driveConnectBtn:not(:disabled):hover {
   background: #1b4d67;
 }
+
+#driveFolderHelp {
+  border-inline-start: 1px solid #48728d;
+  padding-inline-start: 12px;
+}
+#driveFolderHelp strong,
+#driveFolderHelp span { display: block; }
+#driveFolderHelp strong {
+  color: #c9ecfb;
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+#driveSyncStatus[data-state="error"] {
+  border-inline-start: 3px solid #ed9a9a;
+  padding-inline-start: 11px;
+}

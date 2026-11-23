@@ -15,4 +15,5 @@ const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
 assert.match(html,/id="driveRestoreBtn"[^>]*>Download verified backup<\/button>/,'recovery action must be clearly labeled');
 assert.match(handler,/No domAIn backups found yet\. Use Save backup to Drive first/,'empty backup list must give next action');
 assert.match(handler,/Verified backup downloaded: /,'success must identify downloaded file');
+assert.match(handler,/parsed\.files\.some\(file=>file\.data==null\).*missing file contents/);
 console.log('Drive recovery guard checks passed');

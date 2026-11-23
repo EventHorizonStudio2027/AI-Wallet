@@ -34,7 +34,7 @@ const item=(id,checksum='a')=>({id,name:'file',mimeType:'image/png',modifiedTime
  replies=[()=>({ok:true,headers:new Headers(),blob:async()=>new Blob(['oversized'])})];
  await assert.rejects(api.download('token','file001',3),/exceeds the allowed size/);
  replies=[()=>({ok:false,status:401,headers:new Headers()})];
- await assert.rejects(api.listFolder('token','folder123'),/session expired or was revoked/);
+ await assert.rejects(api.listFolder('token','folder123'),{status:401,message:/session expired or was revoked/});
  replies=[()=>({ok:false,status:403,headers:new Headers()})];
  await assert.rejects(api.listFolder('token','folder123'),/access denied/);
  replies=[()=>({ok:false,status:404,headers:new Headers()})];

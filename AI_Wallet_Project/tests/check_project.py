@@ -149,7 +149,7 @@ check('id="fileImportProgressBar"' in html, "Visual import progress bar missing"
 check('id="driveOperationProgress"' in html, "Drive operation progress indicator missing")
 check('id="workspaceHealth"' in html, "Dashboard workspace health panel missing")
 check("function renderWorkspaceHealth()" in app_js, "Workspace health rendering missing")
-check("renderWorkspaceHealth()}\nfunction driveControls" in app_js, "Drive status changes must refresh dashboard health")
+check("renderWorkspaceHealth()}\nfunction reportDriveFailure" in app_js, "Drive status changes must refresh dashboard health")
 check(".workspace-health-grid{display:grid;grid-template-columns:repeat(3" in css, "Workspace health layout styling missing")
 check("driveProgress(added+updated+tooLarge,pending.length)" in app_js, "Drive folder sync progress updates missing")
 check("driveProgress(processed,state.files.length)" in app_js, "Drive backup preparation progress missing")

@@ -264,6 +264,10 @@ let driveToken='',driveTokenExpires=0,driveBusy=false,driveClient=null;
 const driveAPI=()=>window.AIWalletModules.driveSync;
 function driveProgress(current,total){const bar=$('#driveOperationProgress');if(!bar)return;bar.hidden=!Number.isFinite(total)||total<=0;bar.value=bar.hidden?0:Math.max(0,Math.min(100,Math.round(current/total*100)));bar.setAttribute('aria-valuetext',bar.hidden?'':current+' of '+total+' items processed')}
 function driveStatus(message){const status=$('#driveSyncStatus');status.textContent=message;const connected=!!driveToken&&Date.now()<driveTokenExpires;status.dataset.state=/failed|did not|error|blocked|invalid|expired|stopped|missing|exceeds|canceled|could not|not found|empty/i.test(message)?'error':/^(?:✓|Drive import complete)/.test(message)?'success':connected?'connected':'pending';const button=$('#driveConnectBtn');button.textContent=connected?'✓ Google Drive connected':'Connect Google Drive';button.setAttribute('aria-label',connected?'Google Drive connected for this session':'Connect Google Drive');renderWorkspaceHealth()}
+function reportDriveFailure(error,message){
+ if(error.status===401){driveToken='';driveTokenExpires=0;driveClient=null}
+ driveStatus(message+String(error.message||error).slice(0,170));
+}
 function driveControls(){
  const ready=!!driveToken&&Date.now()<driveTokenExpires;
  $('#driveConnectBtn').disabled=driveBusy||ready;
@@ -329,11 +333,12 @@ $('#driveCheckBtn').onclick=async()=>{
   const folderId=folderMatch?folderMatch[1]:folderText;
   if(folderId){
    if(!/^[A-Za-z0-9_-]{5,200}$/.test(folderId))throw Error('Enter a valid Drive folder ID or URL to test folder access');
+   await driveAPI().checkFolder(driveToken,folderId);
    const folder=await driveAPI().listFolder(driveToken,folderId);
    if(!folder||!Array.isArray(folder.files))throw Error('Drive folder listing returned an invalid response');
    driveStatus('✓ Private backup storage accessible · '+result.files.length+' backup(s) found · selected folder accessible ('+folder.files.length+' items on first page). Ready for sync and backup.');
   }else driveStatus('✓ Private backup storage accessible · '+result.files.length+' backup(s) found. Paste a folder link to test imports, or save a private backup now.');
- }catch(error){console.warn('Drive connection test failed',error);driveStatus('Drive access check failed: '+String(error.message||error).slice(0,170));}
+ }catch(error){console.warn('Drive connection test failed',error);reportDriveFailure(error,'Drive access check failed: ');}
  finally{driveBusy=false;driveControls()}
 };
 $('#driveSyncBtn').onclick=async()=>{
@@ -348,6 +353,7 @@ $('#driveSyncBtn').onclick=async()=>{
  driveLibraryBusy=true;driveBusy=true;driveControls();driveStatus('Checking Google Drive folder…');
  let added=0,updated=0,skipped=0,tooLarge=0;driveProgress(0,0);
  try{
+  await driveAPI().checkFolder(driveToken,folderId);
   const remoteFiles=await driveAPI().listAllFolderFiles(driveToken,folderId);
   const existing=state.files.filter(f=>f.source==='google-drive'&&f.remoteFileId).map(f=>({
    sourceKey:'google-drive:'+f.remoteFileId,
@@ -394,7 +400,7 @@ $('#driveSyncBtn').onclick=async()=>{
   render();
   driveProgress(pending.length,pending.length);
   driveStatus('✓ Sync complete · '+added+' new · '+updated+' updated · '+plan.unchanged.length+' current · '+unsupported+' Google-native skipped (export first) · '+tooLarge+' oversized/invalid. Files saved on this device.');
- }catch(error){console.warn('Google Drive import error',error);driveProgress(0,0);render();driveStatus('Drive import stopped: '+String(error.message||error).slice(0,150)+' · '+(added+updated)+' files saved before error.')}
+ }catch(error){console.warn('Google Drive import error',error);driveProgress(0,0);render();reportDriveFailure(error,'Drive import stopped · '+(added+updated)+' files saved before error. ')}
  finally{driveLibraryBusy=false;driveBusy=false;driveControls()}
 };
 $('#driveBackupBtn').onclick=async()=>{
@@ -436,7 +442,7 @@ $('#driveBackupBtn').onclick=async()=>{
   if(!originalBytes.every((value,index)=>value===recoveredBytes[index]))throw Error('Recovered backup content differs from the uploaded file');
   driveStatus('✓ Verified backup · SHA-256 match · '+result.name+' · '+formatSize(blob.size)+'. Select Download verified backup to save a separate copy.');
   driveProgress(state.files.length,state.files.length);
- }catch(error){console.warn('Google Drive backup failed',error);driveProgress(0,0);driveStatus('Backup failed: '+String(error.message||error).slice(0,160))}
+ }catch(error){console.warn('Google Drive backup failed',error);driveProgress(0,0);reportDriveFailure(error,'Backup failed: ')}
  finally{driveLibraryBusy=false;driveBusy=false;driveControls()}
 };
 $('#driveRestoreBtn').onclick=async()=>{
@@ -458,11 +464,12 @@ $('#driveRestoreBtn').onclick=async()=>{
   let parsed;
   try{parsed=JSON.parse(await blob.text())}catch{throw Error('Downloaded backup is not valid JSON')}
   window.AIWalletModules.backup.validateBackup(parsed);
+  if(parsed.files.some(file=>file.data==null))throw Error('This backup is missing file contents. Save a complete backup before relying on recovery.');
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=window.AIWalletModules.fileSafety.safeFilename(latest.name||'domain-backup.json');
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
   driveStatus('✓ Verified backup downloaded: '+a.download+'. Your existing domAIn data was not changed. Keep this JSON file somewhere safe.');
- }catch(error){console.warn('Drive backup recovery failed',error);driveStatus('Recovery download failed: '+String(error.message||error).slice(0,145))}
+ }catch(error){console.warn('Drive backup recovery failed',error);reportDriveFailure(error,'Recovery download failed: ')}
  finally{driveBusy=false;driveControls()}
 };
 driveControls();
