@@ -556,3 +556,7 @@ body{font-size:14px}
 
 /* Final visual pass: a subtle trustworthy accent on directory disclosure. */
 #page-apps .card-head .tiny{border-left:2px solid rgba(120,222,238,.78);background:linear-gradient(90deg,rgba(72,180,211,.08),transparent 84%);border-radius:0 9px 9px 0;padding:7px 12px}
+
+/* Subscription overview: compact, readable status typography. */
+#page-usage .card-head .tiny{font-size:.88rem;letter-spacing:.005em;max-width:72ch}
+@media(max-width:600px){#page-usage .card-head .tiny{font-size:.84rem;line-height:1.65}}
