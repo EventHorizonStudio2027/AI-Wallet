@@ -644,3 +644,17 @@ body{font-size:14px}
 .custom-folder :focus-visible { outline: 2px solid #81def5; outline-offset: -2px; }
 .custom-folder.drop-active { border-color: #81def5; background: #1a3d59; }
 .custom-folder-remove:hover { color: #ffb3be; background: #46243c; }
+
+.library-storage-check {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-block: 1px solid #314b70;
+}
+.library-storage-check #fileIntegrityNotice { flex: 1 1 220px; }
+#checkLibraryStorageBtn { padding: 6px 10px; font-size: 11px; }
+#checkLibraryStorageBtn:focus-visible { outline: 2px solid #81def5; outline-offset: 2px; }

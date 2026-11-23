@@ -17,15 +17,16 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout main
+      - name: Checkout release commit
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
       - name: Verify website build
         shell: bash
         run: |
@@ -71,16 +72,21 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$PAGE_URL"
-          curl --fail --location --silent --show-error --retry 5 --retry-delay 5 --retry-all-errors --max-time 20 "${PAGE_URL%/}/index.html" -o /tmp/domain-live.html
-          grep -q 'domAIn' /tmp/domain-live.html
-          curl --fail --location --silent --show-error --retry 5 --retry-delay 5 --retry-all-errors --max-time 20 "${PAGE_URL%/}/src/app.js" -o /tmp/domain-live-app.js
-          test -s /tmp/domain-live-app.js
-          curl --fail --location --silent --show-error --retry 5 --retry-delay 5 --retry-all-errors --max-time 20 "${PAGE_URL%/}/styles/app.css" -o /tmp/domain-live-app.css
-          test -s /tmp/domain-live-app.css
-          # Verify the live site serves this release, not a stale Pages artifact.
-          curl --fail --location --silent --show-error --retry 5 --retry-delay 5 --retry-all-errors --max-time 20 "${PAGE_URL%/}/service-worker.js" -o /tmp/domain-live-sw.js
-          test -s /tmp/domain-live-sw.js
-          cmp AI_Wallet_Project/service-worker.js /tmp/domain-live-sw.js
-          cmp AI_Wallet_Project/src/app.js /tmp/domain-live-app.js
-          cmp AI_Wallet_Project/styles/app.css /tmp/domain-live-app.css
-          echo "Verified live domAIn assets match this GitHub commit."
+          assets=(index.html src/app.js styles/app.css service-worker.js)
+          for attempt in {1..6}; do
+            matched=true
+            for asset in "${assets[@]}"; do
+              if ! curl --fail --location --silent --show-error --max-time 10 \
+                "${PAGE_URL%/}/${asset}?release=${GITHUB_SHA}&attempt=${attempt}" -o /tmp/domain-live-asset ||
+                 ! cmp -s "AI_Wallet_Project/${asset}" /tmp/domain-live-asset; then
+                echo "Live asset pending: ${asset}"
+                matched=false
+              fi
+            done
+            if [[ "$matched" == true ]]; then
+              echo "Verified live domAIn assets match ${GITHUB_SHA}."
+              exit 0
+            fi
+            if [[ "$attempt" -lt 6 ]]; then sleep 5; fi
+          done
+          exit 1
