@@ -541,3 +541,7 @@ body{font-size:14px}
 /* Final visual refinement: crisp, accessible focus on subscription fields. */
 #page-usage input:focus-visible,#page-usage select:focus-visible{outline:2px solid #77e6f0;outline-offset:2px;box-shadow:0 0 0 5px rgba(75,193,222,.10)}
 @media(prefers-reduced-motion:reduce){#page-usage input,#page-usage select{transition:none!important}}
+
+/* Data-safety refinement: prevent long backup guidance from crowding actions. */
+#page-usage .card-head .tiny{max-width:74ch;text-wrap:pretty;line-height:1.75}
+@media(max-width:650px){#page-usage .card-head{align-items:stretch}}
