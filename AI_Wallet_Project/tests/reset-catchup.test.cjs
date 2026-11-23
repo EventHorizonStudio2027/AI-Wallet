@@ -1,0 +1,16 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+const source=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
+const start=source.indexOf('function shiftResetDate('),end=source.indexOf('function localDateKey(',start);
+assert.ok(start>=0&&end>start);
+const context=vm.createContext({Date});vm.runInContext(source.slice(start,end),context);
+const next=context.advanceSimpleReset;
+assert.equal(next('2020-01-01','daily','2026-11-23'),'2026-11-24');
+assert.equal(next('2020-01-01','weekly','2026-11-23'),'2026-11-25');
+assert.equal(next('2026-11-23','daily','2026-11-23'),'2026-11-24');
+assert.equal(next('2026-11-24','daily','2026-11-23'),'');
+assert.equal(next('2026-02-30','daily','2026-11-23'),'');
+console.log('Long-overdue usage reset fast-forward tests passed');
