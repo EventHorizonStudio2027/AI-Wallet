@@ -674,51 +674,90 @@ $('#fileDuplicatesOnly').addEventListener('change',renderFiles);
 ['fileSearch','fileProvider','fileType','fileStorage','fileSource','fileSort'].forEach(id=>$('#'+id).addEventListener(id==='fileSearch'?'input':'change',renderFiles));
 async function downloadFile(id){let f=state.files.find(x=>x.id===id);if(!f)return;try{let blob=await getFileBlob(id);if(!blob&&f.data)blob=dataUrlToBlob(f.data);if(!blob)throw Error('File data not found');let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=window.AIWalletModules.fileSafety.safeFilename(f.name);a.style.display='none';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}catch(e){toast('Could not retrieve this file from browser storage')}}let activeMediaPreviewUrl=null;
 let mediaPreviewRequest=0;
-function closeMediaPreview(invalidateRequest=true){
- if(invalidateRequest)mediaPreviewRequest++;
+function clearMediaPreview(){
+ $('#mediaPreviewContent').replaceChildren();
+ if(activeMediaPreviewUrl){
+  URL.revokeObjectURL(activeMediaPreviewUrl);
+  activeMediaPreviewUrl=null;
+ }
+}
+function closeMediaPreview(){
+ mediaPreviewRequest++;
  const dialog=$('#mediaPreviewDialog');
- if(dialog?.open)dialog.close();
- $('#mediaPreviewContent')?.replaceChildren();
- if(activeMediaPreviewUrl){URL.revokeObjectURL(activeMediaPreviewUrl);activeMediaPreviewUrl=null}
+ if(dialog.open)dialog.close();
+ clearMediaPreview();
 }
 $('#closeMediaPreviewBtn').onclick=closeMediaPreview;
-$('#mediaPreviewDialog').addEventListener('close',closeMediaPreview);
-async function previewMediaInline(f){
+$('#mediaPreviewDialog').addEventListener('cancel',event=>{
+ event.preventDefault();
+ closeMediaPreview();
+});
+$('#mediaPreviewDialog').addEventListener('close',event=>{
+ if(!event.currentTarget.open)clearMediaPreview();
+});
+async function previewMediaInline(file){
  const dialog=$('#mediaPreviewDialog');
- if(!dialog||typeof dialog.showModal!=='function')return false;
- const type=f.category==='Videos'?'video':f.category==='Audio'?'audio':null;
- if(!type)return false;
- if(f.storageMode==='remote'){toast('Linked media must be downloaded before preview');return true}
+ if(typeof dialog?.showModal!=='function')return false;
+ const mime=String(file.type||'').split(';')[0].trim().toLowerCase();
+ const family=mime.split('/')[0];
+ const tags={video:'video',audio:'audio',image:'img'};
+ const tag=mime==='text/plain'?'pre':tags[family];
+ if(!tag||!window.AIWalletModules.fileSafety.canInlinePreview(file))return false;
+ if(file.storageMode==='remote'){toast('Linked media must be downloaded before preview');return true}
  const request=++mediaPreviewRequest;
  try{
-  let blob=await getFileBlob(f.id);
-  if(!blob&&f.data)blob=dataUrlToBlob(f.data);
+  const stored=await getFileBlob(file.id);
   if(request!==mediaPreviewRequest)return true;
+  const blob=stored||(file.data?dataUrlToBlob(file.data):null);
   if(!blob)throw Error('File contents unavailable');
-  if(!blob.type.toLowerCase().startsWith(type+'/')||!window.AIWalletModules.fileSafety.canInlinePreview({name:f.name,type:blob.type}))throw Error('Unsupported media format');
+  const blobMime=blob.type.split(';')[0].trim().toLowerCase();
+  if(blobMime!==mime||!window.AIWalletModules.fileSafety.canInlinePreview({name:file.name,type:blob.type}))throw Error('Unsupported preview format');
+
+  const content=document.createElement(tag);
+  const kind={pre:'Text',img:'Image',video:'Video',audio:'Audio'}[tag];
+  let summary=kind+' · '+formatSize(blob.size);
+  if(tag==='pre'){
+   const limit=64*1024;
+   content.textContent=await blob.slice(0,limit).text();
+   if(blob.size>limit)summary+=' · First 64 KB';
+   content.tabIndex=0;
+  }
   if(request!==mediaPreviewRequest)return true;
-  closeMediaPreview(false);
-  const url=URL.createObjectURL(blob);
-  activeMediaPreviewUrl=url;
-  const player=document.createElement(type);
-  player.controls=true;player.preload='metadata';player.src=url;
-  player.addEventListener('loadedmetadata',()=>{if(activeMediaPreviewUrl===url){const duration=Number.isFinite(player.duration)?Math.round(player.duration):null;$('#mediaPreviewMeta').textContent=(type==='video'?'Video':'Audio')+' · '+formatSize(blob.size)+(duration!==null?' · '+Math.floor(duration/60)+':'+String(duration%60).padStart(2,'0'):'')}});
-  player.setAttribute('aria-label',f.name);
-  player.addEventListener('error',()=>{if(activeMediaPreviewUrl===url)$('#mediaPreviewMeta').textContent='This format cannot be played in this browser. Save the file to open it in another app.'});
-  if(type==='video')player.playsInline=true;
-  $('#mediaPreviewTitle').textContent=f.name;
-  $('#mediaPreviewMeta').textContent=(type==='video'?'Video':'Audio')+' · '+formatSize(blob.size);
+  clearMediaPreview();
+  if(tag!=='pre'){
+   const url=URL.createObjectURL(blob);
+   activeMediaPreviewUrl=url;
+   content.addEventListener('error',()=>{
+    if(activeMediaPreviewUrl===url)$('#mediaPreviewMeta').textContent='This file cannot be previewed in this browser. Save it to open it in another app.';
+   });
+   if(tag==='img')content.alt=file.name;
+   else{
+    content.controls=true;
+    content.preload='metadata';
+    content.setAttribute('aria-label',file.name);
+    if(tag==='video')content.playsInline=true;
+    content.addEventListener('loadedmetadata',()=>{
+     if(activeMediaPreviewUrl!==url||!Number.isFinite(content.duration))return;
+     const seconds=Math.round(content.duration);
+     $('#mediaPreviewMeta').textContent=summary+' · '+Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');
+    });
+   }
+   content.src=url;
+  }
+  $('#mediaPreviewTitle').textContent=file.name;
+  $('#mediaPreviewMeta').textContent=summary;
   const actions=document.createElement('div');actions.className='media-preview-actions';
-  const save=document.createElement('button');save.type='button';save.className='secondary';save.textContent='Save original file';save.onclick=()=>downloadFile(f.id);
+  const save=document.createElement('button');save.type='button';save.className='secondary';save.textContent='Save original file';save.onclick=()=>downloadFile(file.id);
   actions.append(save);
-  $('#mediaPreviewContent').replaceChildren(player,actions);
-  dialog.showModal();
+  $('#mediaPreviewContent').replaceChildren(content,actions);
+  if(!dialog.open)dialog.showModal();
  }catch(error){if(request===mediaPreviewRequest)toast('Media preview unavailable; try saving the file')}
  return true;
 }
 async function previewFile(id){
  let f=state.files.find(x=>x.id===id);if(!f)return;
- if(await previewMediaInline(f))return;
+ const request=++mediaPreviewRequest;
+ if(await previewMediaInline(f)||request!==mediaPreviewRequest)return;
  if(!window.AIWalletModules.fileSafety.canInlinePreview(f)){toast('This file type is download-only for safety');await downloadFile(id);return}
  let w=window.open('about:blank','_blank');if(w)w.opener=null;
  try{

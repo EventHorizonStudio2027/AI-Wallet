@@ -664,3 +664,26 @@ body{font-size:14px}
 #fileIntegrityNotice[data-state="clear"] { color: #a5e5c5; }
 #fileIntegrityNotice[data-state="attention"],
 #fileIntegrityNotice[data-state="clear"] { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.media-preview-content img {
+  display: block;
+  max-width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+  border-radius: 10px;
+}
+.media-preview-content pre {
+  width: 100%;
+  max-height: 55vh;
+  overflow: auto;
+  margin: 0;
+  padding: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #0b1428;
+  border: 1px solid #334d73;
+  border-radius: 10px;
+  color: #d6e7f6;
+  font: 13px/1.6 ui-monospace, monospace;
+}
+.media-preview-content pre:focus-visible { outline: 2px solid #8fc9ff; outline-offset: 2px; }
