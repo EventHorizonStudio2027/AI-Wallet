@@ -692,3 +692,14 @@ body{font-size:14px}
 #importModal #backupImportStatus { margin: 8px 0 0; color: #a5def3; font-weight: 600; }
 #importModal #backupImportStatus:empty { margin: 0; }
 #importModal #backupInput:focus-visible { outline: 2px solid #81def5; outline-offset: 3px; }
+
+#importModal input::file-selector-button {
+  margin-inline-end: 10px;
+  padding: 7px 10px;
+  border: 1px solid #58759b;
+  border-radius: 8px;
+  background: #1a3557;
+  color: #e2f4ff;
+  cursor: pointer;
+}
+#importModal input:disabled::file-selector-button { opacity: .6; cursor: wait; }
