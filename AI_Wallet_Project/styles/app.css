@@ -603,3 +603,12 @@ body{font-size:14px}
   border-inline-start: 3px solid #ed9a9a;
   padding-inline-start: 11px;
 }
+
+#page-files .toolbar #fileSearch { flex-basis: 100%; }
+#page-files .toolbar select { flex: 1 1 120px; }
+#fileFolders .folder:focus-visible {
+  outline: 2px solid #81def5;
+  outline-offset: 2px;
+}
+#exportLibraryCsvBtn:disabled { opacity: .55; cursor: default; }
+#fileCount { color: #c0d7f2; font-weight: 600; }
