@@ -7,7 +7,7 @@ assert.match(app,/name:'Flow',domain:'labs\.google'.*url:'https:\/\/labs\.google
 assert.match(app,/name:'Flow Music',domain:'www\.flowmusic\.app'.*url:'https:\/\/www\.flowmusic\.app\/'/,'Google Flow Music must have a separate website and favicon');
 assert.match(app,/function serviceLaunchUrl\(s\)/,'Service links must be normalized');
 assert.match(app,/url\.protocol!=='https:'/,'Only HTTPS service destinations are allowed');
-assert.match(app,/window\.location\.assign\(url\)/,'Provider navigation must use same-tab navigation, not popups');
+assert.match(app,/link\.href=url;link\.target='_blank';link\.rel='noopener noreferrer'/,'Provider launch must use a separate tab without attaching the opener');
 
 
 assert.match(app,/accountProviderOnly=true;page='accounts';render\(\)/,'Top icons must open provider-filtered account hub');

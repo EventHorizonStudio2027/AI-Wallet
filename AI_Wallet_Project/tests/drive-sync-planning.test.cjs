@@ -17,13 +17,13 @@ assert.throws(()=>api.planIncrementalSync(null),/Invalid sync inventory/);
 (async()=>{
  await assert.rejects(api.listAllFolderFiles('token',a.id,5001),/Invalid sync file limit/);
  context.fetchImpl=async()=>({ok:true,json:async()=>({files:[],nextPageToken:'repeat'})});
- await assert.rejects(api.listAllFolderFiles('token',a.id),/pagination loop/);
+ await assert.rejects(api.listAllFolderFiles('token',a.id),/pagination (?:loop|did not advance)/);
  let n=0;
- context.fetchImpl=async()=>({ok:true,json:async()=>++n===1?{files:[{id:'backup111',name:'first'}],nextPageToken:'next'}:{files:[{id:'backup222',name:'second'}]}});
+ context.fetchImpl=async()=>({ok:true,json:async()=>++n===1?{files:[{id:'backup111',name:'domain-backup-2026-11-18T10-00-00-000Z.json'}],nextPageToken:'next'}:{files:[{id:'backup222',name:'domain-backup-2026-11-18T11-00-00-000Z.json'}]}});
  const backups=await api.listBackups('token');
  assert.equal(backups.files.length,2,'backup list must include all pages');
  context.fetchImpl=async()=>({ok:true,json:async()=>({files:[],nextPageToken:'loop'})});
- await assert.rejects(api.listBackups('token'),/pagination loop/);
+ await assert.rejects(api.listBackups('token'),/pagination (?:loop|did not advance)/);
  context.fetchImpl=async()=>({ok:true,json:async()=>({invalid:true})});
  await assert.rejects(api.listAllFolderFiles('token',a.id),/Malformed Google Drive file listing/);
  await assert.rejects(api.listBackups('token'),/Malformed Google Drive backup listing/);

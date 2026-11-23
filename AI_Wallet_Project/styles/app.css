@@ -563,3 +563,27 @@ body{font-size:14px}
 
 /* Final visual detail: subtle accent for reset guidance without extra visual clutter. */
 #page-usage .card-head .tiny{border-left-color:rgba(121,235,241,.88);box-shadow:inset 10px 0 18px -18px rgba(121,235,241,.7)}
+
+.drive-folder-config {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  column-gap: 16px;
+}
+.drive-folder-config label,
+.drive-folder-config input { grid-column: 1; }
+.drive-folder-config label,
+.drive-folder-config #driveFolderHelp { margin-top: 0; }
+.drive-folder-config #driveFolderHelp { grid-column: 2; grid-row: 1 / span 2; }
+@media (max-width: 680px) {
+  .drive-folder-config { grid-template-columns: minmax(0, 1fr); }
+  .drive-folder-config #driveFolderHelp { grid-column: 1; grid-row: auto; }
+}
+
+.drive-connector #driveConnectBtn:not(:disabled) {
+  background: #143c53;
+  border-color: #5bd0ed;
+  color: #effcff;
+}
+.drive-connector #driveConnectBtn:not(:disabled):hover {
+  background: #1b4d67;
+}

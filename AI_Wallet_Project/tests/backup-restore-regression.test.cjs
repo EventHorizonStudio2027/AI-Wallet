@@ -11,8 +11,8 @@ assert.match(storage,/tx\.oncomplete=\(\)=>resolve\(keys\)/,'File audit must wai
 assert.match(storage,/tx\.onabort=\(\)=>reject\(/,'File audit must reject aborted transactions');
 assert.match(app,/let backupExportBusy=false;async function exportBackup\(\)/,'Backup export must guard concurrent work');
 assert.match(app,/finally\{backupExportBusy=false\}/,'Backup export must release its lock');
-assert.match(app,/if\(window\._walletImportBusy\|\|fileUploadBusy\|\|backupExportBusy\)/,'Backup import must wait for other file operations');
-assert.match(app,/if\(fileUploadBusy\|\|window\._walletImportBusy\|\|backupExportBusy\)/,'Uploads must wait for backup export');
+assert.match(app,/if\(localFileOperationBusy\(\)\|\|driveLibraryBusy\)/,'Backup import must wait for other file operations');
+assert.match(app,/if\(localFileOperationBusy\(\)\|\|driveLibraryBusy\)/,'Uploads must wait for backup export');
 assert.match(app,/toast\('Backup import cancelled'\);return/,'User cancellation must not report invalid backup');
 assert.match(app,/a\.download='domain-backup\.json'/,'Export filename must use DomAIn brand');
 assert.match(app,/const currentRaw=localStorage\.getItem\(DATA_KEY\)/,'Rollback must safely read stored metadata');

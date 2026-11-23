@@ -7,5 +7,6 @@ const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
 assert.match(app,/Private backup storage accessible/,'access check must explain private backup access');
 assert.match(app,/driveProgress\(0,0\);driveControls\(\);\s*driveStatus\('Disconnected/,'disconnect should reset progress');
 assert.match(html,/To protect your library, select Save backup to Drive/,'UI should guide backup verification');
-assert.match(html,/id="driveRestoreBtn"[^>]*aria-label="Download Drive recovery copy without replacing local data"/,'recovery must be non-destructive and accessible');
+assert.match(html,/id="driveRestoreBtn"[^>]*aria-describedby="driveRecoveryHelp"/,'recovery must be non-destructive and accessible');
+assert.match(html,/id="driveRecoveryHelp"[^>]*>Downloading a backup leaves your local data intact/);
 console.log('Drive connector guidance and state regression checks passed');
