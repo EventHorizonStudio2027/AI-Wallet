@@ -620,3 +620,27 @@ body{font-size:14px}
 #fileImportProgressBar {
   accent-color: #76d6ec;
 }
+
+.custom-folder {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px;
+  align-items: start;
+  padding: 5px;
+}
+.custom-folder-select,
+.custom-folder-remove {
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+}
+.custom-folder-select {
+  min-width: 0;
+  text-align: left;
+  overflow-wrap: anywhere;
+  padding: 6px;
+}
+.custom-folder-remove { min-width: 32px; min-height: 32px; color: #b9caeb; }
+.custom-folder :focus-visible { outline: 2px solid #81def5; outline-offset: -2px; }
+.custom-folder.drop-active { border-color: #81def5; background: #1a3d59; }
+.custom-folder-remove:hover { color: #ffb3be; background: #46243c; }
