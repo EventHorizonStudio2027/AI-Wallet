@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+const source=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
+const begin=source.indexOf('function serviceLaunchUrl('),end=source.indexOf('function launchService(',begin);
+assert.ok(begin>=0&&end>begin);
+const context=vm.createContext({URL});vm.runInContext(source.slice(begin,end),context);
+const check=(url,expected)=>assert.equal(context.serviceLaunchUrl({url}),expected,url);
+check('https://openai.com/path','https://openai.com/path');
+check('https://claude.ai/','https://claude.ai/');
+for(const url of ['http://openai.com/','https://127.0.0.1/','https://10.0.0.1/','https://192.168.0.1/','https://172.16.0.1/','https://169.254.169.254/','https://a.example/','https://localhost/','https://user:pass@openai.com/'])check(url,'');
+console.log('Provider URL security checks passed');
