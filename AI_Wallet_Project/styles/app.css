@@ -713,3 +713,17 @@ body{font-size:14px}
   outline-offset: 2px;
 }
 .modal-box h2 { letter-spacing: -.025em; }
+
+.account-search-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-block-end: 8px;
+}
+.account-search-row .search { min-width: 0; }
+.account-search-row button:disabled { opacity: .55; cursor: default; }
+#accountSearchStatus { color: #b9d8f0; font-variant-numeric: tabular-nums; }
+@media (max-width: 520px) {
+  #accountSearchStatus { flex-basis: 100%; }
+}
