@@ -553,3 +553,6 @@ body{font-size:14px}
 /* Security disclosure: clean spacing and line length in the service directory. */
 #page-apps .card-head .tiny{max-width:76ch;line-height:1.8;text-wrap:pretty}
 @media(max-width:600px){#page-apps .card-head .tiny{padding-right:5px}}
+
+/* Final visual pass: a subtle trustworthy accent on directory disclosure. */
+#page-apps .card-head .tiny{border-left:2px solid rgba(120,222,238,.78);background:linear-gradient(90deg,rgba(72,180,211,.08),transparent 84%);border-radius:0 9px 9px 0;padding:7px 12px}
