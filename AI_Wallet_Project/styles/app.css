@@ -549,3 +549,7 @@ body{font-size:14px}
 /* Final polish: quiet visual hierarchy for critical storage guidance. */
 #page-usage .card-head .tiny{border-left:2px solid rgba(116,225,234,.72);background:linear-gradient(90deg,rgba(59,180,211,.075),rgba(59,180,211,0) 88%);padding:7px 12px;border-radius:0 9px 9px 0}
 @media(prefers-reduced-motion:reduce){#page-usage .card-head .tiny{scroll-behavior:auto}}
+
+/* Security disclosure: clean spacing and line length in the service directory. */
+#page-apps .card-head .tiny{max-width:76ch;line-height:1.8;text-wrap:pretty}
+@media(max-width:600px){#page-apps .card-head .tiny{padding-right:5px}}
