@@ -658,3 +658,9 @@ body{font-size:14px}
 .library-storage-check #fileIntegrityNotice { flex: 1 1 220px; }
 #checkLibraryStorageBtn { padding: 6px 10px; font-size: 11px; }
 #checkLibraryStorageBtn:focus-visible { outline: 2px solid #81def5; outline-offset: 2px; }
+
+#fileIntegrityNotice[data-state="checking"] { color: #a5def3; }
+#fileIntegrityNotice[data-state="attention"] { color: #ffd09e; }
+#fileIntegrityNotice[data-state="clear"] { color: #a5e5c5; }
+#fileIntegrityNotice[data-state="attention"],
+#fileIntegrityNotice[data-state="clear"] { font-weight: 600; font-variant-numeric: tabular-nums; }
