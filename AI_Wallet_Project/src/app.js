@@ -475,9 +475,15 @@ $('#driveRestoreBtn').onclick=async()=>{
 driveControls();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')driveControls()});
 $('#uploadBtn').onclick=()=>{if(!localFileOperationBusy()&&!driveLibraryBusy)$('#fileInput').click()};
-$('#fileInput').onchange=e=>addFiles([...e.target.files],{source:$('#manualFileOrigin').value});
+function importFileSelection(input,source){
+ const files=[...input.files];
+ input.value='';
+ return addFiles(files,{source});
+}
+$('#fileInput').onchange=e=>importFileSelection(e.target,$('#manualFileOrigin').value);
 $('#importFolderBtn').onclick=()=>{if(!localFileOperationBusy()&&!driveLibraryBusy)$('#folderInput').click()};
-$('#folderInput').onchange=e=>addFiles([...e.target.files],{source:'folder-import'});
+$('#folderInput').onchange=e=>importFileSelection(e.target,'folder-import');
+let hideImportProgressTimer;
 async function addFiles(files,{source='manual-import'}={}){
  source=window.AIWalletModules.files.normalizeManualOrigin(source);
  if(localFileOperationBusy()||driveLibraryBusy){toast('Wait for the current file operation to finish');return}
@@ -488,6 +494,7 @@ async function addFiles(files,{source='manual-import'}={}){
  const batchBytes=files.reduce((total,file)=>total+file.size,0);
  const maxBatchBytes=2*1024*1024*1024;
  if(!Number.isSafeInteger(batchBytes)||batchBytes>maxBatchBytes){toast('This batch is larger than 2 GB. Split it into smaller imports.');return}
+ clearTimeout(hideImportProgressTimer);
  fileUploadBusy=true;
  const uploadButton=$('#uploadBtn');if(uploadButton)uploadButton.disabled=true;
  let svc=selectedService,acct=state.accounts.find(a=>a.id===selectedAccount&&a.serviceId===selectedService),previous=cloneState(state),stored=[],committed=false;
@@ -537,12 +544,35 @@ async function addFiles(files,{source='manual-import'}={}){
   fileUploadBusy=false;
   if(uploadButton)uploadButton.disabled=false;
   if(folderButton)folderButton.disabled=false;
-  $('#fileInput').value='';
-  $('#folderInput').value='';
-  if(uploadStatus){uploadStatus.textContent=committed?'Import finished':'Import did not complete';if(uploadProgress){uploadProgress.value=committed?100:0;uploadProgress.setAttribute('aria-valuetext',committed?'Import complete':'Import not completed');setTimeout(()=>{uploadProgress.hidden=true;uploadProgress.value=0;uploadProgress.removeAttribute('aria-valuetext')},3000)}setTimeout(()=>{uploadStatus.hidden=true},3000)}
+  if(uploadStatus)uploadStatus.textContent=committed?'Import finished':'Import did not complete';
+  if(uploadProgress){
+   uploadProgress.value=committed?100:0;
+   uploadProgress.setAttribute('aria-valuetext',committed?'Import complete':'Import not completed');
+  }
+  hideImportProgressTimer=setTimeout(()=>{
+   if(uploadStatus)uploadStatus.hidden=true;
+   if(uploadProgress){
+    uploadProgress.hidden=true;
+    uploadProgress.value=0;
+    uploadProgress.removeAttribute('aria-valuetext');
+   }
+  },3000);
  }
 }
-$('#dropzone').ondragover=e=>{e.preventDefault();$('#dropzone').style.borderColor='#9b8cff'};$('#dropzone').ondrop=e=>{e.preventDefault();$('#dropzone').style.borderColor='';addFiles([...e.dataTransfer.files])};$('#dropzone').ondragleave=()=>{$('#dropzone').style.borderColor=''};
+const libraryDropzone=$('#dropzone');
+libraryDropzone.ondragover=e=>{
+ if(!e.dataTransfer.types.includes('Files'))return;
+ e.preventDefault();
+ libraryDropzone.classList.add('drop-active');
+};
+libraryDropzone.ondrop=e=>{
+ e.preventDefault();
+ libraryDropzone.classList.remove('drop-active');
+ addFiles([...e.dataTransfer.files],{source:$('#manualFileOrigin').value});
+};
+libraryDropzone.ondragleave=e=>{
+ if(!libraryDropzone.contains(e.relatedTarget))libraryDropzone.classList.remove('drop-active');
+};
 $('#fileDuplicatesOnly').addEventListener('change',renderFiles);
 ['fileSearch','fileProvider','fileType','fileStorage','fileSource','fileSort'].forEach(id=>$('#'+id).addEventListener(id==='fileSearch'?'input':'change',renderFiles));
 async function downloadFile(id){let f=state.files.find(x=>x.id===id);if(!f)return;try{let blob=await getFileBlob(id);if(!blob&&f.data)blob=dataUrlToBlob(f.data);if(!blob)throw Error('File data not found');let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=window.AIWalletModules.fileSafety.safeFilename(f.name);a.style.display='none';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}catch(e){toast('Could not retrieve this file from browser storage')}}let activeMediaPreviewUrl=null;

@@ -612,3 +612,11 @@ body{font-size:14px}
 }
 #exportLibraryCsvBtn:disabled { opacity: .55; cursor: default; }
 #fileCount { color: #c0d7f2; font-weight: 600; }
+
+#dropzone.drop-active {
+  border-color: #94dafa;
+  background: #193354;
+}
+#fileImportProgressBar {
+  accent-color: #76d6ec;
+}

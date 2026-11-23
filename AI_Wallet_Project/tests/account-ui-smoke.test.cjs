@@ -40,7 +40,7 @@ assert.match(app,/Stored · this browser/,'Library rows must disclose local stor
 assert.match(app,/if\(state\.files\.length>=10000\)throw Error/,'Unique-file quota must be checked after duplicate detection');
 assert.match(app,/catch\(hashError\)/,'Checksum failure must not block a valid import');
 assert.match(app,/files\.filter\(f=>window\.AIWalletModules\.files\.storageStatus\(f\)==='local'\)\.length\+' local'/,'Library count must disclose local file totals');
-assert.match(app,/folderInput'\)\.onchange=e=>addFiles/,'Folder selection must use the existing import pipeline');
+assert.match(app,/folderInput'\)\.onchange=e=>importFileSelection/,'Folder selection must use the existing import pipeline');
 assert.match(app,/sourcePath:\['folder-import','watched-folder'\]\.includes\(source\)/,'Folder imports must record relative source paths');
 assert.match(app,/window\.showDirectoryPicker\(\{mode:'read'\}\)/,'Watched folder must use permission-based directory picker');
 assert.match(app,/watchedFolderTimer=setInterval/,'Watched folder must schedule periodic checks');
@@ -54,4 +54,6 @@ assert.match(app,/driveAPI\(\)\.listAllFolderFiles/,'Drive import must list remo
 assert.match(app,/driveAPI\(\)\.uploadBackup/,'Drive backup must upload remote file');
 assert.match(app,/driveAPI\(\)\.listBackups/,'Drive recovery must list saved backups');
 assert.match(app,/driveToken='';driveTokenExpires=0/,'Disconnect must clear in-memory token');
+assert.match(app,/const files=\[\.\.\.input.files\];\s*input.value='';\s*return addFiles\(files,\{source\}\)/,'File pickers must reset before import validation');
+assert.match(app,/addFiles\(\[\.\.\.e.dataTransfer.files\],\{source:\$\('#manualFileOrigin'\).value\}\)/,'Dropped files must use the current source');
 console.log('DomAIn account UI smoke checks passed');
