@@ -703,3 +703,13 @@ body{font-size:14px}
   cursor: pointer;
 }
 #importModal input:disabled::file-selector-button { opacity: .6; cursor: wait; }
+
+.modal-box {
+  max-height: min(90vh, calc(100dvh - 32px));
+  overscroll-behavior: contain;
+}
+.modal-box :is(input, select, textarea, button):focus-visible {
+  outline: 2px solid #81def5;
+  outline-offset: 2px;
+}
+.modal-box h2 { letter-spacing: -.025em; }
