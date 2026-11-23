@@ -1,0 +1,18 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+const src=fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8');
+const begin=src.indexOf('function applyDueResets(');
+const end=src.indexOf('function commitState(',begin);
+assert.ok(begin>=0&&end>begin,'automatic reset helpers exist');
+const helpers=src.slice(begin,end);
+const original={accounts:[{id:'a',reset:'2026-01-01',cycle:'monthly',used:9,chats:[{refreshAt:'2026-01-01',refreshCycle:'monthly',used:8}]}]};
+const context=vm.createContext({state:structuredClone(original),cloneState:structuredClone,localDateKey:()=> '2026-02-01',shiftResetDate:()=> '2026-03-01',save:()=>false,makeUsageEvent:()=>null,console,Date});
+vm.runInContext(helpers,context);
+context.applyDueResets();
+assert.equal(context.state.accounts[0].used,9,'usage restored when save fails');
+context.applyDueChatRefreshes();
+assert.equal(context.state.accounts[0].chats[0].used,8,'chat counter restored when save fails');
+console.log('Automatic reset persistence rollback tests passed');
