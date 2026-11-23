@@ -769,7 +769,85 @@ async function previewFile(id){
  }catch(e){if(w)w.close();toast('Preview unavailable for this file')}
 }
 let backupExportBusy=false;async function exportBackup(){if(localFileOperationBusy()||driveLibraryBusy){toast('Wait for the current file operation to finish');return}backupExportBusy=true;try{let backup=window.AIWalletModules.backup.createEnvelope(state),missing=[];for(let f of state.files){let blob=await getFileBlob(f.id);if(!blob&&f.data)blob=dataUrlToBlob(f.data);if(!blob)missing.push(f.name);backup.files.push({...f,data:blob?await blobToDataUrl(blob):null})}if(missing.length&&!confirm(`${missing.length} file(s) have missing contents. This backup will contain their records but not their files. Export anyway?`))return;let blob=new Blob([JSON.stringify(backup)],{type:'application/json'});window.AIWalletModules.backup.assertBackupSize(blob.size);let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='domain-backup.json';a.style.display='none';document.body.appendChild(a);try{a.click()}finally{a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}toast(missing.length?`Backup exported with ${missing.length} missing file(s)`:'Wallet backup exported')}catch(e){console.error('Backup export failed',e);toast('Backup export failed: check file storage and the 100 MB backup limit.')}finally{backupExportBusy=false}}
-$('#backupBtn').onclick=exportBackup;$('#exportBtn').onclick=exportBackup;$('#importBtn').onclick=()=>openModal('importModal');$('#backupInput').onchange=e=>{let f=e.target.files[0];if(!f)return;if(localFileOperationBusy()||driveLibraryBusy){toast('Wait for the current file operation to finish');e.target.value='';return}window._walletImportBusy=true;if(f.size>window.AIWalletModules.backup.MAX_BACKUP_BYTES){toast('Backup exceeds the 100 MB import limit');e.target.value='';window._walletImportBusy=false;return}let r=new FileReader();r.onload=async()=>{let previous=cloneState(state),written=[],previousRaw=null,previousUsage=null,metadataCommitted=false;try{previousRaw=localStorage.getItem(DATA_KEY);let parsed=JSON.parse(r.result);window.AIWalletModules.backup.validateBackup(parsed);const incompleteFiles=parsed.files.filter(file=>file.data==null);if(incompleteFiles.length&&!confirm(`${incompleteFiles.length} file(s) in this backup have no recoverable contents. Importing will preserve their metadata but cannot restore the missing files. Continue?`)){toast('Backup import cancelled');return}let rawIds=new Set(),fileIdMap=new Map(),staged=[];for(let file of parsed.files){if(!file||typeof file.id!=='string'||!file.id||rawIds.has(file.id))throw Error('Invalid or duplicate file entry');rawIds.add(file.id);if(file.data!=null&&typeof file.data!=='string')throw Error('Invalid file payload');let newId=id();fileIdMap.set(file.id,newId);if(typeof file.data==='string'){if(!window.AIWalletModules.backup.isBase64DataUrl(file.data))throw Error('Invalid file data');let blob=dataUrlToBlob(file.data);window.AIWalletModules.backup.assertBlobSize(blob);staged.push([newId,blob])}}let x=normalizeState(parsed);x.files=x.files.map(file=>{const {data,...metadata}=file;return {...metadata,id:fileIdMap.get(file.id)||id()}});for(let [fid,blob] of staged){await putFileBlob(fid,blob);written.push(fid)}previousUsage=await readUsageEvents();await replaceUsageEvents(x.usageHistory||[]);state=x;if(!save())throw Error('Could not save backup metadata');metadataCommitted=true;selectedService=state.services[0]?.id||'chatgpt';selectedAccount=state.accounts[0]?.id||'';render();$('#importModal').classList.remove('open');$('#backupInput').value='';toast('Backup imported')}catch(err){state=previous;try{const currentRaw=localStorage.getItem(DATA_KEY);if(metadataCommitted||previousRaw!==currentRaw){if(previousRaw===null)localStorage.removeItem(DATA_KEY);else localStorage.setItem(DATA_KEY,previousRaw)}}catch(rollbackError){console.error('Backup metadata rollback failed',rollbackError)}if(previousUsage!==null)try{await replaceUsageEvents(previousUsage)}catch(rollbackError){console.error('Usage rollback failed',rollbackError)}for(let fid of written)try{await deleteFileBlob(fid)}catch(cleanupError){}console.error('Backup import failed',err);toast('Backup import failed: file is invalid, too large, or browser storage is full')}finally{window._walletImportBusy=false;$('#backupInput').value=''}};r.onerror=()=>{window._walletImportBusy=false;toast('Backup could not be read');e.target.value=''};r.onabort=()=>{window._walletImportBusy=false;e.target.value=''};try{r.readAsText(f)}catch(error){window._walletImportBusy=false;e.target.value='';toast('Backup could not be opened')}};$('#clearBtn').onclick=async()=>{if(localFileOperationBusy()||driveLibraryBusy){toast('Wait for file operations to finish before resetting');return}if(confirm('Delete all locally saved domAIn data? Export a backup first if you need it.')){let previous=cloneState(state);state=emptyState();selectedAccount='';selectedService='chatgpt';if(!save()){state=previous;render();return}walletResetBusy=true;try{await changeFileStorage(()=>window.AIWalletModules.storage.clearWalletStores())}catch(e){state=previous;save();render();toast('Could not clear all browser storage. Your wallet data was restored where possible.');return}finally{walletResetBusy=false}render();toast('Local wallet reset')}};
+$('#backupBtn').onclick=exportBackup;$('#exportBtn').onclick=exportBackup;$('#importBtn').onclick=()=>openModal('importModal');$('#backupInput').onchange=async event=>{
+ const input=event.currentTarget;
+ const file=input.files[0];
+ input.value='';
+ if(!file)return;
+ if(localFileOperationBusy()||driveLibraryBusy){toast('Wait for the current file operation to finish');return}
+ const backup=window.AIWalletModules.backup;
+ if(file.size>backup.MAX_BACKUP_BYTES){toast('Backup exceeds the 100 MB import limit');return}
+
+ window._walletImportBusy=true;
+ input.disabled=true;
+ const status=$('#backupImportStatus');
+ status.textContent='Validating backup…';
+ const written=[];
+ let previous,previousUsage=null;
+ try{
+  const parsed=JSON.parse(await file.text());
+  backup.validateBackup(parsed);
+  const incompleteFiles=parsed.files.filter(file=>file.data==null&&file.storageMode!=='remote');
+  const warning=incompleteFiles.length?` ${incompleteFiles.length} file(s) have metadata only and cannot be recovered.`:'';
+  if(!confirm(`Replace this device’s wallet with ${parsed.accounts.length} account(s) and ${parsed.files.length} file record(s) from this backup?${warning}`)){
+   toast('Backup import cancelled');
+   return;
+  }
+
+  status.textContent='Restoring accounts and files…';
+  const restored=normalizeState(parsed);
+  const fileIdMap=new Map(parsed.files.map(record=>[record.id,id()]));
+  restored.files=restored.files.map(file=>{
+   const {data,...metadata}=file;
+   return {...metadata,id:fileIdMap.get(file.id)||id()};
+  });
+  for(const record of parsed.files){
+   if(record.data==null)continue;
+   const blob=dataUrlToBlob(record.data);
+   backup.assertBlobSize(blob);
+   const fileId=fileIdMap.get(record.id);
+   await putFileBlob(fileId,blob);
+   written.push(fileId);
+  }
+  previousUsage=await readUsageEvents();
+  await replaceUsageEvents(restored.usageHistory||[]);
+  previous=state;
+  state=restored;
+  if(!save())throw Error('Could not save backup metadata');
+ }catch(error){
+  if(previous)state=previous;
+  if(previousUsage!==null){
+   try{await replaceUsageEvents(previousUsage)}
+   catch(rollbackError){console.error('Usage rollback failed',rollbackError)}
+  }
+  for(const fileId of written){
+   try{await deleteFileBlob(fileId)}
+   catch(cleanupError){console.error('Backup cleanup failed',cleanupError)}
+  }
+  console.error('Backup import failed',error);
+  toast('Backup import failed: file is invalid, too large, or browser storage is full');
+  return;
+ }finally{
+  window._walletImportBusy=false;
+  input.disabled=false;
+  status.textContent='';
+ }
+
+ storageRevision++;
+ fileStorageAudit={};
+ activeFolder='';
+ $('#importModal').classList.remove('open');
+ selectedService=state.services[0]?.id||'chatgpt';
+ selectedAccount=state.accounts[0]?.id||'';
+ try{
+  render();
+  toast('Backup imported');
+ }catch(error){
+  console.error('Restored wallet refresh failed',error);
+  toast('Backup imported. Reload to refresh your wallet.');
+ }
+};
+$('#clearBtn').onclick=async()=>{if(localFileOperationBusy()||driveLibraryBusy){toast('Wait for file operations to finish before resetting');return}if(confirm('Delete all locally saved domAIn data? Export a backup first if you need it.')){let previous=cloneState(state);state=emptyState();selectedAccount='';selectedService='chatgpt';if(!save()){state=previous;render();return}walletResetBusy=true;try{await changeFileStorage(()=>window.AIWalletModules.storage.clearWalletStores())}catch(e){state=previous;save();render();toast('Could not clear all browser storage. Your wallet data was restored where possible.');return}finally{walletResetBusy=false}render();toast('Local wallet reset')}};
 
 function renderCreator(){
  const root=$('#creatorDashboard');if(!root)return;

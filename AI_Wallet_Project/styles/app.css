@@ -687,3 +687,8 @@ body{font-size:14px}
   font: 13px/1.6 ui-monospace, monospace;
 }
 .media-preview-content pre:focus-visible { outline: 2px solid #8fc9ff; outline-offset: 2px; }
+
+#importModal #backupInput { display: block; width: 100%; margin-block-start: 14px; }
+#importModal #backupImportStatus { margin: 8px 0 0; color: #a5def3; font-weight: 600; }
+#importModal #backupImportStatus:empty { margin: 0; }
+#importModal #backupInput:focus-visible { outline: 2px solid #81def5; outline-offset: 3px; }
