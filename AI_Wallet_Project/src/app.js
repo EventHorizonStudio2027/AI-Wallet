@@ -380,23 +380,23 @@ async function syncWatchedFolder(){
  watchedFolderBusy=true;updateWatchedFolderUI('Checking watched folder…');
  try{
   const permission=await watchedDirectory.queryPermission({mode:'read'});
-  if(permission!=='granted'){updateWatchedFolderUI('Folder permission expired. Connect again to authorize.');disconnectWatchedFolder();return}
+  if(permission!=='granted'){disconnectWatchedFolder('Folder permission expired. Connect again to authorize.');return}
   const entries=await collectWatchedFiles(watchedDirectory);
   const known=new Set(state.files.filter(f=>f.source==='watched-folder').map(f=>[f.sourcePath,f.size,f.originalModified].join('|')));
   const incoming=entries.filter(entry=>!known.has([entry.path,entry.file.size,entry.file.lastModified].join('|')));
   if(incoming.length){
-   const files=incoming.map(entry=>{const file=entry.file;return {name:file.name,type:file.type,size:file.size,lastModified:file.lastModified,webkitRelativePath:entry.path,arrayBuffer:()=>file.arrayBuffer(),slice:(...args)=>file.slice(...args)}});
-   await addFiles(files,{source:'watched-folder'});
+   const sourcePaths=new Map(incoming.map(({file,path})=>[file,path]));
+   await addFiles([...sourcePaths.keys()],{source:'watched-folder',sourcePaths});
   }
   watchedFolderLastSync=new Date().toLocaleTimeString();
   updateWatchedFolderUI('Connected: '+watchedDirectory.name+' · Checked '+watchedFolderLastSync+' · '+incoming.length+' changed/new file(s) detected');
  }catch(error){console.warn('Watched folder sync failed',error);updateWatchedFolderUI('Sync failed: '+String(error.message||error).slice(0,130))}
  finally{watchedFolderBusy=false;updateWatchedFolderUI(watchStatus().textContent)}
 }
-function disconnectWatchedFolder(){
+function disconnectWatchedFolder(message){
  if(watchedFolderTimer)clearInterval(watchedFolderTimer);
  watchedFolderTimer=null;watchedDirectory=null;watchedFolderLastSync=null;
- updateWatchedFolderUI('Disconnected. Reconnect to watch a folder; existing imported files remain in your library.');
+ updateWatchedFolderUI(message||'Disconnected. Reconnect to watch a folder; existing imported files remain in your library.');
 }
 $('#watchFolderBtn').onclick=async()=>{
  if(typeof window.showDirectoryPicker!=='function')return;
@@ -637,7 +637,7 @@ $('#fileInput').onchange=e=>importFileSelection(e.target,$('#manualFileOrigin').
 $('#importFolderBtn').onclick=()=>{if(!localFileOperationBusy()&&!driveLibraryBusy)$('#folderInput').click()};
 $('#folderInput').onchange=e=>importFileSelection(e.target,'folder-import');
 let hideImportProgressTimer;
-async function addFiles(files,{source='manual-import'}={}){
+async function addFiles(files,{source='manual-import',sourcePaths}={}){
  source=window.AIWalletModules.files.normalizeManualOrigin(source);
  if(localFileOperationBusy()||driveLibraryBusy){toast('Wait for the current file operation to finish');return}
  if(!files.length)return;
@@ -650,11 +650,10 @@ async function addFiles(files,{source='manual-import'}={}){
  clearTimeout(hideImportProgressTimer);
  fileUploadBusy=true;
  const uploadButton=$('#uploadBtn');if(uploadButton)uploadButton.disabled=true;
- let svc=selectedService,acct=state.accounts.find(a=>a.id===selectedAccount&&a.serviceId===selectedService),previous=cloneState(state),stored=[],committed=false;
+ let svc=selectedService,acct=state.accounts.find(a=>a.id===selectedAccount&&a.serviceId===selectedService),previous=cloneState(state),stored=[],committed=false,duplicates=0;
  const folderButton=$('#importFolderBtn');if(folderButton)folderButton.disabled=true;
- const uploadStatus=$('#fileImportProgress'),uploadProgress=$('#fileImportProgressBar');if(uploadStatus){uploadStatus.hidden=false;uploadStatus.textContent='Preparing '+files.length+' file(s)…'}if(uploadProgress){uploadProgress.hidden=false;uploadProgress.value=0}
+ const uploadStatus=$('#fileImportProgress'),uploadProgress=$('#fileImportProgressBar');if(uploadStatus){uploadStatus.hidden=false;uploadStatus.dataset.state='running';uploadStatus.textContent='Preparing '+files.length+' file(s)…'}if(uploadProgress){uploadProgress.hidden=false;uploadProgress.value=0}
  try{
-  let duplicates=0;
   const fingerprint=window.AIWalletModules.files.fingerprint;
   const knownFingerprints=new Set(state.files.map(fingerprint).filter(Boolean));
   let processed=0;
@@ -675,13 +674,12 @@ async function addFiles(files,{source='manual-import'}={}){
    await putFileBlob(fid,f);
    stored.push(fid);
    const providerName=window.AIWalletModules.files.manualOrigins[source];const attributedService=providerName?state.services.find(service=>service.name.toLowerCase()===providerName.toLowerCase()):null;
-   state.files.push({id:fid,name:f.name,type:f.type,size:f.size,category:fileCategory(f.name,f.type),serviceId:attributedService?.id||acct?.serviceId||svc,accountId:attributedService?'':acct?.id||'',added:Date.now(),source,storageMode:'local',sourcePath:['folder-import','watched-folder'].includes(source)?String(f.webkitRelativePath||'').slice(0,512):'',originalModified:f.lastModified||null,checksum,checksumAlgorithm:checksum?'sha256':null});
+   state.files.push({id:fid,name:f.name,type:f.type,size:f.size,category:fileCategory(f.name,f.type),serviceId:attributedService?.id||acct?.serviceId||svc,accountId:attributedService?'':acct?.id||'',added:Date.now(),source,storageMode:'local',sourcePath:['folder-import','watched-folder'].includes(source)?String(sourcePaths?.get(f)||f.webkitRelativePath||'').slice(0,512):'',originalModified:f.lastModified||null,checksum,checksumAlgorithm:checksum?'sha256':null});
   }
   if(!save())throw Error('Could not save uploaded file metadata');
   committed=true;
   render();
   toast(stored.length+' file'+(stored.length===1?'':'s')+' added'+(duplicates?' · '+duplicates+' duplicate'+(duplicates===1?'':'s')+' skipped':'')+'.');
-  if(uploadStatus)uploadStatus.textContent='Complete · '+stored.length+' added'+(duplicates?' · '+duplicates+' duplicates skipped':'');
  }catch(err){
   console.error('File upload failed',err);
   if(!committed){
@@ -697,7 +695,10 @@ async function addFiles(files,{source='manual-import'}={}){
   fileUploadBusy=false;
   if(uploadButton)uploadButton.disabled=false;
   if(folderButton)folderButton.disabled=false;
-  if(uploadStatus)uploadStatus.textContent=committed?'Import finished':'Import did not complete';
+  if(uploadStatus){
+   uploadStatus.dataset.state=committed?'complete':'error';
+   uploadStatus.textContent=committed?'Complete · '+stored.length+' added'+(duplicates?' · '+duplicates+' duplicates skipped':''):'Import did not complete';
+  }
   if(uploadProgress){
    uploadProgress.value=committed?100:0;
    uploadProgress.setAttribute('aria-valuetext',committed?'Import complete':'Import not completed');
