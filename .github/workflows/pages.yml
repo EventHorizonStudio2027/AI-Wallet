@@ -75,7 +75,7 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$PAGE_URL"
-          assets=(index.html src/app.js styles/app.css service-worker.js)
+          assets=(index.html apple-touch-icon.png manifest.webmanifest src/app.js styles/app.css service-worker.js)
           for attempt in {1..6}; do
             matched=true
             for asset in "${assets[@]}"; do
