@@ -63,11 +63,13 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./AI_Wallet_Project
+          name: github-pages-${{ github.run_attempt }}
       - name: Publish website
         id: deployment
         uses: actions/deploy-pages@v4
         with:
           timeout: 600000
+          artifact_name: github-pages-${{ github.run_attempt }}
       - name: Verify deployed website responds
         shell: bash
         env:
