@@ -64,6 +64,8 @@ jobs:
         with:
           path: ./AI_Wallet_Project
           name: github-pages-${{ github.run_attempt }}
+      - name: Wait for Pages artifact indexing
+        run: sleep 15
       - name: Publish website
         id: deployment
         uses: actions/deploy-pages@v4
