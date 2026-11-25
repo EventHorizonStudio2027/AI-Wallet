@@ -362,6 +362,7 @@ function updateWatchedFolderUI(message){
  $('#watchFolderBtn').disabled=!supported||watchedFolderBusy;
  $('#syncFolderBtn').disabled=!watchedDirectory||watchedFolderBusy;
  $('#disconnectFolderBtn').disabled=!watchedDirectory||watchedFolderBusy;
+ watchStatus().dataset.state=watchedFolderBusy?'checking':watchedDirectory?'connected':'idle';
  watchStatus().textContent=message||(watchedDirectory?'Connected: '+watchedDirectory.name+(watchedFolderLastSync?' · Last checked '+watchedFolderLastSync:''):'Watched folder requires Chrome or Edge with folder access. No files are uploaded to a server.');
 }
 async function collectWatchedFiles(directory,prefix='',output=[]){
@@ -375,8 +376,12 @@ async function collectWatchedFiles(directory,prefix='',output=[]){
  }
  return output;
 }
-async function syncWatchedFolder(){
- if(!watchedDirectory||watchedFolderBusy||localFileOperationBusy()||driveLibraryBusy)return;
+async function syncWatchedFolder({manual=false}={}){
+ if(!watchedDirectory||watchedFolderBusy)return;
+ if(localFileOperationBusy()||driveLibraryBusy){
+  if(manual)toast('Wait for the current file operation to finish');
+  return;
+ }
  watchedFolderBusy=true;updateWatchedFolderUI('Checking watched folder…');
  try{
   const permission=await watchedDirectory.queryPermission({mode:'read'});
@@ -384,12 +389,18 @@ async function syncWatchedFolder(){
   const entries=await collectWatchedFiles(watchedDirectory);
   const known=new Set(state.files.filter(f=>f.source==='watched-folder').map(f=>[f.sourcePath,f.size,f.originalModified].join('|')));
   const incoming=entries.filter(entry=>!known.has([entry.path,entry.file.size,entry.file.lastModified].join('|')));
+  let summary='No new or changed files';
   if(incoming.length){
    const sourcePaths=new Map(incoming.map(({file,path})=>[file,path]));
-   await addFiles([...sourcePaths.keys()],{source:'watched-folder',sourcePaths});
+   const result=await addFiles([...sourcePaths.keys()],{source:'watched-folder',sourcePaths});
+   if(!result){
+    updateWatchedFolderUI('Import did not complete. Check the import message and try Sync now again.');
+    return;
+   }
+   summary=result.added+' added · '+result.duplicates+' duplicates skipped';
   }
   watchedFolderLastSync=new Date().toLocaleTimeString();
-  updateWatchedFolderUI('Connected: '+watchedDirectory.name+' · Checked '+watchedFolderLastSync+' · '+incoming.length+' changed/new file(s) detected');
+  updateWatchedFolderUI('Connected: '+watchedDirectory.name+' · Checked '+watchedFolderLastSync+' · '+summary);
  }catch(error){console.warn('Watched folder sync failed',error);updateWatchedFolderUI('Sync failed: '+String(error.message||error).slice(0,130))}
  finally{watchedFolderBusy=false;updateWatchedFolderUI(watchStatus().textContent)}
 }
@@ -408,7 +419,7 @@ $('#watchFolderBtn').onclick=async()=>{
   await syncWatchedFolder();
  }catch(error){if(error.name!=='AbortError'){console.warn('Folder access unavailable',error);updateWatchedFolderUI('Could not connect folder: '+String(error.message||error).slice(0,110))}}
 };
-$('#syncFolderBtn').onclick=()=>syncWatchedFolder();
+$('#syncFolderBtn').onclick=()=>syncWatchedFolder({manual:true});
 $('#disconnectFolderBtn').onclick=()=>disconnectWatchedFolder();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&watchedDirectory)syncWatchedFolder()});
 updateWatchedFolderUI();
@@ -712,6 +723,7 @@ async function addFiles(files,{source='manual-import',sourcePaths}={}){
    }
   },3000);
  }
+ return committed?{added:stored.length,duplicates}:null;
 }
 const libraryDropzone=$('#dropzone');
 libraryDropzone.ondragover=e=>{

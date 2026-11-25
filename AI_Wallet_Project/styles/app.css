@@ -747,3 +747,11 @@ body{font-size:14px}
 #fileImportProgress[data-state="complete"] { color: #a5e5c5; }
 #fileImportProgress[data-state="error"] { color: #ffd09e; }
 #fileImportProgress { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+#liveFolderStatus {
+  display: block;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+#liveFolderStatus[data-state="checking"] { color: #a5def3; font-weight: 600; }
+#liveFolderStatus[data-state="connected"] { color: #bed7ef; }
